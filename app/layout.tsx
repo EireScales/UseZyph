@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Zyph",
   description: "Zyph app",
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -17,5 +20,6 @@ export default function RootLayout({
         {children}
       </body>
     </html>
+  
   );
 }
