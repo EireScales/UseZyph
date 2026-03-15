@@ -49,7 +49,7 @@ export default function OnboardingPage() {
       const { error: upsertError } = await supabase.from("profiles").upsert(
         {
           id: user.id,
-          name: name.trim() || null,
+          display_name: name.trim() || null,
           primary_uses: primaryUses,
         },
         { onConflict: "id" }

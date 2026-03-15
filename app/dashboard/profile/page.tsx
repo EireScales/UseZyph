@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-type ProfileRow = { id: string; name: string | null } | null;
+type ProfileRow = { id: string; display_name: string | null } | null;
 type ObservationRow = {
   id: string;
   created_at: string;
@@ -69,7 +69,7 @@ export default function ProfilePage() {
       try {
         const [profileRes, observationsRes, insightsRes, countRes] =
           await Promise.all([
-            supabase.from("profiles").select("id, name").eq("id", user.id).single(),
+            supabase.from("profiles").select("id, display_name").eq("id", user.id).single(),
             supabase
               .from("observations")
               .select("id, created_at, app_name, description")
@@ -142,9 +142,9 @@ export default function ProfilePage() {
     try {
       await supabase
         .from("profiles")
-        .update({ name: editNameValue.trim() || null })
+        .update({ display_name: editNameValue.trim() || null })
         .eq("id", user.id);
-      setProfile((p) => (p ? { ...p, name: editNameValue.trim() || null } : null));
+      setProfile((p) => (p ? { ...p, display_name: editNameValue.trim() || null } : null));
       setEditingName(false);
     } finally {
       setSavingName(false);
@@ -200,7 +200,7 @@ export default function ProfilePage() {
     );
   }
 
-  const initial = profile?.name?.[0]?.toUpperCase() || "?";
+  const initial = profile?.display_name?.[0]?.toUpperCase() || "?";
   const displayObservations = observations.slice(0, observationsLimit);
   const hasMoreObservations = observations.length > observationsLimit;
 
@@ -244,7 +244,7 @@ export default function ProfilePage() {
                   type="button"
                   onClick={() => {
                     setEditingName(false);
-                    setEditNameValue(profile?.name ?? "");
+                    setEditNameValue(profile?.display_name ?? "");
                   }}
                   className="px-3 py-2 rounded-lg text-[#666] hover:bg-[#141414] text-sm transition-colors duration-200"
                 >
@@ -255,12 +255,12 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => {
-                  setEditNameValue(profile?.name ?? "");
+                  setEditNameValue(profile?.display_name ?? "");
                   setEditingName(true);
                 }}
                 className="text-2xl font-bold text-[#f0f0f0] hover:text-white transition-colors duration-200 text-left"
               >
-                {profile?.name?.trim() || "Add your name"}
+                {profile?.display_name?.trim() || "Add your name"}
               </button>
             )}
             {userEmail && <p className="text-[#555] text-sm mt-0.5">{userEmail}</p>}
@@ -279,7 +279,7 @@ export default function ProfilePage() {
           <div>
             <p className="text-[#555] text-xs uppercase tracking-wider mb-1">Name</p>
             <p className="text-[#f0f0f0] font-medium truncate" style={{ fontFamily: "var(--font-mono)" }}>
-              {profile?.name || "—"}
+              {profile?.display_name || "—"}
             </p>
           </div>
           <div>

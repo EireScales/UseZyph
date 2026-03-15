@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 
 type ProfileRow = {
   id: string;
-  name: string | null;
+  display_name: string | null;
   settings?: {
     capture_frequency?: string;
     idle_enabled?: boolean;
@@ -66,13 +66,13 @@ export default function SettingsPage() {
       try {
         const { data } = await supabase
           .from("profiles")
-          .select("name, settings")
+          .select("display_name, settings")
           .eq("id", user.id)
           .single();
 
         if (data) {
           const row = data as ProfileRow;
-          setDisplayName(row.name ?? "");
+          setDisplayName(row.display_name ?? "");
           const s = row.settings;
           if (s) {
             if (s.capture_frequency) setFrequency(s.capture_frequency);
@@ -116,7 +116,7 @@ export default function SettingsPage() {
       const { error } = await supabase
         .from("profiles")
         .update({
-          name: displayName.trim() || null,
+          display_name: displayName.trim() || null,
           settings,
         })
         .eq("id", userId);
