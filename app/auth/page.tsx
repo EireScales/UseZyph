@@ -36,14 +36,15 @@ export default function AuthPage() {
           password,
         });
         if (signInError) throw signInError;
+        router.push("/dashboard");
       } else {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         });
         if (signUpError) throw signUpError;
+        router.push("/onboarding");
       }
-      router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong");

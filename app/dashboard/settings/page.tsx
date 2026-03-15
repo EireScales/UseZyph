@@ -4,12 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-const glassCard = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  backdropFilter: "blur(24px)",
-};
-
 type ProfileRow = {
   id: string;
   name: string | null;
@@ -35,11 +29,16 @@ const CAPTURE_CATEGORIES = [
   { id: "meetings", label: "Meetings & calendar" },
 ];
 
+type Toast = { type: "success" | "error"; message: string } | null;
+
+const inputClass =
+  "w-full px-4 py-2.5 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] placeholder-[#666] focus:outline-none focus:border-[#7c3aed] focus:ring-0 transition-colors duration-200";
+
 export default function SettingsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<Toast>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -51,7 +50,7 @@ export default function SettingsPage() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       const {
         data: { user },
         error: sessionError,
@@ -83,13 +82,13 @@ export default function SettingsPage() {
               setDataRetentionDays(s.data_retention_days);
           }
         }
-      } catch {
-        // use defaults
+      } catch (err) {
+        console.error("Save error:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetch();
+    fetchData();
   }, [router]);
 
   useEffect(() => {
@@ -119,14 +118,14 @@ export default function SettingsPage() {
         .update({
           name: displayName.trim() || null,
           settings,
-          updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
 
       if (error) throw error;
-      setToast("Settings saved");
-    } catch {
-      setToast("Failed to save");
+      setToast({ type: "success", message: "Saved" });
+    } catch (err) {
+      const message = (err as Error)?.message ?? "Failed to save";
+      setToast({ type: "error", message });
     } finally {
       setSaving(false);
     }
@@ -145,10 +144,10 @@ export default function SettingsPage() {
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
-      setToast("All data deleted");
+      setToast({ type: "success", message: "All data deleted" });
       setDeleteModalOpen(false);
     } catch {
-      setToast("Failed to delete data");
+      setToast({ type: "error", message: "Failed to delete data" });
     } finally {
       setDeleting(false);
     }
@@ -169,79 +168,73 @@ export default function SettingsPage() {
 
   return (
     <div
-      className="min-h-screen p-8"
-      style={{
-        backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
-        `,
-        backgroundSize: "80px 80px",
-      }}
+      className="p-6 md:p-8 pb-24"
+      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
     >
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">Settings</h1>
 
-        <section className="rounded-2xl p-6 mb-8" style={glassCard}>
-          <h2 className="text-lg font-semibold text-white mb-6">Account</h2>
-          <div className="flex items-center gap-6 mb-6">
+      <div className="max-w-[680px] mx-auto">
+        <h1 className="text-[28px] font-semibold text-[#f0f0f0] mb-8">
+          Settings
+        </h1>
+
+        {/* Account */}
+        <section className="mb-10">
+          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
+            Account
+          </h2>
+          <div className="h-px bg-[#1a1a1a] mb-6" />
+          <div className="flex items-start gap-6 mb-6">
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white shrink-0"
+              className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0"
               style={{
-                background:
-                  "linear-gradient(135deg, #7c3aed 0%, #e8837a 100%)",
+                background: "linear-gradient(135deg, #7c3aed 0%, #e8837a 100%)",
               }}
             >
               {initial}
             </div>
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 space-y-4 min-w-0">
               <div>
-                <label className="block text-sm text-white/60 mb-1.5">
+                <label className="block text-xs text-[#666] mb-1.5">
                   Display name
                 </label>
                 <input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/50"
-                  style={{
-                    background: "rgba(0,0,0,0.3)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                  }}
+                  className={inputClass}
                   placeholder="Your name"
                 />
               </div>
               <div>
-                <label className="block text-sm text-white/60 mb-1.5">
-                  Email
-                </label>
+                <label className="block text-xs text-[#666] mb-1.5">Email</label>
                 <input
                   type="email"
                   value={email}
                   readOnly
-                  className="w-full px-4 py-2.5 rounded-xl text-white/70 bg-white/5 border border-white/10 cursor-not-allowed"
+                  className={`${inputClass} opacity-80 cursor-not-allowed`}
                   placeholder="Email"
                 />
-                <p className="text-white/40 text-xs mt-1">
-                  Email is managed by your account and cannot be changed here.
-                </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="rounded-2xl p-6 mb-8" style={glassCard}>
-          <h2 className="text-lg font-semibold text-white mb-6">
-            Capture preferences
+        {/* Capture Preferences */}
+        <section className="mb-10">
+          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
+            Capture Preferences
           </h2>
+          <div className="h-px bg-[#1a1a1a] mb-6" />
           <div className="space-y-6">
             <div>
-              <label className="block text-sm text-white/60 mb-2">
-                Capture frequency
+              <label className="block text-xs text-[#666] mb-1.5">
+                Frequency
               </label>
               <select
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/50 bg-black/30 border border-white/10"
+                className={inputClass}
+                style={{ appearance: "auto" }}
               >
                 {FREQUENCY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -250,10 +243,10 @@ export default function SettingsPage() {
                 ))}
               </select>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="text-white font-medium">Capture when idle</p>
-                <p className="text-white/50 text-sm">
+                <p className="text-[#f0f0f0] font-medium">Capture when idle</p>
+                <p className="text-[#666] text-sm mt-0.5">
                   Continue learning when you&apos;re away from the keyboard
                 </p>
               </div>
@@ -262,34 +255,34 @@ export default function SettingsPage() {
                 role="switch"
                 aria-checked={idleEnabled}
                 onClick={() => setIdleEnabled((v) => !v)}
-                className={`relative w-12 h-7 rounded-full transition-colors ${
-                  idleEnabled ? "bg-[#7c3aed]" : "bg-white/20"
+                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+                  idleEnabled ? "bg-[#7c3aed]" : "bg-[#1a1a1a]"
                 }`}
               >
                 <span
-                  className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-transform ${
+                  className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 ${
                     idleEnabled ? "left-6" : "left-1"
                   }`}
                 />
               </button>
             </div>
             <div>
-              <label className="block text-sm text-white/60 mb-2">
+              <label className="block text-xs text-[#666] mb-2">
                 Categories to capture
               </label>
-              <div className="flex flex-wrap gap-3">
+              <div className="space-y-1">
                 {CAPTURE_CATEGORIES.map((cat) => (
                   <label
                     key={cat.id}
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-[#141414] transition-colors duration-200"
                   >
                     <input
                       type="checkbox"
                       checked={categories.includes(cat.id)}
                       onChange={() => toggleCategory(cat.id)}
-                      className="rounded border-white/30 bg-black/30 text-[#7c3aed] focus:ring-[#7c3aed]/50"
+                      className="w-4 h-4 rounded border-[#1e1e1e] bg-[#111] text-[#7c3aed] focus:ring-[#7c3aed] focus:ring-offset-0 focus:ring-offset-transparent"
                     />
-                    <span className="text-white/90 text-sm">{cat.label}</span>
+                    <span className="text-[#f0f0f0] text-sm">{cat.label}</span>
                   </label>
                 ))}
               </div>
@@ -297,13 +290,15 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl p-6 mb-8" style={glassCard}>
-          <h2 className="text-lg font-semibold text-white mb-6">Danger zone</h2>
+        {/* Data & Privacy */}
+        <section className="mb-10">
+          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
+            Data & Privacy
+          </h2>
+          <div className="h-px bg-[#1a1a1a] mb-6" />
           <div className="space-y-6">
-            <div>
-              <label className="block text-sm text-white/60 mb-2">
-                Data retention (days)
-              </label>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <label className="text-xs text-[#666]">Data retention</label>
               <input
                 type="number"
                 min={7}
@@ -312,72 +307,80 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setDataRetentionDays(Number(e.target.value) || 90)
                 }
-                className="w-32 px-4 py-2.5 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/50 bg-black/30 border border-white/10"
+                className="w-20 px-3 py-2 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] focus:outline-none focus:border-[#7c3aed] text-sm"
               />
-              <p className="text-white/40 text-xs mt-1">
-                Observations older than this will be automatically removed.
-              </p>
+              <span className="text-[#666] text-sm">days</span>
             </div>
-            <div>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-[#f0f0f0] border border-[#1e1e1e] hover:bg-[#141414] transition-colors duration-200"
+              >
+                Export my data
+              </button>
               <button
                 type="button"
                 onClick={() => setDeleteModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl text-sm font-medium text-red-400 border border-red-500/50 bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 border border-red-900/60 bg-transparent hover:bg-red-950/50 transition-colors duration-200"
               >
-                Delete all my data
+                Delete all data
               </button>
             </div>
           </div>
         </section>
 
+        {/* Save button */}
         <div className="flex justify-end">
           <button
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-8 py-3 rounded-xl font-semibold text-white disabled:opacity-50 transition-all hover:opacity-95"
-            style={{
-              background:
-                "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
-              boxShadow: "0 4px 20px rgba(124,58,237,0.35)",
-            }}
+            className="px-6 py-3 rounded-lg font-medium text-white bg-[#7c3aed] hover:opacity-90 disabled:opacity-50 transition-all duration-200 flex items-center gap-2"
           >
-            {saving ? "Saving…" : "Save changes"}
+            {saving ? (
+              <>
+                <span
+                  className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"
+                  aria-hidden
+                />
+                Saving…
+              </>
+            ) : (
+              "Save changes"
+            )}
           </button>
         </div>
       </div>
 
+      {/* Toasts */}
       {toast && (
         <div
-          className="fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl text-white text-sm font-medium shadow-lg"
-          style={{
-            background: "rgba(0,0,0,0.8)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            backdropFilter: "blur(12px)",
-          }}
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border border-[#1e1e1e] shadow-lg"
+          style={{ background: "#111111" }}
         >
-          {toast}
+          <span
+            className={`w-2 h-2 rounded-full shrink-0 ${
+              toast.type === "success" ? "bg-[#22c55e]" : "bg-red-500"
+            }`}
+          />
+          <span className="text-sm text-[#f0f0f0]">{toast.message}</span>
         </div>
       )}
 
+      {/* Delete modal */}
       {deleteModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{
-            background: "rgba(0,0,0,0.7)",
-            backdropFilter: "blur(8px)",
-          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70"
           onClick={() => !deleting && setDeleteModalOpen(false)}
         >
           <div
-            className="rounded-2xl p-6 max-w-md w-full shadow-xl"
-            style={glassCard}
+            className="rounded-xl p-6 max-w-md w-full border border-[#1e1e1e] bg-[#111111]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-white mb-2">
+            <h3 className="text-lg font-semibold text-[#f0f0f0] mb-2">
               Delete all data?
             </h3>
-            <p className="text-white/60 text-sm mb-6">
+            <p className="text-[#666] text-sm mb-6">
               This will permanently delete all observations and insights. Your
               account will remain; only learned data is removed.
             </p>
@@ -386,7 +389,7 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setDeleteModalOpen(false)}
                 disabled={deleting}
-                className="px-4 py-2 rounded-xl text-white/80 hover:bg-white/10 transition-colors"
+                className="px-4 py-2 rounded-lg text-[#999] hover:bg-[#141414] transition-colors duration-200"
               >
                 Cancel
               </button>
@@ -394,7 +397,7 @@ export default function SettingsPage() {
                 type="button"
                 onClick={handleDeleteAllData}
                 disabled={deleting}
-                className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-lg text-red-400 border border-red-900/50 bg-transparent hover:bg-red-950/50 disabled:opacity-50 transition-colors duration-200"
               >
                 {deleting ? "Deleting…" : "Yes, delete everything"}
               </button>

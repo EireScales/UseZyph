@@ -51,7 +51,6 @@ export default function OnboardingPage() {
           id: user.id,
           name: name.trim() || null,
           primary_uses: primaryUses,
-          updated_at: new Date().toISOString(),
         },
         { onConflict: "id" }
       );

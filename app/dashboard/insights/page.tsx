@@ -4,12 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-const glassCard = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  backdropFilter: "blur(24px)",
-};
-
 type InsightRow = {
   id: string;
   type?: string | null;
@@ -21,6 +15,13 @@ type InsightRow = {
   updated_at?: string;
 };
 
+const CATEGORY_COLORS: Record<string, string> = {
+  communication: "#7c3aed",
+  interests: "#e8837a",
+  "work style": "#f59e0b",
+  General: "#22c55e",
+};
+
 export default function InsightsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -29,9 +30,10 @@ export default function InsightsPage() {
   const [categoriesCount, setCategoriesCount] = useState(0);
   const [avgConfidence, setAvgConfidence] = useState<number | null>(null);
   const [recentDate, setRecentDate] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       const {
         data: { user },
         error: sessionError,
@@ -81,21 +83,25 @@ export default function InsightsPage() {
         setLoading(false);
       }
     };
-    fetch();
+    fetchData();
   }, [router]);
 
-  const groupedByType = insights.reduce<Record<string, InsightRow[]>>(
-    (acc, i) => {
-      const key = i.type || i.category || "General";
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(i);
-      return acc;
-    },
-    {}
+  const categories = Array.from(
+    new Set(insights.map((i) => i.category || i.type || "General"))
   );
+  const filteredInsights =
+    selectedCategory === "All"
+      ? insights
+      : insights.filter(
+          (i) => (i.category || i.type || "General") === selectedCategory
+        );
 
   const statCards = [
-    { label: "Total insights", value: totalCount.toString(), border: "#7c3aed" },
+    {
+      label: "Total insights",
+      value: totalCount.toString(),
+      border: "#7c3aed",
+    },
     {
       label: "Categories",
       value: categoriesCount.toString(),
@@ -104,14 +110,12 @@ export default function InsightsPage() {
     {
       label: "Avg confidence",
       value: avgConfidence != null ? `${(avgConfidence * 100).toFixed(0)}%` : "—",
-      border: "#d4956a",
+      border: "#f59e0b",
     },
     {
       label: "Last updated",
-      value: recentDate
-        ? new Date(recentDate).toLocaleDateString()
-        : "—",
-      border: "#7c3aed",
+      value: recentDate ? new Date(recentDate).toLocaleDateString() : "—",
+      border: "#22c55e",
     },
   ];
 
@@ -128,31 +132,33 @@ export default function InsightsPage() {
 
   return (
     <div
-      className="min-h-screen p-8"
-      style={{
-        backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
-        `,
-        backgroundSize: "80px 80px",
-      }}
+      className="p-6 md:p-8"
+      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
     >
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">Your Insights</h1>
 
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-2xl font-semibold text-[#f0f0f0] mb-6">
+          Your Insights
+        </h1>
+
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {statCards.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-2xl p-5 relative overflow-hidden"
-              style={glassCard}
+              className="rounded-xl p-5 transition-all duration-200 hover:border-[#2a2a2a]"
+              style={{
+                background: "#111111",
+                border: "1px solid #1e1e1e",
+                borderLeft: "2px solid " + stat.border,
+              }}
             >
-              <div
-                className="absolute top-0 left-0 right-0 h-1"
-                style={{ background: stat.border }}
-              />
-              <p className="text-white/50 text-sm mb-1">{stat.label}</p>
-              <p className="text-lg font-semibold text-white truncate">
+              <p className="text-[#555] text-[11px] uppercase tracking-widest mb-1">
+                {stat.label}
+              </p>
+              <p
+                className="text-lg font-medium text-[#f0f0f0] truncate"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
                 {stat.value}
               </p>
             </div>
@@ -161,62 +167,109 @@ export default function InsightsPage() {
 
         {insights.length === 0 ? (
           <div
-            className="rounded-2xl p-12 flex flex-col items-center justify-center text-center"
-            style={glassCard}
+            className="rounded-xl p-16 flex flex-col items-center justify-center text-center border border-[#1e1e1e]"
+            style={{ background: "#111111" }}
           >
-            <div
-              className="w-20 h-20 rounded-full mb-6 opacity-80"
-              style={{
-                background:
-                  "radial-gradient(circle, rgba(124,58,237,0.4) 0%, transparent 70%)",
-                animation: "pulse-glow 2.5s ease-in-out infinite",
-              }}
-            />
-            <h2 className="text-xl font-semibold text-white mb-2">
+            <div className="relative w-24 h-24 mb-6">
+              <span
+                className="absolute inset-0 rounded-full bg-[#7c3aed]/20 animate-pulse"
+                style={{ animationDuration: "2s" }}
+              />
+              <span
+                className="absolute inset-2 rounded-full bg-[#7c3aed]/30 animate-pulse"
+                style={{ animationDuration: "2s", animationDelay: "0.2s" }}
+              />
+              <span
+                className="absolute inset-4 rounded-full bg-[#7c3aed]/40 animate-pulse"
+                style={{ animationDuration: "2s", animationDelay: "0.4s" }}
+              />
+            </div>
+            <h2 className="text-xl font-semibold text-[#f0f0f0] mb-2">
               Zyph is still learning
             </h2>
-            <p className="text-white/50 text-sm max-w-sm">
-              Use the desktop app and keep working as usual. Insights will appear
-              here as your profile builds.
+            <p className="text-[#666] text-sm max-w-sm mb-4">
+              Keep working as normal. Insights appear here after 2–4 weeks.
             </p>
+            <a
+              href="#"
+              className="text-sm text-[#7c3aed] hover:underline transition-opacity duration-200"
+            >
+              Download desktop app →
+            </a>
           </div>
         ) : (
-          <div className="space-y-8">
-            {Object.entries(groupedByType).map(([typeName, items]) => (
-              <div key={typeName}>
-                <h2 className="text-lg font-semibold text-white mb-4">
-                  {typeName}
-                </h2>
-                <div className="space-y-4">
-                  {items.map((insight) => (
-                    <div
-                      key={insight.id}
-                      className="rounded-2xl p-6"
-                      style={glassCard}
+          <div className="flex flex-col lg:flex-row gap-6">
+            <aside className="lg:w-48 shrink-0">
+              <p className="text-[#555] text-xs uppercase tracking-wider mb-3">
+                Category
+              </p>
+              <div className="flex flex-wrap gap-2 lg:flex-col">
+                {["All", ...categories].map((cat) => {
+                  const isActive = selectedCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                        isActive
+                          ? "bg-[#7c3aed] text-white"
+                          : "bg-[#141414] text-[#666] border border-[#1e1e1e] hover:border-[#333] hover:bg-[#1a1a1a]"
+                      }`}
                     >
-                      <p className="text-white/80 text-sm leading-relaxed">
-                        {insight.content || insight.summary || "—"}
-                      </p>
-                      <div className="mt-3 flex items-center gap-3 text-xs text-white/40">
-                        {insight.confidence != null && (
-                          <span>
-                            {(Number(insight.confidence) * 100).toFixed(0)}%
-                            confidence
-                          </span>
-                        )}
-                        {(insight.updated_at || insight.created_at) && (
-                          <span>
-                            {new Date(
-                              insight.updated_at || insight.created_at!
-                            ).toLocaleDateString()}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      {cat}
+                    </button>
+                  );
+                })}
               </div>
-            ))}
+            </aside>
+
+            <div className="flex-1 min-w-0 space-y-4">
+              {filteredInsights.map((insight) => {
+                const cat = insight.category || insight.type || "General";
+                const color = CATEGORY_COLORS[cat] || "#7c3aed";
+                const conf = insight.confidence != null ? Number(insight.confidence) : 0;
+                const pct = Math.min(100, Math.round(conf * 100));
+                const text = insight.content || insight.summary || "—";
+                return (
+                  <div
+                    key={insight.id}
+                    className="rounded-xl p-4 transition-all duration-200 hover:border-[#2a2a2a] hover:-translate-y-0.5"
+                    style={{
+                      background: "#111111",
+                      border: "1px solid #1e1e1e",
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span
+                        className="px-2 py-0.5 rounded text-xs font-medium"
+                        style={{
+                          background: `${color}20`,
+                          color,
+                        }}
+                      >
+                        {cat}
+                      </span>
+                      <span
+                        className="text-xs text-[#666]"
+                        style={{ fontFamily: "var(--font-mono)" }}
+                      >
+                        {pct}%
+                      </span>
+                    </div>
+                    <p className="text-[#f0f0f0] text-[15px] leading-relaxed mb-3">
+                      {text}
+                    </p>
+                    <div className="h-1 rounded-full overflow-hidden bg-[#1a1a1a]">
+                      <div
+                        className="h-full rounded-full bg-[#7c3aed] transition-all duration-300"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

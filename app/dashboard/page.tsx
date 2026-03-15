@@ -1,15 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-
-const glassCard = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  backdropFilter: "blur(24px)",
-};
 
 type Profile = { id: string; name: string | null } | null;
 type Observation = {
@@ -23,8 +17,41 @@ type ProfileInsight = {
   id: string;
   content?: string | null;
   summary?: string | null;
+  category?: string | null;
+  type?: string | null;
   updated_at?: string;
 } | Record<string, unknown>;
+
+function useCountUp(end: number, duration = 1200, enabled = true) {
+  const [value, setValue] = useState(0);
+  const startRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!enabled || typeof end !== "number") {
+      setValue(end);
+      return;
+    }
+    const isNumeric = Number.isFinite(end) && !Number.isNaN(end);
+    if (!isNumeric) {
+      setValue(0);
+      return;
+    }
+    const start = 0;
+    let rafId: number;
+    const step = (ts: number) => {
+      if (startRef.current == null) startRef.current = ts;
+      const elapsed = ts - startRef.current;
+      const t = Math.min(elapsed / duration, 1);
+      const easeOut = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(start + (end - start) * easeOut));
+      if (t < 1) rafId = requestAnimationFrame(step);
+    };
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
+  }, [end, duration, enabled]);
+
+  return value;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -37,6 +64,11 @@ export default function DashboardPage() {
   const [insightsCount, setInsightsCount] = useState(0);
   const [topApp, setTopApp] = useState<string>("—");
   const [time, setTime] = useState<Date>(() => new Date());
+  const [lastActiveDaysAgo, setLastActiveDaysAgo] = useState<number | null>(null);
+
+  const countTotal = useCountUp(totalObservations, 1000, !loading);
+  const countDays = useCountUp(daysActive, 1000, !loading);
+  const countInsights = useCountUp(insightsCount, 1000, !loading);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -65,7 +97,7 @@ export default function DashboardPage() {
               .limit(10),
             supabase
               .from("user_profile_insights")
-              .select("id, content, summary, updated_at")
+              .select("id, content, summary, category, type, updated_at")
               .eq("user_id", user.id)
               .order("updated_at", { ascending: false })
               .limit(5),
@@ -115,6 +147,17 @@ export default function DashboardPage() {
           const top = Object.entries(apps).sort((a, b) => b[1] - a[1])[0];
           if (top) setTopApp(top[0]);
         }
+
+        const latestObs = observationsRes.data?.[0] as { created_at?: string } | undefined;
+        if (latestObs?.created_at) {
+          const last = new Date(latestObs.created_at);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          last.setHours(0, 0, 0, 0);
+          setLastActiveDaysAgo(Math.floor((today.getTime() - last.getTime()) / (24 * 60 * 60 * 1000)));
+        } else {
+          setLastActiveDaysAgo(null);
+        }
       } catch {
         // Tables may not exist yet; keep defaults
       } finally {
@@ -134,6 +177,32 @@ export default function DashboardPage() {
     time.getHours() < 12 ? "morning" : time.getHours() < 18 ? "afternoon" : "evening";
   const displayName = profile?.name?.trim() || "there";
 
+  const statCards = [
+    {
+      label: "Total Observations",
+      value: countTotal.toLocaleString(),
+      border: "#7c3aed",
+    },
+    {
+      label: "Days Active",
+      value: countDays.toString(),
+      border: "#e8837a",
+    },
+    {
+      label: "Insights Generated",
+      value: countInsights.toString(),
+      border: "#f59e0b",
+    },
+    { label: "Top App Used", value: topApp, border: "#22c55e" },
+  ];
+
+  const insightCategories: Record<string, ProfileInsight[]> = {};
+  profileInsights.forEach((i) => {
+    const cat = (i.category || i.type || "General") as string;
+    if (!insightCategories[cat]) insightCategories[cat] = [];
+    insightCategories[cat].push(i);
+  });
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -145,52 +214,23 @@ export default function DashboardPage() {
     );
   }
 
-  const statCards = [
-    {
-      label: "Total Observations",
-      value: totalObservations.toLocaleString(),
-      border: "#7c3aed",
-    },
-    {
-      label: "Days Active",
-      value: daysActive.toString(),
-      border: "#e8837a",
-    },
-    {
-      label: "Insights Generated",
-      value: insightsCount.toString(),
-      border: "#d4956a",
-    },
-    { label: "Top App Used", value: topApp, border: "#7c3aed" },
-  ];
-
   return (
     <div
-      className="min-h-screen p-8"
-      style={{
-        backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
-        `,
-        backgroundSize: "80px 80px",
-      }}
+      className="p-6 md:p-8"
+      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
     >
+
       <div className="max-w-6xl mx-auto">
-        <header className="flex flex-wrap items-start justify-between gap-4 mb-10">
+        <header className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <h1
-            className="text-3xl lg:text-4xl font-bold"
-            style={{
-              background:
-                "linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.75) 50%, rgba(255,200,190,0.9) 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
+            className="text-[32px] font-semibold text-[#f0f0f0]"
+            style={{ fontFamily: "var(--font-sans)" }}
           >
             Good {greeting}, {displayName}
           </h1>
           <div
-            className="text-right tabular-nums text-white/80 font-medium"
+            className="text-right tabular-nums text-[#444] font-medium text-sm"
+            style={{ fontFamily: "var(--font-mono)" }}
             aria-live="polite"
           >
             {time.toLocaleTimeString("en-US", {
@@ -200,22 +240,29 @@ export default function DashboardPage() {
             })}
           </div>
         </header>
+        <div className="h-px bg-[#1a1a1a] mb-8" />
 
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {statCards.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-2xl p-6 relative overflow-hidden"
-              style={glassCard}
+              className="rounded-xl p-5 relative overflow-hidden transition-all duration-200 hover:border-[#2a2a2a]"
+              style={{
+                background: "#111111",
+                border: "1px solid #1e1e1e",
+                borderLeft: "2px solid " + stat.border,
+              }}
             >
-              <div
-                className="absolute top-0 left-0 right-0 h-1"
-                style={{ background: stat.border }}
-              />
-              <p className="text-white/50 text-sm mb-1">
+              <p
+                className="text-[#555] text-[11px] uppercase tracking-widest mb-1"
+                style={{ letterSpacing: "0.1em" }}
+              >
                 {stat.label}
               </p>
-              <p className="text-xl font-semibold text-white truncate">
+              <p
+                className="text-[28px] font-medium text-white truncate"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
                 {stat.value}
               </p>
             </div>
@@ -224,16 +271,36 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-2xl p-6" style={glassCard}>
-              <h2 className="text-lg font-semibold text-white mb-4">
-                Recent Activity
-              </h2>
+            <div
+              className="rounded-xl p-5 transition-all duration-200"
+              style={{
+                background: "#111111",
+                border: "1px solid #1e1e1e",
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base font-semibold text-[#f0f0f0]">
+                  Recent Activity
+                </h2>
+                <Link
+                  href="/dashboard/profile"
+                  className="text-sm text-[#7c3aed] hover:underline transition-opacity duration-200"
+                >
+                  View all
+                </Link>
+              </div>
               {observations.length === 0 ? (
-                <p className="text-white/40 text-sm">
-                  No observations yet. Use the desktop app to start.
-                </p>
+                <div className="py-12 flex flex-col items-center justify-center text-center">
+                  <div
+                    className="w-12 h-12 rounded-full mb-3 opacity-60"
+                    style={{ background: "#1a1a2e" }}
+                  />
+                  <p className="text-[#666] text-sm">
+                    Start the desktop app to begin learning
+                  </p>
+                </div>
               ) : (
-                <ul className="space-y-3">
+                <ul className="divide-y divide-[#1a1a1a]">
                   {observations.map((obs) => {
                     const o = obs as {
                       id: string;
@@ -245,22 +312,35 @@ export default function DashboardPage() {
                     return (
                       <li
                         key={o.id}
-                        className="flex items-start gap-3 py-2 border-b border-white/5 last:border-0"
+                        className="flex items-start gap-3 py-3 first:pt-0"
                       >
-                        <span className="text-white/40 text-sm shrink-0">
-                          {new Date(o.created_at).toLocaleString()}
-                        </span>
-                        <div className="min-w-0">
-                          {o.app_name && (
-                            <span className="text-white/70 font-medium">
-                              {o.app_name}
-                            </span>
-                          )}
-                          {o.description && (
-                            <p className="text-white/50 text-sm truncate">
-                              {o.description}
-                            </p>
-                          )}
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0 mt-1.5"
+                          style={{
+                            background:
+                              ["#7c3aed", "#e8837a", "#f59e0b", "#22c55e"][
+                                o.app_name?.length ?? 0 % 4
+                              ] || "#7c3aed",
+                          }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[#f0f0f0] text-sm">
+                            {o.app_name && (
+                              <span className="font-medium">{o.app_name}</span>
+                            )}
+                            {o.description && (
+                              <span className="text-[#666]">
+                                {" "}
+                                — {o.description}
+                              </span>
+                            )}
+                          </p>
+                          <p
+                            className="text-[#666] text-xs mt-0.5"
+                            style={{ fontFamily: "var(--font-mono)" }}
+                          >
+                            {new Date(o.created_at).toLocaleString()}
+                          </p>
                         </div>
                       </li>
                     );
@@ -269,67 +349,127 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="rounded-2xl p-6" style={glassCard}>
-              <h2 className="text-lg font-semibold text-white mb-4">
-                Your AI Profile
+            <div
+              className="rounded-xl p-5 transition-all duration-200"
+              style={{
+                background: "#111111",
+                border: "1px solid #1e1e1e",
+              }}
+            >
+              <h2 className="text-base font-semibold text-[#f0f0f0] mb-4">
+                What Zyph knows about you
               </h2>
               {profileInsights.length === 0 ? (
-                <p className="text-white/40 text-sm">
-                  Complete onboarding and use Zyph to build your profile.
-                </p>
+                <div className="py-10 flex flex-col items-center justify-center text-center">
+                  <div
+                    className="w-10 h-10 rounded-full bg-[#7c3aed]/40 animate-pulse mb-3"
+                    style={{ boxShadow: "0 0 20px rgba(124,58,237,0.3)" }}
+                  />
+                  <p className="text-[#666] text-sm">
+                    Zyph is building your profile…
+                  </p>
+                </div>
               ) : (
-                <ul className="space-y-3">
-                  {profileInsights.map((insight) => {
-                    const i = insight as {
-                      id: string;
-                      content?: string;
-                      summary?: string;
-                      updated_at?: string;
-                    };
-                    const text = i.content || i.summary || "";
-                    return (
-                      <li
-                        key={i.id}
-                        className="py-2 border-b border-white/5 last:border-0"
-                      >
-                        <p className="text-white/70 text-sm">{text}</p>
-                        {i.updated_at && (
-                          <span className="text-white/35 text-xs">
-                            {new Date(i.updated_at).toLocaleDateString()}
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className="space-y-4">
+                  {Object.entries(insightCategories).map(([category, items]) => (
+                    <div key={category}>
+                      <p className="text-[#555] text-xs uppercase tracking-wider mb-2">
+                        {category}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {items.slice(0, 5).map((insight) => {
+                          const i = insight as {
+                            id: string;
+                            content?: string;
+                            summary?: string;
+                          };
+                          const text = i.content || i.summary || "";
+                          return (
+                            <span
+                              key={i.id}
+                              className="inline-flex px-3 py-1 rounded-full text-xs text-[#a78bfa]"
+                              style={{
+                                background: "#1a1a2e",
+                              }}
+                            >
+                              {text.slice(0, 60)}
+                              {text.length > 60 ? "…" : ""}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
 
-          <div>
+          <div className="space-y-6">
             <Link
               href="/dashboard/chat"
-              className="block rounded-2xl p-8 transition-opacity hover:opacity-95"
+              className="block rounded-xl p-6 transition-all duration-200 hover:border-[#2a1a4a]"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(232,131,122,0.2) 0%, rgba(212,149,106,0.15) 100%)",
-                border: "1px solid rgba(232,131,122,0.25)",
-                boxShadow: "0 8px 32px rgba(232,131,122,0.1)",
+                background: "linear-gradient(135deg, #1a0a2e 0%, #0f0a0a 100%)",
+                border: "1px solid #2a1a4a",
               }}
             >
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-lg font-semibold text-white mb-1">
                 Chat with Zyph
               </h3>
-              <p className="text-white/60 text-sm mb-4">
-                Ask anything. Your AI already knows your context.
+              <p className="text-[#666] text-sm mb-4">
+                Your AI has full context. Ask anything.
               </p>
               <span
-                className="inline-flex items-center gap-2 text-sm font-medium"
-                style={{ color: "#e8837a" }}
+                className="inline-flex items-center justify-center w-full py-2.5 rounded-lg text-sm font-medium text-white transition-colors duration-200 hover:opacity-90"
+                style={{ background: "#7c3aed" }}
               >
                 Open Chat →
               </span>
+              <p className="text-[#22c55e] text-xs mt-3 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                Zyph knows you
+              </p>
             </Link>
+
+            <div
+              className="rounded-xl p-5 transition-all duration-200"
+              style={{
+                background: "#111111",
+                border: "1px solid #1e1e1e",
+              }}
+            >
+              <h3 className="text-sm font-medium text-[#f0f0f0] mb-3">
+                Quick Stats
+              </h3>
+              <div className="flex gap-1 mb-3 items-end" style={{ height: 24 }}>
+                {Array.from({ length: 14 }).map((_, i) => {
+                  const active = i < Math.min(daysActive, 14);
+                  return (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-sm bg-[#1a1a1a] min-h-[4px]"
+                      style={{
+                        height: active ? `${12 + (i % 3) * 4}px` : "6px",
+                        opacity: active ? 0.7 : 0.25,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-sm text-[#666] flex items-center gap-2">
+                {lastActiveDaysAgo === 0 ? (
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                    Active today
+                  </>
+                ) : lastActiveDaysAgo != null ? (
+                  <>Last active: {lastActiveDaysAgo} days ago</>
+                ) : (
+                  <>No activity yet</>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>
