@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 const ANALYSE_SYSTEM = `You are an analyst for a personal AI product. Given raw text captured from the user's screen or activity, respond with a JSON object only (no markdown, no code block), with these exact keys:
 - summary: string (one short sentence describing what the user was doing)
@@ -28,28 +29,61 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = await createClient();
+    // Determine auth path: Bearer token (desktop) vs cookie session (web)
+    let effectiveUserId: string | undefined = userId;
+    let supabase: ReturnType<typeof createSupabaseClient>;
 
-// Try cookie-based auth first (web app)
-let effectiveUserId = userId;
+    const authHeader = req.headers.get("Authorization");
 
-const authHeader = req.headers.get('Authorization');
-if (authHeader?.startsWith('Bearer ')) {
-  // Desktop app sends Bearer token
-  const token = authHeader.replace('Bearer ', '');
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  if (error || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  effectiveUserId = user.id;
-} else {
-  // Web app uses cookie session
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  effectiveUserId = user.id;
-}
+    if (authHeader?.startsWith("Bearer ")) {
+      // --- Desktop app path ---
+      // Must use a fresh Supabase client initialised with the user's token,
+      // NOT the cookie-based server client (which ignores the Bearer token).
+      const token = authHeader.replace("Bearer ", "").trim();
+
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        console.error("Missing Supabase env vars");
+        return NextResponse.json(
+          { error: "Server misconfigured" },
+          { status: 500 }
+        );
+      }
+
+      // Create a client that carries the user's JWT in every request
+      supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey, {
+        global: {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      });
+
+      // Validate the token and extract the user id
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      if (error || !user) {
+        console.error("Bearer token validation failed:", error?.message);
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      effectiveUserId = user.id;
+      console.log("Desktop auth OK, userId:", effectiveUserId);
+    } else {
+      // --- Web app path — cookie session ---
+      const cookieClient = await createClient();
+      const { data: { user }, error: authError } = await cookieClient.auth.getUser();
+      if (authError || !user) {
+        console.error("Cookie auth failed:", authError?.message);
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      effectiveUserId = user.id;
+      supabase = cookieClient as unknown as ReturnType<typeof createSupabaseClient>;
+    }
+
+    if (!effectiveUserId) {
+      return NextResponse.json({ error: "Could not resolve user id" }, { status: 401 });
+    }
+
+    // --- Call Claude ---
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
@@ -87,28 +121,29 @@ if (authHeader?.startsWith('Bearer ')) {
       );
     }
 
-    const data = (await response.json()) as {
+    const claudeData = (await response.json()) as {
       content?: { type: string; text?: string }[];
     };
-    const text = data.content?.find((c) => c.type === "text")?.text ?? "{}";
+    const claudeText = claudeData.content?.find((c) => c.type === "text")?.text ?? "{}";
 
     let summary = "";
     let category = "Other";
     let insights: string[] = [];
     try {
-      const parsed = JSON.parse(text.trim()) as {
+      const parsed = JSON.parse(claudeText.trim()) as {
         summary?: string;
         category?: string;
         insights?: string[];
       };
       summary = typeof parsed.summary === "string" ? parsed.summary : "";
-      category =
-        typeof parsed.category === "string" ? parsed.category : "Other";
+      category = typeof parsed.category === "string" ? parsed.category : "Other";
       insights = Array.isArray(parsed.insights) ? parsed.insights : [];
     } catch {
+      console.warn("Failed to parse Claude JSON, falling back to raw text summary");
       summary = raw_text.slice(0, 200);
     }
 
+    // --- Save observation ---
     const observationRow = {
       user_id: effectiveUserId,
       raw_text: raw_text.slice(0, 32000),
@@ -123,31 +158,49 @@ if (authHeader?.startsWith('Bearer ')) {
       .insert(observationRow);
 
     if (obsError) {
-      console.error("observations insert error:", obsError);
+      // Surface this clearly — this is the most common silent failure point
+      console.error("❌ observations insert error:", JSON.stringify(obsError));
+      // Return error so Electron logs it instead of silently succeeding
+      return NextResponse.json(
+        { error: "Failed to save observation", detail: obsError.message },
+        { status: 500 }
+      );
     }
 
+    console.log("✅ Observation saved for user:", effectiveUserId);
+
+    // --- Save insights ---
     for (const insight of insights.slice(0, 5)) {
       if (!insight || typeof insight !== "string") continue;
-      await supabase.from("user_profile_insights").insert({
-        user_id: effectiveUserId,
-        content: insight,
-        category,
-        type: category,
-        confidence: 0.8,
-        updated_at: new Date().toISOString(),
-      });
+      const { error: insightError } = await supabase
+        .from("user_profile_insights")
+        .insert({
+          user_id: effectiveUserId,
+          content: insight,
+          category,
+          type: category,
+          confidence: 0.8,
+          updated_at: new Date().toISOString(),
+        });
+      if (insightError) {
+        console.error("❌ insight insert error:", JSON.stringify(insightError));
+      }
     }
 
     if (summary && insights.length === 0) {
-      await supabase.from("user_profile_insights").insert({
-        user_id: effectiveUserId,
-        content: summary,
-        summary: summary,
-        category,
-        type: category,
-        confidence: 0.7,
-        updated_at: new Date().toISOString(),
-      });
+      const { error: fallbackError } = await supabase
+        .from("user_profile_insights")
+        .insert({
+          user_id: effectiveUserId,
+          content: summary,
+          category,
+          type: category,
+          confidence: 0.7,
+          updated_at: new Date().toISOString(),
+        });
+      if (fallbackError) {
+        console.error("❌ fallback insight insert error:", JSON.stringify(fallbackError));
+      }
     }
 
     return NextResponse.json({ ok: true }, { status: 200 });
