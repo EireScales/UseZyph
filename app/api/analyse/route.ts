@@ -29,17 +29,27 @@ export async function POST(req: Request) {
     }
 
     const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+// Try cookie-based auth first (web app)
+let effectiveUserId = userId;
 
-    const effectiveUserId = user.id;
-
+const authHeader = req.headers.get('Authorization');
+if (authHeader?.startsWith('Bearer ')) {
+  // Desktop app sends Bearer token
+  const token = authHeader.replace('Bearer ', '');
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  effectiveUserId = user.id;
+} else {
+  // Web app uses cookie session
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  effectiveUserId = user.id;
+}
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
