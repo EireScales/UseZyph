@@ -1,9 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { UpgradeModal } from "@/components/UpgradeModal";
+import {
+  defaultSubscription,
+  isFreeTier,
+  isTrialing,
+  parseSubscriptionRow,
+  startOfUtcDayIso,
+  trialDaysRemaining,
+  type SubscriptionRow,
+} from "@/lib/subscription-shared";
 
 type Profile = { id: string; name: string | null } | null;
 type Observation = {
@@ -53,8 +63,9 @@ function useCountUp(end: number, duration = 1200, enabled = true) {
   return value;
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile>(null);
   const [observations, setObservations] = useState<Observation[]>([]);
@@ -65,6 +76,13 @@ export default function DashboardPage() {
   const [topApp, setTopApp] = useState<string>("—");
   const [time, setTime] = useState<Date>(() => new Date());
   const [lastActiveDaysAgo, setLastActiveDaysAgo] = useState<number | null>(null);
+  const [capturesToday, setCapturesToday] = useState(0);
+  const [subscription, setSubscription] = useState<SubscriptionRow>(() =>
+    defaultSubscription()
+  );
+  const [modalDismissed, setModalDismissed] = useState(false);
+  const [storageRead, setStorageRead] = useState(false);
+  const [fromDesktopLimit, setFromDesktopLimit] = useState(false);
 
   const countTotal = useCountUp(totalObservations, 1000, !loading);
   const countDays = useCountUp(daysActive, 1000, !loading);
@@ -82,11 +100,12 @@ export default function DashboardPage() {
       }
 
       try {
-        const [profileRes, observationsRes, insightsRes, countRes] =
+        const dayStart = startOfUtcDayIso();
+        const [profileRes, observationsRes, insightsRes, countRes, todayCountRes] =
           await Promise.all([
             supabase
               .from("profiles")
-              .select("id, name")
+              .select("id, name, subscription")
               .eq("id", user.id)
               .single(),
             supabase
@@ -105,9 +124,23 @@ export default function DashboardPage() {
               .from("observations")
               .select("id", { count: "exact", head: true })
               .eq("user_id", user.id),
+            supabase
+              .from("observations")
+              .select("id", { count: "exact", head: true })
+              .eq("user_id", user.id)
+              .gte("captured_at", dayStart),
           ]);
 
-        if (profileRes.data) setProfile(profileRes.data as Profile);
+        if (profileRes.data) {
+          const raw = profileRes.data as {
+            id: string;
+            name: string | null;
+            subscription?: unknown;
+          };
+          setProfile({ id: raw.id, name: raw.name });
+          setSubscription(parseSubscriptionRow(raw.subscription));
+        }
+        if (todayCountRes.count != null) setCapturesToday(todayCountRes.count);
         if (observationsRes.data)
           setObservations((observationsRes.data as Observation[]) || []);
         if (insightsRes.data)
@@ -173,6 +206,29 @@ export default function DashboardPage() {
     return () => clearInterval(tick);
   }, []);
 
+  useEffect(() => {
+    const urgent = searchParams.get("daily_limit") === "1";
+    if (urgent) {
+      setFromDesktopLimit(true);
+      setModalDismissed(false);
+      try {
+        sessionStorage.removeItem("zyph_upgrade_modal_dismissed");
+      } catch {
+        /* private mode */
+      }
+      router.replace("/dashboard", { scroll: false });
+    } else {
+      try {
+        if (sessionStorage.getItem("zyph_upgrade_modal_dismissed") === "1") {
+          setModalDismissed(true);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    setStorageRead(true);
+  }, [searchParams, router]);
+
   const greeting =
     time.getHours() < 12 ? "morning" : time.getHours() < 18 ? "afternoon" : "evening";
   const displayName = profile?.name?.trim() || "there";
@@ -202,6 +258,12 @@ export default function DashboardPage() {
     if (!insightCategories[cat]) insightCategories[cat] = [];
     insightCategories[cat].push(i);
   });
+
+  const onFreePlan = isFreeTier(subscription);
+  const trialing = isTrialing(subscription);
+  const trialDaysLeft = trialDaysRemaining(subscription.trial_end);
+  const trialEndsSoon =
+    trialing && trialDaysLeft !== null && trialDaysLeft <= 3;
 
   if (loading) {
     return (
@@ -241,6 +303,90 @@ export default function DashboardPage() {
           </div>
         </header>
         <div className="h-px bg-[#1a1a1a] mb-8" />
+
+        {trialing && trialEndsSoon && (
+          <div
+            className="mb-6 flex flex-col gap-3 rounded-xl border border-amber-600/40 bg-amber-950/25 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            role="status"
+          >
+            <p className="text-sm text-amber-100/95">
+              Your trial ends soon — upgrade to keep unlimited access
+            </p>
+            <Link
+              href="/pricing"
+              className="shrink-0 text-sm font-semibold text-amber-400 hover:text-amber-300 hover:underline"
+            >
+              View plans →
+            </Link>
+          </div>
+        )}
+
+        {trialing && !trialEndsSoon && (
+          <div
+            className="mb-6 flex flex-col gap-3 rounded-xl border border-[#5b21b6]/50 bg-[#1a0a2e]/80 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            role="status"
+          >
+            <p className="text-sm text-[#c4b5fd]">
+              {trialDaysLeft != null && trialDaysLeft > 0 ? (
+                <>
+                  <span className="font-semibold text-white">
+                    {trialDaysLeft}
+                  </span>{" "}
+                  {trialDaysLeft === 1 ? "day" : "days"} left in your free trial
+                </>
+              ) : (
+                <>You&apos;re on a free trial — Pro features are unlocked.</>
+              )}
+            </p>
+            <Link
+              href="/pricing"
+              className="shrink-0 text-sm font-semibold text-[#a78bfa] hover:text-white hover:underline"
+            >
+              Plans & pricing →
+            </Link>
+          </div>
+        )}
+
+        {onFreePlan && (
+          <div
+            className="mb-6 flex flex-col gap-3 rounded-xl border border-[#2a1a4a] bg-[#14101c] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            role="status"
+          >
+            <p className="text-sm text-[#c4b5fd]">
+              You&apos;re on the Free plan — upgrade to Pro for unlimited
+              captures, full history, and priority AI.
+            </p>
+            <Link
+              href="/pricing"
+              className="shrink-0 text-sm font-semibold text-[#7c3aed] hover:underline"
+            >
+              Upgrade →
+            </Link>
+          </div>
+        )}
+
+        {onFreePlan &&
+          capturesToday >= 15 &&
+          capturesToday < 20 && (
+            <div
+              className="mb-6 flex flex-col gap-3 rounded-xl border border-[#3a2a4a] bg-[#161018] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+              role="status"
+            >
+              <p className="text-sm text-[#a78bfa]">
+                You&apos;ve used{" "}
+                <span className="font-semibold text-white">{capturesToday}</span>{" "}
+                of{" "}
+                <span className="font-semibold text-white">20</span> free
+                captures today — upgrade for unlimited.
+              </p>
+              <Link
+                href="/pricing"
+                className="shrink-0 text-sm font-semibold text-[#7c3aed] hover:underline"
+              >
+                View Pro →
+              </Link>
+            </div>
+          )}
 
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {statCards.map((stat) => (
@@ -473,6 +619,44 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <UpgradeModal
+        open={
+          storageRead &&
+          !loading &&
+          onFreePlan &&
+          !modalDismissed &&
+          (capturesToday >= 20 || fromDesktopLimit)
+        }
+        onDismiss={() => {
+          setModalDismissed(true);
+          setFromDesktopLimit(false);
+          try {
+            sessionStorage.setItem("zyph_upgrade_modal_dismissed", "1");
+          } catch {
+            /* ignore */
+          }
+        }}
+      />
     </div>
+  );
+}
+
+function DashboardLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div
+        className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+        aria-label="Loading"
+      />
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<DashboardLoading />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

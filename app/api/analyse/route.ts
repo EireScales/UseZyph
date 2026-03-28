@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import {
+  isFreeTier,
+  parseSubscriptionRow,
+  startOfUtcDayIso,
+} from "@/lib/subscription-shared";
 
 const ANALYSE_SYSTEM = `You are an analyst for a personal AI product. Given raw text captured from the user's screen or activity, respond with a JSON object only (no markdown, no code block), with these exact keys:
 - summary: string (one short sentence describing what the user was doing)
@@ -81,6 +86,32 @@ export async function POST(req: Request) {
 
     if (!effectiveUserId) {
       return NextResponse.json({ error: "Could not resolve user id" }, { status: 401 });
+    }
+
+    // --- Free tier: daily capture limit (before Claude to save cost) ---
+    const { data: profileForLimit } = await supabase
+      .from("profiles")
+      .select("subscription")
+      .eq("id", effectiveUserId)
+      .maybeSingle();
+
+    const subRow = parseSubscriptionRow(profileForLimit?.subscription);
+    if (isFreeTier(subRow)) {
+      const dayStart = startOfUtcDayIso();
+      const { count: todayCount, error: countError } = await supabase
+        .from("observations")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", effectiveUserId)
+        .gte("captured_at", dayStart);
+
+      if (countError) {
+        console.error("Daily limit count error:", countError.message);
+      } else if ((todayCount ?? 0) >= 20) {
+        return NextResponse.json(
+          { error: "Daily limit reached", upgrade: true },
+          { status: 429 }
+        );
+      }
     }
 
     // --- Call Claude ---

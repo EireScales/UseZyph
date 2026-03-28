@@ -3,6 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import {
+  parseSubscriptionRow,
+  type SubscriptionRow,
+} from "@/lib/subscription-shared";
 
 type ProfileRow = {
   id: string;
@@ -48,6 +52,10 @@ export default function SettingsPage() {
   const [dataRetentionDays, setDataRetentionDays] = useState(90);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [subscription, setSubscription] = useState<SubscriptionRow | null>(
+    null
+  );
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,12 +74,13 @@ export default function SettingsPage() {
       try {
         const { data } = await supabase
           .from("profiles")
-          .select("display_name, settings")
+          .select("display_name, settings, subscription")
           .eq("id", user.id)
           .single();
 
         if (data) {
-          const row = data as ProfileRow;
+          const row = data as ProfileRow & { subscription?: unknown };
+          setSubscription(parseSubscriptionRow(row.subscription));
           setDisplayName(row.display_name ?? "");
           const s = row.settings;
           if (s) {
@@ -128,6 +137,33 @@ export default function SettingsPage() {
       setToast({ type: "error", message });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok) {
+        setToast({
+          type: "error",
+          message: data.error ?? "Could not open billing portal",
+        });
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      setToast({ type: "error", message: "No portal URL returned" });
+    } catch {
+      setToast({ type: "error", message: "Network error" });
+    } finally {
+      setPortalLoading(false);
     }
   };
 
@@ -215,6 +251,43 @@ export default function SettingsPage() {
                   placeholder="Email"
                 />
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Subscription */}
+        <section className="mb-10">
+          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
+            Subscription
+          </h2>
+          <div className="h-px bg-[#1a1a1a] mb-6" />
+          <div className="rounded-xl border border-[#1e1e1e] bg-[#111] px-4 py-4 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-[#f0f0f0] font-medium">Billing</p>
+                <p className="text-[#666] text-sm mt-0.5">
+                  {subscription?.stripe_customer_id
+                    ? "Manage your plan, payment method, and invoices in Stripe."
+                    : "Subscribe to Pro to unlock unlimited captures and full history."}
+                </p>
+              </div>
+              {subscription?.stripe_customer_id ? (
+                <button
+                  type="button"
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                  className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#7c3aed] hover:opacity-90 disabled:opacity-50 transition-opacity duration-200"
+                >
+                  {portalLoading ? "Opening…" : "Manage subscription"}
+                </button>
+              ) : (
+                <a
+                  href="/pricing"
+                  className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#7c3aed] hover:opacity-90 transition-opacity duration-200 inline-block text-center"
+                >
+                  View pricing
+                </a>
+              )}
             </div>
           </div>
         </section>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { isFreeTier, parseSubscriptionRow } from "@/lib/subscription-shared";
 
 const SUGGESTIONS = [
   "Help me write an email",
@@ -19,6 +20,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isFreeUser, setIsFreeUser] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +49,21 @@ export default function ChatPage() {
       }
       setUserId(user.id);
 
-      const { data } = await supabase
-        .from("user_profile_insights")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1);
+      const [profileRes] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("subscription")
+          .eq("id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("user_profile_insights")
+          .select("id")
+          .eq("user_id", user.id)
+          .limit(1),
+      ]);
+      setIsFreeUser(
+        isFreeTier(parseSubscriptionRow(profileRes.data?.subscription))
+      );
       setInsightsLoaded(true);
     };
     init();
@@ -271,9 +283,16 @@ export default function ChatPage() {
               </button>
             </div>
           </form>
-          <p className="text-[11px] text-[#333] mt-2 text-center">
-            Zyph knows you · Powered by Claude
-          </p>
+          <div className="mt-2 space-y-1 text-center">
+            {isFreeUser && (
+              <p className="text-[11px] text-[#6b7280]">
+                Pro users get priority AI responses
+              </p>
+            )}
+            <p className="text-[11px] text-[#333]">
+              Zyph knows you · Powered by Claude
+            </p>
+          </div>
         </div>
       </div>
     </div>
