@@ -36,7 +36,8 @@ export async function POST(req: Request) {
 
     // Determine auth path: Bearer token (desktop) vs cookie session (web)
     let effectiveUserId: string | undefined = userId;
-    let supabase: ReturnType<typeof createSupabaseClient>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let supabase: any;
 
     const authHeader = req.headers.get("Authorization");
 
@@ -95,7 +96,7 @@ export async function POST(req: Request) {
       .eq("id", effectiveUserId)
       .maybeSingle();
 
-    const subRow = parseSubscriptionRow(profileForLimit?.subscription);
+    const subRow = parseSubscriptionRow(profileForLimit?.subscription as Record<string, unknown> | null | undefined);
     if (isFreeTier(subRow)) {
       const dayStart = startOfUtcDayIso();
       const { count: todayCount, error: countError } = await supabase
