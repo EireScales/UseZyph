@@ -4,8 +4,15 @@ import { getStripe } from "@/lib/stripe-server";
 import { parseSubscriptionRow } from "@/lib/subscription";
 
 type BillingInterval = "monthly" | "annual";
+type Tier = "pro" | "mirror";
 
-function resolvePriceId(interval: BillingInterval): string | null {
+function resolvePriceId(interval: BillingInterval, tier: Tier): string | null {
+  if (tier === "mirror") {
+    if (interval === "monthly") {
+      return process.env.STRIPE_PRICE_ID_MIRROR_MONTHLY || null;
+    }
+    return process.env.STRIPE_PRICE_ID_MIRROR_YEARLY || null;
+  }
   if (interval === "monthly") {
     return (
       process.env.STRIPE_PRICE_ID_MONTHLY ||
@@ -24,16 +31,21 @@ function resolvePriceId(interval: BillingInterval): string | null {
 export async function POST(request: Request) {
   try {
     let interval: BillingInterval = "annual";
+    let tier: Tier = "pro";
     let cancelPath = "/dashboard/settings";
     try {
       const body = (await request.json()) as {
         interval?: string;
+        tier?: string;
         source?: string;
       };
       if (body.interval === "monthly") {
         interval = "monthly";
       } else if (body.interval === "annual") {
         interval = "annual";
+      }
+      if (body.tier === "mirror") {
+        tier = "mirror";
       }
       if (body.source === "pricing") {
         cancelPath = "/pricing";
@@ -42,12 +54,14 @@ export async function POST(request: Request) {
       /* empty body */
     }
 
-    const priceId = resolvePriceId(interval);
+    const priceId = resolvePriceId(interval, tier);
     if (!priceId) {
       return NextResponse.json(
         {
           error:
-            "Stripe price not configured (set STRIPE_PRICE_ID_MONTHLY / STRIPE_PRICE_ID_YEARLY or STRIPE_PRICE_ID)",
+            tier === "mirror"
+              ? "Stripe price not configured (set STRIPE_PRICE_ID_MIRROR_MONTHLY / STRIPE_PRICE_ID_MIRROR_YEARLY)"
+              : "Stripe price not configured (set STRIPE_PRICE_ID_MONTHLY / STRIPE_PRICE_ID_YEARLY or STRIPE_PRICE_ID)",
         },
         { status: 500 }
       );

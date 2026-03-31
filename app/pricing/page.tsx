@@ -27,19 +27,38 @@ const FREE_FEATURES = [
 ];
 
 const PRO_FEATURES = [
-  "Unlimited captures",
+  "50 screen captures per day",
   "Priority AI analysis & faster responses",
   "Full history — keep every moment",
   "Early access to new features",
 ];
 
-const COMPARE_ROWS: { label: string; free: string; pro: string }[] = [
-  { label: "Daily captures", free: "20", pro: "Unlimited" },
-  { label: "AI chat", free: "Basic", pro: "Priority models & speed" },
-  { label: "Activity history", free: "7 days", pro: "Full archive" },
-  { label: "Profile insights", free: "Standard", pro: "Deeper & faster" },
-  { label: "New features", free: "—", pro: "Early access" },
-  { label: "Support", free: "Community", pro: "Priority" },
+const MIRROR_FEATURES = [
+  "Unlimited captures",
+  "Priority AI analysis & faster responses",
+  "Full history — keep every moment",
+  "Early access to new features",
+  "Priority support",
+];
+
+const COMPARE_ROWS: { label: string; free: string; pro: string; mirror: string }[] =
+  [
+    { label: "Daily captures", free: "20", pro: "50", mirror: "Unlimited" },
+    { label: "AI chat", free: "Basic", pro: "Priority", mirror: "Priority" },
+    {
+      label: "Activity history",
+      free: "7 days",
+      pro: "Full archive",
+      mirror: "Full archive",
+    },
+    {
+      label: "Profile insights",
+      free: "Standard",
+      pro: "Deeper & faster",
+      mirror: "Deeper & faster",
+    },
+    { label: "New features", free: "—", pro: "Early access", mirror: "Early access" },
+    { label: "Support", free: "Community", pro: "Priority", mirror: "Priority" },
 ];
 
 function CheckIcon({ className }: { className?: string }) {
@@ -79,6 +98,42 @@ export default function PricingPage() {
         credentials: "include",
         body: JSON.stringify({
           interval: billing,
+          tier: "pro",
+          source: "pricing",
+        }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (res.status === 401) {
+        router.push("/auth?next=/pricing");
+        return;
+      }
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Try again.");
+        return;
+      }
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+      setError("No checkout URL returned.");
+    } catch {
+      setError("Network error. Check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function startMirrorCheckout() {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          interval: billing,
+          tier: "mirror",
           source: "pricing",
         }),
       });
@@ -304,15 +359,14 @@ export default function PricingPage() {
               </button>
             </div>
             <p className="text-center text-xs" style={{ color: SUBTLE }}>
-              Annual is{" "}
-              <span className="font-semibold text-white">$29.99/year</span> vs{" "}
-              <span style={{ color: MUTED }}>$119.88</span> if billed monthly —
-              same Pro features, smarter price.
+              Annual: Pro is{" "}
+              <span className="font-semibold text-white">$39.99/year</span>, Mirror
+              is <span className="font-semibold text-white">$59.99/year</span>.
             </p>
           </div>
 
           {/* Cards */}
-          <div className="mt-14 grid gap-6 md:grid-cols-2 md:gap-8">
+          <div className="mt-14 grid gap-6 md:grid-cols-3 md:gap-8">
             {/* Free */}
             <article
               className="relative flex flex-col rounded-2xl border p-8 md:p-10"
@@ -405,14 +459,14 @@ export default function PricingPage() {
                 ) : (
                   <>
                     <span className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-                      $29.99
+                      $39.99
                     </span>
                     <span className="text-base font-medium" style={{ color: MUTED }}>
                       {" "}
                       / year
                     </span>
                     <p className="mt-2 text-sm font-medium" style={{ color: "#a78bfa" }}>
-                      ≈ $2.50/mo · billed annually
+                      ≈ $3.33/mo · billed annually
                     </p>
                   </>
                 )}
@@ -467,6 +521,116 @@ export default function PricingPage() {
                 {loading ? "Opening checkout…" : "Start My Free Trial"}
               </button>
             </article>
+
+            {/* Mirror */}
+            <article
+              className="relative flex flex-col overflow-hidden rounded-2xl p-8 md:p-10"
+              style={{
+                backgroundColor: "#0f0f12",
+                border: `1px solid ${VIOLET}55`,
+                boxShadow: `0 0 0 1px rgba(124,58,237,0.15), 0 24px 80px -24px ${VIOLET}66`,
+              }}
+            >
+              <div
+                className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full opacity-30 blur-3xl"
+                style={{ background: VIOLET }}
+                aria-hidden
+              />
+              <div className="relative mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <h2 className="text-xl font-bold text-white">Mirror</h2>
+                    <span
+                      className="rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white"
+                      style={{
+                        background: `linear-gradient(90deg, ${VIOLET}, #a78bfa)`,
+                      }}
+                    >
+                      Most powerful
+                    </span>
+                  </div>
+                  <p className="text-sm" style={{ color: MUTED }}>
+                    For professionals who want total recall.
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative mb-2">
+                {billing === "monthly" ? (
+                  <>
+                    <span className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+                      $24.99
+                    </span>
+                    <span className="text-base font-medium" style={{ color: MUTED }}>
+                      {" "}
+                      / month
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+                      $59.99
+                    </span>
+                    <span className="text-base font-medium" style={{ color: MUTED }}>
+                      {" "}
+                      / year
+                    </span>
+                    <p className="mt-2 text-sm font-medium" style={{ color: "#a78bfa" }}>
+                      ≈ $5.00/mo · billed annually
+                    </p>
+                  </>
+                )}
+              </div>
+
+              <ul className="relative mb-8 mt-6 flex flex-1 flex-col gap-4">
+                {MIRROR_FEATURES.map((f) => (
+                  <li key={f} className="flex gap-3 text-sm text-white/90">
+                    <span
+                      className="mt-0.5 flex shrink-0 text-violet-400"
+                      aria-hidden
+                    >
+                      <CheckIcon />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <div
+                className="relative mb-6 rounded-xl border px-4 py-3 text-sm leading-relaxed"
+                style={{
+                  borderColor: `${VIOLET}40`,
+                  background: `linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(91,33,182,0.06) 100%)`,
+                }}
+              >
+                <p className="font-semibold text-white">14-day free trial</p>
+                <p className="mt-1 text-xs md:text-sm" style={{ color: "#c4b5fd" }}>
+                  Start free, no card required… just kidding—we need it, but you
+                  won&apos;t be charged for 14 days.
+                </p>
+              </div>
+
+              {error ? (
+                <p className="relative mb-3 text-center text-sm text-red-400">
+                  {error}
+                </p>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={startMirrorCheckout}
+                disabled={loading}
+                className="relative w-full rounded-xl py-4 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
+                style={{
+                  background: `linear-gradient(90deg, ${VIOLET} 0%, #6d28d9 50%, #5b21b6 100%)`,
+                  backgroundSize: "200% 100%",
+                  animation: loading ? "none" : "pricing-shimmer 4s linear infinite",
+                  boxShadow: `0 8px 32px -8px ${VIOLET}aa`,
+                }}
+              >
+                {loading ? "Opening checkout…" : "Start My Free Trial"}
+              </button>
+            </article>
           </div>
 
           {/* Comparison */}
@@ -506,6 +670,13 @@ export default function PricingPage() {
                       >
                         Pro
                       </th>
+                      <th
+                        className="px-6 py-4 font-semibold md:px-8"
+                        scope="col"
+                        style={{ color: "#c4b5fd" }}
+                      >
+                        Mirror
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -532,6 +703,9 @@ export default function PricingPage() {
                         <td className="px-6 py-4 font-medium text-white/95 md:px-8">
                           {row.pro}
                         </td>
+                        <td className="px-6 py-4 font-medium text-white/95 md:px-8">
+                          {row.mirror}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -553,12 +727,12 @@ export default function PricingPage() {
                 Ready for an AI that doesn&apos;t reset every morning?
               </p>
               <p className="mt-1 text-sm" style={{ color: MUTED }}>
-                Join Pro with a 14-day trial. Downgrade or cancel whenever.
+                Go Mirror with a 14-day trial. Downgrade or cancel whenever.
               </p>
             </div>
             <button
               type="button"
-              onClick={startProCheckout}
+              onClick={startMirrorCheckout}
               disabled={loading}
               className="shrink-0 rounded-xl px-8 py-3.5 text-sm font-bold text-white transition-transform hover:scale-[1.02] disabled:opacity-60"
               style={{
