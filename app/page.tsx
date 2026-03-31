@@ -414,8 +414,8 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-6">
               <Link href="/auth" className="text-sm hover:text-[#0a0a0a] transition-colors" style={{ color: GRAY }}>Sign In</Link>
-              <Link href="#" className="text-sm hover:text-[#0a0a0a] transition-colors" style={{ color: GRAY }}>Privacy</Link>
-              <Link href="#" className="text-sm hover:text-[#0a0a0a] transition-colors" style={{ color: GRAY }}>Terms</Link>
+              <Link href="/privacy" className="text-sm hover:text-[#0a0a0a] transition-colors" style={{ color: GRAY }}>Privacy</Link>
+              <Link href="/terms" className="text-sm hover:text-[#0a0a0a] transition-colors" style={{ color: GRAY }}>Terms</Link>
             </div>
           </footer>
         </main>
