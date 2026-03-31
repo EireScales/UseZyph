@@ -106,7 +106,7 @@ export async function POST(req: Request) {
 
       if (countError) {
         console.error("Daily limit count error:", countError.message);
-      } else if ((todayCount ?? 0) >= 20) {
+      } else if ((todayCount ?? 0) >= 80) {
         return NextResponse.json(
           { error: "Daily limit reached", upgrade: true },
           { status: 429 }

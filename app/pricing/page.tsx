@@ -20,14 +20,14 @@ const TRUST = [
 ] as const;
 
 const FREE_FEATURES = [
-  "20 screen captures per day",
+  "80 screen captures per day",
   "Basic chat with your profile",
   "7-day activity history",
   "Standard insight updates",
 ];
 
 const PRO_FEATURES = [
-  "50 screen captures per day",
+  "150 screen captures per day",
   "Priority AI analysis & faster responses",
   "Full history — keep every moment",
   "Early access to new features",
@@ -43,7 +43,7 @@ const MIRROR_FEATURES = [
 
 const COMPARE_ROWS: { label: string; free: string; pro: string; mirror: string }[] =
   [
-    { label: "Daily captures", free: "20", pro: "50", mirror: "Unlimited" },
+    { label: "Daily captures", free: "80", pro: "150", mirror: "Unlimited" },
     { label: "AI chat", free: "Basic", pro: "Priority", mirror: "Priority" },
     {
       label: "Activity history",
