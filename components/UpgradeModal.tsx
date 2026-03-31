@@ -93,7 +93,7 @@ export function UpgradeModal({ open, onDismiss }: UpgradeModalProps) {
             id="upgrade-modal-title"
             className="text-xl font-bold leading-tight text-white md:text-2xl"
           >
-            You&apos;ve used all 20 free captures today
+            You&apos;ve used all 80 free captures today
           </h2>
           <p
             id="upgrade-modal-desc"
@@ -105,7 +105,7 @@ export function UpgradeModal({ open, onDismiss }: UpgradeModalProps) {
 
           <ul className="mt-5 space-y-2.5 text-sm text-[#d1d5db]">
             {[
-              "Unlimited daily captures",
+              "Up to 150 captures/day on Pro, unlimited on Mirror",
               "Priority AI analysis",
               "Full activity history",
               "Early access to new features",
@@ -133,9 +133,8 @@ export function UpgradeModal({ open, onDismiss }: UpgradeModalProps) {
             }}
           >
             <p className="text-xs font-medium text-[#c4b5fd]">
-              From <span className="text-white">$9.99/mo</span> ·{" "}
-              <span className="text-white">$29.99/yr</span>{" "}
-              <span className="text-emerald-400/90">(save 75%)</span>
+              Pro <span className="text-white">$9.99/mo</span> · Mirror{" "}
+              <span className="text-white">$24.99/mo</span>
             </p>
           </div>
 
