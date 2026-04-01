@@ -6,11 +6,9 @@ import { supabase } from "@/lib/supabase";
 
 type InsightRow = {
   id: string;
-  type?: string | null;
-  category?: string | null;
-  content?: string | null;
-  summary?: string | null;
-  confidence?: number | null;
+  insight_type?: string | null;
+  insight_value?: string | null;
+  confidence_score?: number | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -46,7 +44,7 @@ export default function InsightsPage() {
       try {
         const { data, error } = await supabase
           .from("user_profile_insights")
-          .select("id, type, category, content, summary, confidence, created_at, updated_at")
+          .select("id, insight_value, insight_type, confidence_score, created_at, updated_at")
           .eq("user_id", user.id)
           .order("updated_at", { ascending: false });
 
@@ -61,14 +59,14 @@ export default function InsightsPage() {
         if (countRes.count != null) setTotalCount(countRes.count);
 
         const categories = new Set(
-          list.map((i) => i.category || i.type || "General")
+          list.map((i) => i.insight_type || "General")
         );
         setCategoriesCount(categories.size);
 
-        const withConf = list.filter((i) => i.confidence != null);
+        const withConf = list.filter((i) => i.confidence_score != null);
         if (withConf.length) {
           const avg =
-            withConf.reduce((s, i) => s + Number(i.confidence), 0) /
+            withConf.reduce((s, i) => s + Number(i.confidence_score), 0) /
             withConf.length;
           setAvgConfidence(Math.round(avg * 100) / 100);
         }
@@ -87,13 +85,13 @@ export default function InsightsPage() {
   }, [router]);
 
   const categories = Array.from(
-    new Set(insights.map((i) => i.category || i.type || "General"))
+    new Set(insights.map((i) => i.insight_type || "General"))
   );
   const filteredInsights =
     selectedCategory === "All"
       ? insights
       : insights.filter(
-          (i) => (i.category || i.type || "General") === selectedCategory
+          (i) => (i.insight_type || "General") === selectedCategory
         );
 
   const statCards = [
@@ -190,12 +188,9 @@ export default function InsightsPage() {
             <p className="text-[#666] text-sm max-w-sm mb-4">
               Keep working as normal. Insights appear here after 2–4 weeks.
             </p>
-            <a
-              href="#"
-              className="text-sm text-[#7c3aed] hover:underline transition-opacity duration-200"
-            >
-              Download desktop app →
-            </a>
+            <p className="text-[#666] text-sm max-w-sm">
+              Insights appear here as Zyph learns from your activity.
+            </p>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-6">
@@ -226,11 +221,11 @@ export default function InsightsPage() {
 
             <div className="flex-1 min-w-0 space-y-4">
               {filteredInsights.map((insight) => {
-                const cat = insight.category || insight.type || "General";
+                const cat = insight.insight_type || "General";
                 const color = CATEGORY_COLORS[cat] || "#7c3aed";
-                const conf = insight.confidence != null ? Number(insight.confidence) : 0;
+                const conf = insight.confidence_score != null ? Number(insight.confidence_score) : 0;
                 const pct = Math.min(100, Math.round(conf * 100));
-                const text = insight.content || insight.summary || "—";
+                const text = insight.insight_value || "—";
                 return (
                   <div
                     key={insight.id}
