@@ -5,7 +5,11 @@ export const metadata: Metadata = {
   title: "Zyph",
   description: "Zyph app",
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png" }],
   },
 };
 
