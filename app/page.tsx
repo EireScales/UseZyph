@@ -201,16 +201,9 @@ export default function Home() {
 
           {/* Section 2 — Social proof */}
           <section className="py-8 border-t border-b overflow-hidden" style={{ borderColor: BORDER, background: '#f9fafb' }}>
-            <div
-              className="flex items-center gap-16 animate-marquee"
-              style={{
-                display: 'flex',
-                width: 'max-content',
-                animation: 'marquee 18s linear infinite',
-              }}
-            >
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="flex items-center gap-3 shrink-0 opacity-30">
+            <div style={{ display: 'flex', width: 'max-content', animation: 'marquee 20s linear infinite' }}>
+              {[...Array(16)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 shrink-0 px-8" style={{ opacity: 0.35 }}>
                   <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
                     <circle cx="50" cy="50" r="26" stroke="#7c3aed" strokeWidth="5" opacity="0.35"/>
                     <circle cx="50" cy="50" r="16" stroke="#7c3aed" strokeWidth="5" opacity="0.65"/>
@@ -220,7 +213,7 @@ export default function Home() {
                     <line x1="16" y1="50" x2="10" y2="50" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" opacity="0.5"/>
                     <line x1="84" y1="50" x2="90" y2="50" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" opacity="0.5"/>
                   </svg>
-                  <span className="text-sm font-bold tracking-tight" style={{ color: '#7c3aed', opacity: 0.4, fontFamily: "'DM Sans', system-ui, sans-serif" }}>Zyph</span>
+                  <span className="text-sm font-bold tracking-tight" style={{ color: '#7c3aed', fontFamily: "'DM Sans', system-ui, sans-serif" }}>Zyph</span>
                 </div>
               ))}
             </div>
