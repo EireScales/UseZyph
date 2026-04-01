@@ -25,13 +25,13 @@ export async function POST(req: Request) {
 
     const { data: insights } = await supabase
       .from("user_profile_insights")
-      .select("content, summary, type, category")
+      .select("insight_value, insight_type")
       .eq("user_id", user.id);
 
     const insightText = (insights || [])
       .map(
-        (i: { content?: string; summary?: string; type?: string; category?: string }) =>
-          [i.content || i.summary, i.type || i.category].filter(Boolean).join(" — ")
+        (i: { insight_value?: string; insight_type?: string }) =>
+          [i.insight_type, i.insight_value].filter(Boolean).join(": ")
       )
       .filter(Boolean)
       .join("\n");
