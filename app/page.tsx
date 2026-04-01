@@ -289,11 +289,41 @@ export default function Home() {
             </div>
           </section>
 
+          {/* Section 5 — See it in action */}
+          <section className="py-24 px-6 bg-[#0a0a0a]">
+            <div className="max-w-5xl mx-auto text-center">
+              <h2
+                ref={(el) => { sectionRefs.current[6] = el; }}
+                className="section-anim text-4xl md:text-5xl font-extrabold text-center mb-4 text-white"
+                style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+              >
+                See it in action
+              </h2>
+              <p className="section-anim text-center text-lg text-white/60">
+                Watch how Zyph learns and adapts to you.
+              </p>
+
+              <div
+                ref={(el) => { sectionRefs.current[7] = el; }}
+                className="section-anim mt-12 w-full max-w-[900px] mx-auto rounded-2xl overflow-hidden border border-white/10"
+                style={{ aspectRatio: "16 / 9" }}
+              >
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/nsGnxbgrk14"
+                  title="See it in action"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </section>
+
           {/* Section 5 — Dashboard mockup */}
           <section className="py-24 px-6 bg-white">
             <div className="max-w-6xl mx-auto">
               <h2
-                ref={(el) => { sectionRefs.current[6] = el; }}
+                ref={(el) => { sectionRefs.current[8] = el; }}
                 className="section-anim text-4xl md:text-5xl font-extrabold text-center mb-4"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
@@ -303,7 +333,7 @@ export default function Home() {
                 Track what Zyph has learned, review your insights, and chat with an AI that already has full context.
               </p>
               <div
-                ref={(el) => { sectionRefs.current[7] = el; }}
+                ref={(el) => { sectionRefs.current[9] = el; }}
                 className="section-anim rounded-2xl shadow-2xl overflow-hidden border w-full"
                 style={{ borderColor: BORDER }}
               >
@@ -353,7 +383,7 @@ export default function Home() {
           <section className="py-24 px-6 bg-[#f9fafb]">
             <div className="max-w-5xl mx-auto">
               <h2
-                ref={(el) => { sectionRefs.current[8] = el; }}
+                ref={(el) => { sectionRefs.current[10] = el; }}
                 className="section-anim text-4xl font-extrabold text-center mb-16"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
@@ -367,7 +397,7 @@ export default function Home() {
                 ].map((f, i) => (
                   <div
                     key={f.title}
-                    ref={(el) => { sectionRefs.current[9 + i] = el; }}
+                    ref={(el) => { sectionRefs.current[11 + i] = el; }}
                     className="section-anim bg-white rounded-2xl p-8 border"
                     style={{ borderColor: BORDER }}
                   >
