@@ -71,6 +71,10 @@ export default function Home() {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
         .hero-anim { opacity: 0; animation: heroFadeUp 0.6s ease-out forwards; }
         .section-anim { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
         .section-anim.section-visible { opacity: 1; transform: translateY(0); }
@@ -196,20 +200,29 @@ export default function Home() {
           </section>
 
           {/* Section 2 — Social proof */}
-          <section className="py-12 border-t border-b bg-[#f9fafb]" style={{ borderColor: BORDER }}>
-            <div className="flex flex-wrap items-center justify-center gap-6 px-6">
-              <div className="flex -space-x-2">
-                {["A", "B", "C", "D", "E"].map((l, i) => (
-                  <div
-                    key={l}
-                    className="w-10 h-10 rounded-full border-2 border-[#f9fafb] flex items-center justify-center text-xs font-semibold text-white"
-                    style={{ background: i % 2 === 0 ? PURPLE : ROSE }}
-                  >
-                    {l}
-                  </div>
-                ))}
-              </div>
-              <span className="text-sm" style={{ color: GRAY }}>Joined by early users across 12 countries</span>
+          <section className="py-8 border-t border-b overflow-hidden" style={{ borderColor: BORDER, background: '#f9fafb' }}>
+            <div
+              className="flex items-center gap-16 animate-marquee"
+              style={{
+                display: 'flex',
+                width: 'max-content',
+                animation: 'marquee 18s linear infinite',
+              }}
+            >
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 shrink-0 opacity-30">
+                  <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="26" stroke="#7c3aed" strokeWidth="5" opacity="0.35"/>
+                    <circle cx="50" cy="50" r="16" stroke="#7c3aed" strokeWidth="5" opacity="0.65"/>
+                    <circle cx="50" cy="50" r="7" fill="#7c3aed"/>
+                    <line x1="50" y1="16" x2="50" y2="10" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" opacity="0.5"/>
+                    <line x1="50" y1="84" x2="50" y2="90" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" opacity="0.5"/>
+                    <line x1="16" y1="50" x2="10" y2="50" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" opacity="0.5"/>
+                    <line x1="84" y1="50" x2="90" y2="50" stroke="#7c3aed" strokeWidth="4" strokeLinecap="round" opacity="0.5"/>
+                  </svg>
+                  <span className="text-sm font-bold tracking-tight" style={{ color: '#7c3aed', opacity: 0.4, fontFamily: "'DM Sans', system-ui, sans-serif" }}>Zyph</span>
+                </div>
+              ))}
             </div>
           </section>
 
