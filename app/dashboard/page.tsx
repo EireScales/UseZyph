@@ -25,10 +25,9 @@ type Observation = {
 } | Record<string, unknown>;
 type ProfileInsight = {
   id: string;
-  content?: string | null;
-  summary?: string | null;
-  category?: string | null;
-  type?: string | null;
+  insight_value?: string | null;
+  insight_type?: string | null;
+  confidence_score?: number | null;
   updated_at?: string;
 } | Record<string, unknown>;
 
@@ -116,7 +115,7 @@ function DashboardContent() {
               .limit(10),
             supabase
               .from("user_profile_insights")
-              .select("id, content, summary, category, type, updated_at")
+              .select("id, insight_value, insight_type, confidence_score, updated_at")
               .eq("user_id", user.id)
               .order("updated_at", { ascending: false })
               .limit(5),
@@ -255,7 +254,7 @@ function DashboardContent() {
 
   const insightCategories: Record<string, ProfileInsight[]> = {};
   profileInsights.forEach((i) => {
-    const cat = (i.category || i.type || "General") as string;
+    const cat = (i.insight_type || "General") as string;
     if (!insightCategories[cat]) insightCategories[cat] = [];
     insightCategories[cat].push(i);
   });
@@ -542,10 +541,9 @@ function DashboardContent() {
                         {items.slice(0, 5).map((insight) => {
                           const i = insight as {
                             id: string;
-                            content?: string;
-                            summary?: string;
+                            insight_value?: string | null;
                           };
-                          const text = i.content || i.summary || "";
+                          const text = i.insight_value ?? "";
                           return (
                             <span
                               key={i.id}
