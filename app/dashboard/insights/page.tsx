@@ -47,6 +47,8 @@ export default function InsightsPage() {
           .select("id, insight_value, insight_type, confidence_score, created_at, updated_at")
           .eq("user_id", user.id)
           .order("updated_at", { ascending: false });
+        console.log("insights data:", data);
+        console.log("insights error:", error);
 
         if (error) throw error;
         const list = (data as InsightRow[]) || [];
