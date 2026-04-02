@@ -641,7 +641,7 @@ function DashboardContent() {
           !loading &&
           onFreePlan &&
           !modalDismissed &&
-          (capturesToday >= 20 || fromDesktopLimit)
+          (capturesToday >= 80 || fromDesktopLimit)
         }
         onDismiss={() => {
           setModalDismissed(true);
