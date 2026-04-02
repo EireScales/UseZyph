@@ -24,7 +24,7 @@ export function startOfUtcDayIso(): string {
 }
 
 export function isFreeTier(sub: SubscriptionRow): boolean {
-  return sub.status === "free";
+  return sub.status === "free" || !sub.status;
 }
 
 export function isTrialing(sub: SubscriptionRow): boolean {
