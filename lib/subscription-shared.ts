@@ -1,6 +1,6 @@
 /** Client-safe subscription helpers (no server-only imports). */
 
-export type PlanStatus = "free" | "trialing" | "pro";
+export type PlanStatus = "free" | "trialing" | "pro" | "mirror";
 
 export type SubscriptionRow = {
   status: PlanStatus;
@@ -45,7 +45,12 @@ export function trialDaysRemaining(trialEndIso: string | null): number | null {
 }
 
 function normalizeStatus(value: unknown): PlanStatus {
-  if (value === "trialing" || value === "pro" || value === "free") {
+  if (
+    value === "trialing" ||
+    value === "pro" ||
+    value === "mirror" ||
+    value === "free"
+  ) {
     return value;
   }
   return "free";

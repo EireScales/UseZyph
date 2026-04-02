@@ -353,21 +353,36 @@ function DashboardContent() {
             role="status"
           >
             <p className="text-sm text-[#c4b5fd]">
-              You&apos;re on the Free plan — upgrade to Pro for unlimited
-              captures, full history, and priority AI.
+              You&apos;re on the <span className="font-semibold text-white">Free plan</span> — upgrade to Pro or Mirror for more captures and priority AI.
             </p>
-            <Link
-              href="/pricing"
-              className="shrink-0 text-sm font-semibold text-[#7c3aed] hover:underline"
-            >
+            <Link href="/pricing" className="shrink-0 text-sm font-semibold text-[#7c3aed] hover:underline">
               Upgrade →
+            </Link>
+          </div>
+        )}
+
+        {!onFreePlan && !trialing && (
+          <div
+            className="mb-6 flex flex-col gap-3 rounded-xl border border-[#1a3a1a] bg-[#0a140a] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            role="status"
+          >
+            <p className="text-sm text-[#86efac]">
+              You&apos;re on the{" "}
+              <span className="font-semibold text-white capitalize">
+                {subscription.status === "mirror" ? "Mirror" : subscription.status === "pro" ? "Pro" : subscription.status}
+              </span>{" "}
+              plan
+              {subscription.status === "mirror" ? " — unlimited captures enabled." : " — 150 captures/day enabled."}
+            </p>
+            <Link href="/pricing" className="shrink-0 text-sm font-semibold text-[#22c55e] hover:underline">
+              Manage plan →
             </Link>
           </div>
         )}
 
         {onFreePlan &&
           capturesToday >= 15 &&
-          capturesToday < 20 && (
+          capturesToday < 80 && (
             <div
               className="mb-6 flex flex-col gap-3 rounded-xl border border-[#3a2a4a] bg-[#161018] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
               role="status"
@@ -376,7 +391,7 @@ function DashboardContent() {
                 You&apos;ve used{" "}
                 <span className="font-semibold text-white">{capturesToday}</span>{" "}
                 of{" "}
-                <span className="font-semibold text-white">20</span> free
+                <span className="font-semibold text-white">80</span> free
                 captures today — upgrade for unlimited.
               </p>
               <Link
