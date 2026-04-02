@@ -139,6 +139,7 @@ function DashboardContent() {
           };
           setProfile({ id: raw.id, name: raw.name });
           setSubscription(parseSubscriptionRow(raw.subscription));
+          console.log("subscription raw:", raw.subscription, "parsed:", parseSubscriptionRow(raw.subscription));
         }
         if (todayCountRes.count != null) setCapturesToday(todayCountRes.count);
         if (observationsRes.data)
