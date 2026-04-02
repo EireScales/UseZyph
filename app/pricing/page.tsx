@@ -87,6 +87,10 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>("annual");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoSuccess, setPromoSuccess] = useState(false);
 
   async function startProCheckout() {
     setError(null);
@@ -120,6 +124,28 @@ export default function PricingPage() {
       setError("Network error. Check your connection.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function redeemPromoCode() {
+    if (!promoCode.trim()) return;
+    setPromoError(null);
+    setPromoLoading(true);
+    try {
+      const res = await fetch("/api/stripe/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ code: promoCode.trim() }),
+      });
+      const data = await res.json();
+      if (res.status === 401) { router.push("/auth?next=/pricing"); return; }
+      if (!res.ok) { setPromoError(data.error ?? "Invalid code"); return; }
+      setPromoSuccess(true);
+    } catch {
+      setPromoError("Network error. Try again.");
+    } finally {
+      setPromoLoading(false);
     }
   }
 
@@ -631,6 +657,37 @@ export default function PricingPage() {
                 {loading ? "Opening checkout…" : "Start My Free Trial"}
               </button>
             </article>
+          </div>
+
+          <div className="mt-12 flex flex-col items-center gap-3">
+            <p className="text-sm font-medium" style={{ color: MUTED }}>Have a promo code?</p>
+            {promoSuccess ? (
+              <div className="rounded-xl px-6 py-4 text-center" style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)" }}>
+                <p className="text-sm font-semibold text-green-400">Code applied! You now have Mirror access.</p>
+                <a href="/dashboard" className="text-xs mt-1 block" style={{ color: "#a78bfa" }}>Go to dashboard →</a>
+              </div>
+            ) : (
+              <div className="flex gap-2 w-full max-w-sm">
+                <input
+                  type="text"
+                  placeholder="Enter code"
+                  value={promoCode}
+                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                  className="flex-1 rounded-xl px-4 py-3 text-sm font-medium text-white outline-none"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                />
+                <button
+                  type="button"
+                  onClick={redeemPromoCode}
+                  disabled={promoLoading || !promoCode.trim()}
+                  className="rounded-xl px-5 py-3 text-sm font-bold text-white disabled:opacity-50"
+                  style={{ background: VIOLET }}
+                >
+                  {promoLoading ? "..." : "Apply"}
+                </button>
+              </div>
+            )}
+            {promoError && <p className="text-sm text-red-400">{promoError}</p>}
           </div>
 
           {/* Comparison */}
