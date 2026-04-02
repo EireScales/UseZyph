@@ -9,7 +9,6 @@ type InsightRow = {
   insight_type?: string | null;
   insight_value?: string | null;
   confidence_score?: number | null;
-  created_at?: string;
   updated_at?: string;
 };
 
@@ -44,11 +43,9 @@ export default function InsightsPage() {
       try {
         const { data, error } = await supabase
           .from("user_profile_insights")
-          .select("id, insight_value, insight_type, confidence_score, created_at, updated_at")
+          .select("id, insight_value, insight_type, confidence_score, updated_at")
           .eq("user_id", user.id)
           .order("updated_at", { ascending: false });
-        console.log("insights data:", data);
-        console.log("insights error:", error);
 
         if (error) throw error;
         const list = (data as InsightRow[]) || [];
@@ -74,7 +71,7 @@ export default function InsightsPage() {
         }
 
         if (list.length) {
-          const latest = list[0].updated_at || list[0].created_at;
+          const latest = list[0].updated_at;
           if (latest) setRecentDate(latest);
         }
       } catch {
