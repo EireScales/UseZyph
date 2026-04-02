@@ -63,6 +63,7 @@ function useCountUp(end: number, duration = 1200, enabled = true) {
 }
 
 function DashboardContent() {
+  console.log("env check:", process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 20));
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
