@@ -257,12 +257,122 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Section 4 — How it works */}
+          {/* Section 4 — What is Zyph? */}
+          <section className="py-32 px-6 bg-[#0a0a0a] text-white overflow-hidden">
+            <div className="max-w-5xl mx-auto">
+              {/* Label */}
+              <p className="text-center text-xs font-semibold tracking-[0.25em] uppercase mb-6 text-[#7c3aed]">
+                WHAT IS ZYPH?
+              </p>
+
+              {/* Main equation */}
+              <div
+                ref={(el) => { sectionRefs.current[1] = el; }}
+                className="section-anim text-center mb-6"
+              >
+                <h2
+                  className="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight"
+                  style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
+                >
+                  <span className="text-white">Zyph = </span>
+                  <span style={{ color: "#7c3aed" }}>Personal Data Engine</span>
+                  <span className="text-white/40"> + </span>
+                  <span style={{ color: "#e8837a" }}>Behavioural Memory Layer</span>
+                </h2>
+              </div>
+
+              {/* Subheading */}
+              <p className="text-center text-lg md:text-xl text-white/50 max-w-2xl mx-auto mb-20 leading-relaxed">
+                Most AI tools give you a blank canvas every session. Zyph gives you an AI that has been silently studying you — your patterns, your tools, your language, your pace — and remembers all of it.
+              </p>
+
+              {/* Two column pillars */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                {/* Pillar 1 */}
+                <div
+                  className="rounded-2xl p-8 border relative overflow-hidden"
+                  style={{ background: "rgba(124,58,237,0.06)", borderColor: "rgba(124,58,237,0.25)" }}
+                >
+                  <div
+                    className="absolute -top-12 -right-12 w-40 h-40 rounded-full blur-3xl opacity-20"
+                    style={{ background: "#7c3aed" }}
+                  />
+                  <div
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-5"
+                    style={{ background: "rgba(124,58,237,0.15)", color: "#a78bfa" }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#7c3aed]" />
+                    Personal Data Engine
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+                    It observes. Constantly.
+                  </h3>
+                  <p className="text-white/50 leading-relaxed text-sm mb-6">
+                    Every 30 seconds, Zyph silently reads your screen — every app, every document, every browser tab. It doesn&apos;t interrupt. It doesn&apos;t ask. It simply watches and extracts signal from noise.
+                  </p>
+                  <ul className="space-y-2">
+                    {["Screen-level context capture", "OCR across every application", "App usage & behavioural patterns", "Structured, categorised memory"].map((item) => (
+                      <li key={item} className="flex items-center gap-2.5 text-sm text-white/70">
+                        <span className="w-1 h-1 rounded-full shrink-0" style={{ background: "#7c3aed" }} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Pillar 2 */}
+                <div
+                  className="rounded-2xl p-8 border relative overflow-hidden"
+                  style={{ background: "rgba(232,131,122,0.06)", borderColor: "rgba(232,131,122,0.25)" }}
+                >
+                  <div
+                    className="absolute -top-12 -right-12 w-40 h-40 rounded-full blur-3xl opacity-20"
+                    style={{ background: "#e8837a" }}
+                  />
+                  <div
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-5"
+                    style={{ background: "rgba(232,131,122,0.15)", color: "#f9a89f" }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#e8837a]" />
+                    Behavioural Memory Layer
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+                    It remembers. Everything.
+                  </h3>
+                  <p className="text-white/50 leading-relaxed text-sm mb-6">
+                    Observations are distilled into a living intelligence profile — your work style, communication patterns, tools, interests, and cognitive rhythms. This profile powers every conversation, permanently.
+                  </p>
+                  <ul className="space-y-2">
+                    {["Persistent insight profile", "Communication style modelling", "Tool & workflow mapping", "Context that compounds over time"].map((item) => (
+                      <li key={item} className="flex items-center gap-2.5 text-sm text-white/70">
+                        <span className="w-1 h-1 rounded-full shrink-0" style={{ background: "#e8837a" }} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Bottom contrast statement */}
+              <div
+                className="rounded-2xl p-8 border text-center"
+                style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}
+              >
+                <p className="text-white/30 text-sm uppercase tracking-widest mb-3 font-semibold">The result</p>
+                <p className="text-2xl md:text-3xl font-extrabold text-white leading-snug" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+                  An AI that doesn&apos;t need you to explain yourself.<br />
+                  <span className="text-white/40">Because it was already paying attention.</span>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 5 — How it works */}
           <section className="py-24 px-6 bg-[#f9fafb]">
             <div className="max-w-5xl mx-auto">
               <p className="text-center text-xs font-semibold tracking-widest mb-4" style={{ color: GRAY }}>HOW IT WORKS</p>
               <h2
-                ref={(el) => { sectionRefs.current[1] = el; }}
+                ref={(el) => { sectionRefs.current[2] = el; }}
                 className="section-anim text-4xl md:text-5xl font-extrabold text-center mb-20"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
@@ -276,7 +386,7 @@ export default function Home() {
                   { num: "03", title: "Builds your profile", body: "Over 2–4 weeks, Zyph maps your communication style, interests, and patterns." },
                   { num: "04", title: "Knows you", body: "Open chat and ask anything. No context needed. It already knows." },
                 ].map((step, i) => (
-                  <div key={step.num} ref={(el) => { sectionRefs.current[2 + i] = el; }} className="section-anim relative bg-white rounded-2xl p-8 border z-10" style={{ borderColor: BORDER }}>
+                  <div key={step.num} ref={(el) => { sectionRefs.current[3 + i] = el; }} className="section-anim relative bg-white rounded-2xl p-8 border z-10" style={{ borderColor: BORDER }}>
                     <p className="text-6xl font-extrabold mb-2" style={{ color: "#f3f4f6", fontFamily: "'DM Sans', system-ui, sans-serif" }}>{step.num}</p>
                     <h3 className="text-lg font-bold text-[#0a0a0a] mb-2" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>{step.title}</h3>
                     <p className="text-sm leading-relaxed" style={{ color: GRAY }}>{step.body}</p>
@@ -295,11 +405,11 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Section 5 — See it in action */}
+          {/* Section 6 — See it in action */}
           <section className="py-24 px-6 bg-[#0a0a0a]">
             <div className="max-w-5xl mx-auto text-center">
               <h2
-                ref={(el) => { sectionRefs.current[6] = el; }}
+                ref={(el) => { sectionRefs.current[7] = el; }}
                 className="section-anim text-4xl md:text-5xl font-extrabold text-center mb-4 text-white"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
@@ -310,7 +420,7 @@ export default function Home() {
               </p>
 
               <div
-                ref={(el) => { sectionRefs.current[7] = el; }}
+                ref={(el) => { sectionRefs.current[8] = el; }}
                 className="section-anim mt-12 w-full max-w-[900px] mx-auto rounded-2xl overflow-hidden border border-white/10"
                 style={{ aspectRatio: "16 / 9" }}
               >
@@ -325,11 +435,11 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Section 5 — Dashboard mockup */}
+          {/* Section 7 — Dashboard mockup */}
           <section className="py-24 px-6 bg-white">
             <div className="max-w-6xl mx-auto">
               <h2
-                ref={(el) => { sectionRefs.current[8] = el; }}
+                ref={(el) => { sectionRefs.current[9] = el; }}
                 className="section-anim text-4xl md:text-5xl font-extrabold text-center mb-4"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
@@ -339,7 +449,7 @@ export default function Home() {
                 Track what Zyph has learned, review your insights, and chat with an AI that already has full context.
               </p>
               <div
-                ref={(el) => { sectionRefs.current[9] = el; }}
+                ref={(el) => { sectionRefs.current[10] = el; }}
                 className="section-anim rounded-2xl shadow-2xl overflow-hidden border w-full"
                 style={{ borderColor: BORDER }}
               >
@@ -385,11 +495,11 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Section 6 — Features */}
+          {/* Section 8 — Features */}
           <section className="py-24 px-6 bg-[#f9fafb]">
             <div className="max-w-5xl mx-auto">
               <h2
-                ref={(el) => { sectionRefs.current[10] = el; }}
+                ref={(el) => { sectionRefs.current[11] = el; }}
                 className="section-anim text-4xl font-extrabold text-center mb-16"
                 style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
               >
@@ -403,7 +513,7 @@ export default function Home() {
                 ].map((f, i) => (
                   <div
                     key={f.title}
-                    ref={(el) => { sectionRefs.current[11 + i] = el; }}
+                    ref={(el) => { sectionRefs.current[12 + i] = el; }}
                     className="section-anim bg-white rounded-2xl p-8 border"
                     style={{ borderColor: BORDER }}
                   >
@@ -416,7 +526,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Section 7 — Download CTA */}
+          {/* Section 9 — Download CTA */}
           <section id="download" className="py-24 px-6 bg-[#0a0a0a] text-white">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-4xl md:text-[56px] font-extrabold leading-tight mb-6" style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}>
@@ -439,7 +549,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* Section 8 — Footer */}
+          {/* Section 10 — Footer */}
           <footer
             className="flex flex-wrap items-center justify-between px-6 md:px-12 h-24 border-t bg-white"
             style={{ borderColor: BORDER }}
