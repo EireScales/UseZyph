@@ -202,16 +202,15 @@ export async function POST(req: Request) {
     console.log("✅ Observation saved for user:", effectiveUserId);
 
     // --- Save insights ---
-    for (const insight of insights.slice(0, 5)) {
+    for (const insight of insights.slice(0, 3)) {
       if (!insight || typeof insight !== "string") continue;
       const { error: insightError } = await supabase
         .from("user_profile_insights")
         .insert({
           user_id: effectiveUserId,
-          content: insight,
-          category,
-          type: category,
-          confidence: 0.8,
+          insight_type: category,
+          insight_value: insight,
+          confidence_score: 0.8,
           updated_at: new Date().toISOString(),
         });
       if (insightError) {
@@ -224,10 +223,9 @@ export async function POST(req: Request) {
         .from("user_profile_insights")
         .insert({
           user_id: effectiveUserId,
-          content: summary,
-          category,
-          type: category,
-          confidence: 0.7,
+          insight_type: category,
+          insight_value: summary,
+          confidence_score: 0.7,
           updated_at: new Date().toISOString(),
         });
       if (fallbackError) {
