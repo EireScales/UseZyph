@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Home", icon: "LayoutDashboard" },
@@ -46,6 +46,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createSupabaseBrowserClient();
   const pathname = usePathname();
   const router = useRouter();
   const [userEmail, setUserEmail] = useState<string | null>(null);

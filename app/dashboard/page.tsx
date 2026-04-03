@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { createBrowserClient } from "@supabase/ssr";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { UpgradeModal } from "@/components/UpgradeModal";
 import {
   defaultSubscription,
@@ -64,13 +63,9 @@ function useCountUp(end: number, duration = 1200, enabled = true) {
 }
 
 function DashboardContent() {
-  console.log("env check:", process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 20));
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabaseClient = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = createSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile>(null);
   const [observations, setObservations] = useState<Observation[]>([]);
@@ -98,7 +93,7 @@ function DashboardContent() {
       const {
         data: { user },
         error: sessionError,
-      } = await supabaseClient.auth.getUser();
+      } = await supabase.auth.getUser();
       if (sessionError || !user) {
         router.replace("/auth");
         return;
@@ -108,28 +103,28 @@ function DashboardContent() {
         const dayStart = startOfUtcDayIso();
         const [profileRes, observationsRes, insightsRes, countRes, todayCountRes] =
           await Promise.all([
-            supabaseClient
+            supabase
               .from("profiles")
               .select("id, name, subscription")
               .eq("id", user.id)
               .single(),
-            supabaseClient
+            supabase
               .from("observations")
               .select("id, created_at, app_name, description, type")
               .eq("user_id", user.id)
               .order("created_at", { ascending: false })
               .limit(10),
-            supabaseClient
+            supabase
               .from("user_profile_insights")
               .select("id, insight_value, insight_type, confidence_score, updated_at")
               .eq("user_id", user.id)
               .order("updated_at", { ascending: false })
               .limit(5),
-            supabaseClient
+            supabase
               .from("observations")
               .select("id", { count: "exact", head: true })
               .eq("user_id", user.id),
-            supabaseClient
+            supabase
               .from("observations")
               .select("id", { count: "exact", head: true })
               .eq("user_id", user.id)
@@ -144,7 +139,6 @@ function DashboardContent() {
           };
           setProfile({ id: raw.id, name: raw.name });
           setSubscription(parseSubscriptionRow(raw.subscription));
-          console.log("subscription raw:", raw.subscription, "parsed:", parseSubscriptionRow(raw.subscription));
         }
         if (todayCountRes.count != null) setCapturesToday(todayCountRes.count);
         if (observationsRes.data)
@@ -153,7 +147,7 @@ function DashboardContent() {
           setProfileInsights((insightsRes.data as ProfileInsight[]) || []);
         if (countRes.count != null) setTotalObservations(countRes.count);
 
-        const daysRes = await supabaseClient
+        const daysRes = await supabase
           .from("observations")
           .select("created_at")
           .eq("user_id", user.id)
@@ -167,7 +161,7 @@ function DashboardContent() {
           setDaysActive(dates.size);
         }
 
-        const insightsCountRes = await supabaseClient
+        const insightsCountRes = await supabase
           .from("user_profile_insights")
           .select("id", { count: "exact", head: true })
           .eq("user_id", user.id);

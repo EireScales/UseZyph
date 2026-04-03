@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 type ProfileRow = { id: string; display_name: string | null } | null;
 type ObservationRow = {
@@ -30,6 +30,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileRow>(null);
   const [observations, setObservations] = useState<ObservationRow[]>([]);

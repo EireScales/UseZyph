@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { isFreeTier, parseSubscriptionRow } from "@/lib/subscription-shared";
 
 const SUGGESTIONS = [
@@ -15,6 +15,7 @@ type Message = { role: "user" | "assistant"; content: string };
 
 export default function ChatPage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [userId, setUserId] = useState<string | null>(null);
   const [insightsLoaded, setInsightsLoaded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 const STEPS = 3;
 const USE_OPTIONS = ["Work", "Creative", "Learning", "Communication"];
@@ -21,6 +21,7 @@ const glassInput = {
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [primaryUses, setPrimaryUses] = useState<string[]>([]);

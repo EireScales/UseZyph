@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 import {
   parseSubscriptionRow,
   type SubscriptionRow,
@@ -40,6 +40,7 @@ const inputClass =
 
 export default function SettingsPage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<Toast>(null);

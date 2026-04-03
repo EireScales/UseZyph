@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 const glassCard = {
   background: "rgba(255,255,255,0.04)",
@@ -27,6 +27,7 @@ const GoogleIcon = () => (
 
 export default function AuthPage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

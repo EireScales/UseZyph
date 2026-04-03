@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
 
 type InsightRow = {
   id: string;
@@ -21,6 +21,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function InsightsPage() {
   const router = useRouter();
+  const supabase = createSupabaseBrowserClient();
   const [loading, setLoading] = useState(true);
   const [insights, setInsights] = useState<InsightRow[]>([]);
   const [totalCount, setTotalCount] = useState(0);
