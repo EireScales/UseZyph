@@ -18,10 +18,10 @@ import {
 type Profile = { id: string; name: string | null } | null;
 type Observation = {
   id: string;
-  created_at: string;
+  captured_at: string;
   app_name?: string | null;
-  description?: string | null;
-  type?: string | null;
+  summary?: string | null;
+  category?: string | null;
 } | Record<string, unknown>;
 type ProfileInsight = {
   id: string;
@@ -110,9 +110,9 @@ function DashboardContent() {
               .single(),
             supabase
               .from("observations")
-              .select("id, created_at, app_name, description, type")
+              .select("id, captured_at, app_name, summary, category")
               .eq("user_id", user.id)
-              .order("created_at", { ascending: false })
+              .order("captured_at", { ascending: false })
               .limit(10),
             supabase
               .from("user_profile_insights")
@@ -149,13 +149,13 @@ function DashboardContent() {
 
         const daysRes = await supabase
           .from("observations")
-          .select("created_at")
+          .select("captured_at")
           .eq("user_id", user.id)
           .limit(500);
         if (daysRes.data?.length) {
           const dates = new Set(
-            (daysRes.data as { created_at: string }[]).map((o) =>
-              o.created_at.slice(0, 10)
+            (daysRes.data as { captured_at: string }[]).map((o) =>
+              o.captured_at.slice(0, 10)
             )
           );
           setDaysActive(dates.size);
@@ -181,9 +181,9 @@ function DashboardContent() {
           if (top) setTopApp(top[0]);
         }
 
-        const latestObs = observationsRes.data?.[0] as { created_at?: string } | undefined;
-        if (latestObs?.created_at) {
-          const last = new Date(latestObs.created_at);
+        const latestObs = observationsRes.data?.[0] as { captured_at?: string } | undefined;
+        if (latestObs?.captured_at) {
+          const last = new Date(latestObs.captured_at);
           const today = new Date();
           today.setHours(0, 0, 0, 0);
           last.setHours(0, 0, 0, 0);
@@ -465,10 +465,10 @@ function DashboardContent() {
                   {observations.map((obs) => {
                     const o = obs as {
                       id: string;
-                      created_at: string;
+                      captured_at: string;
                       app_name?: string;
-                      description?: string;
-                      type?: string;
+                      summary?: string;
+                      category?: string;
                     };
                     return (
                       <li
@@ -489,10 +489,10 @@ function DashboardContent() {
                             {o.app_name && (
                               <span className="font-medium">{o.app_name}</span>
                             )}
-                            {o.description && (
+                            {o.summary && (
                               <span className="text-[#666]">
                                 {" "}
-                                — {o.description}
+                                — {o.summary}
                               </span>
                             )}
                           </p>
@@ -500,7 +500,7 @@ function DashboardContent() {
                             className="text-[#666] text-xs mt-0.5"
                             style={{ fontFamily: "var(--font-mono)" }}
                           >
-                            {new Date(o.created_at).toLocaleString()}
+                            {new Date(o.captured_at).toLocaleString()}
                           </p>
                         </div>
                       </li>
