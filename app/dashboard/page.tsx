@@ -131,6 +131,9 @@ function DashboardContent() {
               .gte("captured_at", dayStart),
           ]);
 
+        console.log("[dashboard] profileRes:", JSON.stringify(profileRes));
+        console.log("[dashboard] profileRes.error:", profileRes.error);
+
         if (profileRes.data) {
           const raw = profileRes.data as {
             id: string;
