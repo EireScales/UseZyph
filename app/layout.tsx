@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+export const revalidate = 0;
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.usezyph.com"),
   title: "Zyph",
   description: "Zyph app",
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
     ],
-    apple: [{ url: "/apple-touch-icon.png" }],
+    apple: "/apple-touch-icon.png",
   },
 };
 

@@ -150,6 +150,23 @@ export default function DashboardLayout({
           className="p-4 border-t border-[#1a1a1a] space-y-2"
           style={{ borderTop: "1px solid #1a1a1a" }}
         >
+          <Link
+            href="/"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#555] hover:text-[#f0f0f0] hover:bg-[#141414] transition-colors duration-200 w-full"
+          >
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to home
+          </Link>
           {userEmail && (
             <p className="text-xs text-[#666] truncate px-2" title={userEmail}>
               {userEmail}
