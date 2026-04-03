@@ -142,6 +142,7 @@ export default function PricingPage() {
       if (res.status === 401) { router.push("/auth?next=/pricing"); return; }
       if (!res.ok) { setPromoError(data.error ?? "Invalid code"); return; }
       setPromoSuccess(true);
+      router.refresh();
     } catch {
       setPromoError("Network error. Try again.");
     } finally {
@@ -664,7 +665,17 @@ export default function PricingPage() {
             {promoSuccess ? (
               <div className="rounded-xl px-6 py-4 text-center" style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)" }}>
                 <p className="text-sm font-semibold text-green-400">Code applied! You now have Mirror access.</p>
-                <a href="/dashboard" className="text-xs mt-1 block" style={{ color: "#a78bfa" }}>Go to dashboard →</a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    router.refresh();
+                    window.location.href = "/dashboard";
+                  }}
+                  className="text-xs mt-1 block w-full text-center"
+                  style={{ color: "#a78bfa" }}
+                >
+                  Go to dashboard →
+                </button>
               </div>
             ) : (
               <div className="flex gap-2 w-full max-w-sm">
