@@ -105,7 +105,7 @@ function DashboardContent() {
           await Promise.all([
             supabase
               .from("profiles")
-              .select("id, name, subscription")
+              .select("id, display_name, subscription")
               .eq("id", user.id)
               .single(),
             supabase
@@ -131,16 +131,9 @@ function DashboardContent() {
               .gte("captured_at", dayStart),
           ]);
 
-        console.log("[dashboard] profileRes:", JSON.stringify(profileRes));
-        console.log("[dashboard] profileRes.error:", profileRes.error);
-
         if (profileRes.data) {
-          const raw = profileRes.data as {
-            id: string;
-            name: string | null;
-            subscription?: unknown;
-          };
-          setProfile({ id: raw.id, name: raw.name });
+          const raw = profileRes.data as { id: string; display_name: string | null; subscription?: unknown };
+          setProfile({ id: raw.id, name: raw.display_name });
           setSubscription(parseSubscriptionRow(raw.subscription));
         }
         if (todayCountRes.count != null) setCapturesToday(todayCountRes.count);
