@@ -115,7 +115,7 @@ export default function Home() {
               NOW IN BETA ✦
             </p>
             <h1
-              className="hero-anim text-5xl md:text-[80px] font-extrabold leading-[1.05] tracking-tight text-center max-w-4xl mb-8"
+              className="hero-anim text-4xl md:text-[80px] font-extrabold leading-[1.05] tracking-tight text-center max-w-4xl mb-8"
               style={{ fontFamily: "'DM Sans', system-ui, sans-serif", animationDelay: "0.2s" }}
             >
               Your AI that
@@ -133,17 +133,17 @@ export default function Home() {
             >
               Zyph watches how you work and builds a personal AI profile — so every conversation starts where you left off.
             </p>
-            <div className="hero-anim flex flex-wrap items-center justify-center gap-4 mb-6" style={{ animationDelay: "0.45s" }}>
+            <div className="hero-anim flex flex-col sm:flex-row items-center justify-center gap-4 mb-6" style={{ animationDelay: "0.45s" }}>
               <Link
                 href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
-                className="btn-primary px-8 py-3 rounded-full font-semibold text-white"
+                className="btn-primary px-8 py-3 rounded-full font-semibold text-white w-full sm:w-auto text-center"
                 style={{ background: PURPLE }}
               >
                 Download Desktop App
               </Link>
               <Link
                 href="/auth"
-                className="btn-secondary px-8 py-3 rounded-full font-semibold bg-white border-2"
+                className="btn-secondary px-8 py-3 rounded-full font-semibold bg-white border-2 w-full sm:w-auto text-center"
                 style={{ borderColor: BLACK, color: BLACK }}
               >
                 Sign in free
@@ -154,45 +154,47 @@ export default function Home() {
             </p>
 
             {/* Chat UI mockup */}
-            <div
-              className="hero-anim mt-16 w-full max-w-4xl mx-auto rounded-2xl shadow-2xl overflow-hidden border"
-              style={{ borderColor: BORDER, animationDelay: "0.65s", transform: "scale(0.75)", transformOrigin: "top center" }}
-            >
-              <div className="bg-[#f3f4f6] px-4 py-3 flex items-center gap-2 border-b" style={{ borderColor: BORDER }}>
-                <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
-                <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
-                <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
-              </div>
-              <div className="flex min-h-[380px]" style={{ background: BLACK }}>
-                <aside className="w-48 shrink-0 py-6 px-4 border-r" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-                  <p className="text-white font-bold text-sm mb-8">Zyph</p>
-                  <nav className="space-y-1 text-sm text-white/70">
-                    <div className="py-2 px-3 rounded-lg text-white/90">Home</div>
-                    <div className="py-2 px-3">My Profile</div>
-                    <div className="py-2 px-3">Insights</div>
-                    <div className="py-2 px-3 rounded-lg bg-white/10 text-white">Chat</div>
-                    <div className="py-2 px-3">Settings</div>
-                  </nav>
-                </aside>
-                <div className="flex-1 flex flex-col p-6">
-                  <p className="text-white/50 text-sm text-center mt-16 mb-6">
-                    Ask anything. Zyph uses your profile to respond.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2 mb-8">
-                    {["Help me write an email", "What have you learned about me?", "Summarise my week"].map((s) => (
-                      <span
-                        key={s}
-                        className="px-4 py-2 rounded-full text-sm text-white/80 border border-white/10"
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-auto flex gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-                    <span className="flex-1 text-sm text-white/40">Message Zyph...</span>
-                    <button type="button" className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: PURPLE }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-                    </button>
+            <div className="hidden md:block">
+              <div
+                className="hero-anim mt-16 w-full max-w-4xl mx-auto rounded-2xl shadow-2xl overflow-hidden border"
+                style={{ borderColor: BORDER, animationDelay: "0.65s", transform: "scale(0.75)", transformOrigin: "top center" }}
+              >
+                <div className="bg-[#f3f4f6] px-4 py-3 flex items-center gap-2 border-b" style={{ borderColor: BORDER }}>
+                  <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
+                  <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
+                  <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
+                </div>
+                <div className="flex min-h-[380px]" style={{ background: BLACK }}>
+                  <aside className="w-48 shrink-0 py-6 px-4 border-r" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                    <p className="text-white font-bold text-sm mb-8">Zyph</p>
+                    <nav className="space-y-1 text-sm text-white/70">
+                      <div className="py-2 px-3 rounded-lg text-white/90">Home</div>
+                      <div className="py-2 px-3">My Profile</div>
+                      <div className="py-2 px-3">Insights</div>
+                      <div className="py-2 px-3 rounded-lg bg-white/10 text-white">Chat</div>
+                      <div className="py-2 px-3">Settings</div>
+                    </nav>
+                  </aside>
+                  <div className="flex-1 flex flex-col p-6">
+                    <p className="text-white/50 text-sm text-center mt-16 mb-6">
+                      Ask anything. Zyph uses your profile to respond.
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 mb-8">
+                      {["Help me write an email", "What have you learned about me?", "Summarise my week"].map((s) => (
+                        <span
+                          key={s}
+                          className="px-4 py-2 rounded-full text-sm text-white/80 border border-white/10"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-auto flex gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
+                      <span className="flex-1 text-sm text-white/40">Message Zyph...</span>
+                      <button type="button" className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: PURPLE }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -406,7 +408,7 @@ export default function Home() {
           </section>
 
           {/* Section 6 — See it in action */}
-          <section className="py-24 px-6 bg-[#0a0a0a]">
+          <section className="py-16 md:py-24 px-6 bg-[#0a0a0a]">
             <div className="max-w-5xl mx-auto text-center">
               <h2
                 ref={(el) => { sectionRefs.current[7] = el; }}
@@ -421,7 +423,7 @@ export default function Home() {
 
               <div
                 ref={(el) => { sectionRefs.current[8] = el; }}
-                className="section-anim mt-12 w-full max-w-[900px] mx-auto rounded-2xl overflow-hidden border border-white/10"
+                className="section-anim mt-12 w-full max-w-[900px] mx-auto rounded-2xl overflow-hidden border border-white/10 min-h-0"
                 style={{ aspectRatio: "16 / 9" }}
               >
                 <iframe
@@ -456,7 +458,10 @@ export default function Home() {
                 <div className="bg-[#f3f4f6] px-4 py-3 flex items-center gap-2 border-b" style={{ borderColor: BORDER }}>
                   <span className="w-3 h-3 rounded-full bg-[#e5e7eb]" /><span className="w-3 h-3 rounded-full bg-[#e5e7eb]" /><span className="w-3 h-3 rounded-full bg-[#e5e7eb]" />
                 </div>
-                <div className="flex min-h-[420px]" style={{ background: BLACK }}>
+                <div className="md:hidden p-8 text-center" style={{ background: BLACK }}>
+                  <p className="text-white/50 text-sm">Your personal AI dashboard</p>
+                </div>
+                <div className="hidden md:flex min-h-[420px]" style={{ background: BLACK }}>
                   <aside className="w-48 shrink-0 py-6 px-4 border-r" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
                     <p className="text-white font-bold text-sm mb-8">Zyph</p>
                     <nav className="space-y-1 text-sm text-white/70">
