@@ -279,6 +279,14 @@ function DashboardContent() {
     >
 
       <div className="max-w-6xl mx-auto">
+        <div
+          className="mb-6 flex items-center justify-center gap-2 rounded-xl border border-amber-600/40 bg-amber-950/25 px-4 py-3"
+          role="status"
+        >
+          <span className="text-sm text-amber-100/90 text-center">
+            ⚠️ Chat is temporarily unavailable until <span className="font-semibold text-white">9th April at 13:00</span>. All other features work as normal.
+          </span>
+        </div>
         <header className="flex flex-wrap items-start justify-between gap-4 mb-8">
           <h1
             className="text-[32px] font-semibold text-[#f0f0f0]"
