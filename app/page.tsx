@@ -135,7 +135,7 @@ export default function Home() {
             </p>
             <div className="hero-anim flex flex-wrap items-center justify-center gap-4 mb-6" style={{ animationDelay: "0.45s" }}>
               <Link
-                href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph%20Setup%201.0.0.exe"
+                href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
                 className="btn-primary px-8 py-3 rounded-full font-semibold text-white"
                 style={{ background: PURPLE }}
               >
@@ -536,7 +536,7 @@ export default function Home() {
                 Download the desktop app and let Zyph start learning. Free to start.
               </p>
               <Link
-                href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph%20Setup%201.0.0.exe"
+                href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
                 className="btn-primary inline-block px-10 py-4 rounded-full font-semibold text-[#0a0a0a] bg-white hover:opacity-95 transition-opacity"
               >
                 Download Desktop App
