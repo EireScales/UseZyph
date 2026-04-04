@@ -546,6 +546,9 @@ export default function Home() {
               >
                 Download Desktop App
               </Link>
+              <p className="mt-4 text-sm text-white/30 max-w-sm mx-auto">
+                Windows may show a security warning on first install — click <span className="text-white/50">&quot;More info&quot; → &quot;Run anyway&quot;</span> to proceed. This is normal for new apps.
+              </p>
               <p className="mt-6">
                 <Link href="/auth" className="text-sm font-medium hover:underline" style={{ color: PURPLE }}>
                   Also available on web →
