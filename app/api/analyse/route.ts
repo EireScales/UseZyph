@@ -207,35 +207,74 @@ export async function POST(req: Request) {
 
     console.log("✅ Observation saved for user:", effectiveUserId);
 
-    // --- Save insights ---
-    for (const insight of insights.slice(0, 3)) {
-      if (!insight || typeof insight !== "string") continue;
-      const { error: insightError } = await supabase
-        .from("user_profile_insights")
-        .insert({
-          user_id: effectiveUserId,
-          insight_type: category,
-          insight_value: insight,
-          confidence_score: 0.8,
-          updated_at: new Date().toISOString(),
-        });
-      if (insightError) {
-        console.error("❌ insight insert error:", JSON.stringify(insightError));
-      }
-    }
+    // --- Save insights (with dedup and cap) ---
+    // Check how many insights this user already has
+    const { count: existingCount } = await supabase
+      .from("user_profile_insights")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", effectiveUserId);
 
-    if (summary && insights.length === 0) {
-      const { error: fallbackError } = await supabase
+    const INSIGHT_CAP = 200;
+
+    if ((existingCount ?? 0) < INSIGHT_CAP) {
+      // Fetch recent insight values to avoid saving duplicates
+      const { data: recentInsights } = await supabase
         .from("user_profile_insights")
-        .insert({
-          user_id: effectiveUserId,
-          insight_type: category,
-          insight_value: summary,
-          confidence_score: 0.7,
-          updated_at: new Date().toISOString(),
-        });
-      if (fallbackError) {
-        console.error("❌ fallback insight insert error:", JSON.stringify(fallbackError));
+        .select("insight_value")
+        .eq("user_id", effectiveUserId)
+        .order("updated_at", { ascending: false })
+        .limit(50);
+
+      const recentValues = new Set<string>(
+        (recentInsights ?? [])
+          .map((i: { insight_value: string | null }) =>
+            i.insight_value?.toLowerCase().trim()
+          )
+          .filter((v: string | undefined): v is string => Boolean(v))
+      );
+
+      const insightsToSave = insights
+        .slice(0, 3)
+        .filter(
+          (insight) =>
+            insight &&
+            typeof insight === "string" &&
+            !recentValues.has(insight.toLowerCase().trim())
+        );
+
+      for (const insight of insightsToSave) {
+        const { error: insightError } = await supabase
+          .from("user_profile_insights")
+          .insert({
+            user_id: effectiveUserId,
+            insight_type: category,
+            insight_value: insight,
+            confidence_score: 0.8,
+            updated_at: new Date().toISOString(),
+          });
+        if (insightError) {
+          console.error("❌ insight insert error:", JSON.stringify(insightError));
+        }
+      }
+
+      // Fallback: save summary as insight if no insights were generated
+      if (
+        summary &&
+        insights.length === 0 &&
+        !recentValues.has(summary.toLowerCase().trim())
+      ) {
+        const { error: fallbackError } = await supabase
+          .from("user_profile_insights")
+          .insert({
+            user_id: effectiveUserId,
+            insight_type: category,
+            insight_value: summary,
+            confidence_score: 0.7,
+            updated_at: new Date().toISOString(),
+          });
+        if (fallbackError) {
+          console.error("❌ fallback insight insert error:", JSON.stringify(fallbackError));
+        }
       }
     }
 
