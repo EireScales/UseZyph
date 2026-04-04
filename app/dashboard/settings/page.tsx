@@ -19,20 +19,6 @@ type ProfileRow = {
   } | null;
 };
 
-const FREQUENCY_OPTIONS = [
-  { value: "realtime", label: "Real-time" },
-  { value: "every_5m", label: "Every 5 minutes" },
-  { value: "every_15m", label: "Every 15 minutes" },
-  { value: "every_hour", label: "Every hour" },
-];
-
-const CAPTURE_CATEGORIES = [
-  { id: "apps", label: "Applications" },
-  { id: "text", label: "Text & clipboard" },
-  { id: "browsing", label: "Browsing" },
-  { id: "meetings", label: "Meetings & calendar" },
-];
-
 type Toast = { type: "success" | "error"; message: string } | null;
 
 const inputClass =
@@ -47,9 +33,6 @@ export default function SettingsPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [frequency, setFrequency] = useState("every_5m");
-  const [idleEnabled, setIdleEnabled] = useState(true);
-  const [categories, setCategories] = useState<string[]>(["apps", "text"]);
   const [dataRetentionDays, setDataRetentionDays] = useState(90);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -84,13 +67,8 @@ export default function SettingsPage() {
           setSubscription(parseSubscriptionRow(row.subscription));
           setDisplayName(row.display_name ?? "");
           const s = row.settings;
-          if (s) {
-            if (s.capture_frequency) setFrequency(s.capture_frequency);
-            if (typeof s.idle_enabled === "boolean") setIdleEnabled(s.idle_enabled);
-            if (Array.isArray(s.categories)) setCategories(s.categories);
-            if (typeof s.data_retention_days === "number")
-              setDataRetentionDays(s.data_retention_days);
-          }
+          if (s && typeof s.data_retention_days === "number")
+            setDataRetentionDays(s.data_retention_days);
         }
       } catch (err) {
         console.error("Save error:", err);
@@ -107,20 +85,24 @@ export default function SettingsPage() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  const toggleCategory = (id: string) => {
-    setCategories((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
-  };
-
   const handleSave = async () => {
     if (!userId) return;
     setSaving(true);
     try {
+      const { data: row, error: fetchErr } = await supabase
+        .from("profiles")
+        .select("settings")
+        .eq("id", userId)
+        .single();
+      if (fetchErr) throw fetchErr;
+      const prev =
+        row?.settings &&
+        typeof row.settings === "object" &&
+        !Array.isArray(row.settings)
+          ? (row.settings as Record<string, unknown>)
+          : {};
       const settings = {
-        capture_frequency: frequency,
-        idle_enabled: idleEnabled,
-        categories,
+        ...prev,
         data_retention_days: dataRetentionDays,
       };
       const { error } = await supabase
@@ -267,20 +249,30 @@ export default function SettingsPage() {
               <div>
                 <p className="text-[#f0f0f0] font-medium">Billing</p>
                 <p className="text-[#666] text-sm mt-0.5">
-                  {subscription?.stripe_customer_id
-                    ? "Manage your plan, payment method, and invoices in Stripe."
-                    : "Subscribe to Pro to unlock unlimited captures and full history."}
+                  {!subscription?.status || subscription.status === "free"
+                    ? "Subscribe to Pro or Mirror to unlock higher limits and full history."
+                    : subscription.stripe_customer_id
+                      ? "Manage your plan, payment method, and invoices in Stripe."
+                      : "Your plan is active."}
                 </p>
               </div>
-              {subscription?.stripe_customer_id ? (
-                <button
-                  type="button"
-                  onClick={handleManageSubscription}
-                  disabled={portalLoading}
-                  className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#7c3aed] hover:opacity-90 disabled:opacity-50 transition-opacity duration-200"
-                >
-                  {portalLoading ? "Opening…" : "Manage subscription"}
-                </button>
+              {subscription?.status && subscription.status !== "free" ? (
+                subscription.stripe_customer_id ? (
+                  <button
+                    type="button"
+                    onClick={handleManageSubscription}
+                    disabled={portalLoading}
+                    className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#7c3aed] hover:opacity-90 disabled:opacity-50 transition-opacity duration-200"
+                  >
+                    {portalLoading ? "Opening…" : "Manage subscription"}
+                  </button>
+                ) : (
+                  <div className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#22c55e] border border-[#22c55e]/30 bg-[#22c55e]/10 inline-block">
+                    {subscription.status === "mirror"
+                      ? "Mirror plan — active"
+                      : "Pro plan — active"}
+                  </div>
+                )
               ) : (
                 <a
                   href="/pricing"
@@ -293,74 +285,17 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        {/* Capture Preferences */}
+        {/* Desktop App */}
         <section className="mb-10">
           <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
-            Capture Preferences
+            Desktop App
           </h2>
           <div className="h-px bg-[#1a1a1a] mb-6" />
-          <div className="space-y-6">
-            <div>
-              <label className="block text-xs text-[#666] mb-1.5">
-                Frequency
-              </label>
-              <select
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value)}
-                className={inputClass}
-                style={{ appearance: "auto" }}
-              >
-                {FREQUENCY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <p className="text-[#f0f0f0] font-medium">Capture when idle</p>
-                <p className="text-[#666] text-sm mt-0.5">
-                  Continue learning when you&apos;re away from the keyboard
-                </p>
-              </div>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={idleEnabled}
-                onClick={() => setIdleEnabled((v) => !v)}
-                className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
-                  idleEnabled ? "bg-[#7c3aed]" : "bg-[#1a1a1a]"
-                }`}
-              >
-                <span
-                  className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-200 ${
-                    idleEnabled ? "left-6" : "left-1"
-                  }`}
-                />
-              </button>
-            </div>
-            <div>
-              <label className="block text-xs text-[#666] mb-2">
-                Categories to capture
-              </label>
-              <div className="space-y-1">
-                {CAPTURE_CATEGORIES.map((cat) => (
-                  <label
-                    key={cat.id}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer hover:bg-[#141414] transition-colors duration-200"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={categories.includes(cat.id)}
-                      onChange={() => toggleCategory(cat.id)}
-                      className="w-4 h-4 rounded border-[#1e1e1e] bg-[#111] text-[#7c3aed] focus:ring-[#7c3aed] focus:ring-offset-0 focus:ring-offset-transparent"
-                    />
-                    <span className="text-[#f0f0f0] text-sm">{cat.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+          <div className="rounded-xl border border-[#1e1e1e] bg-[#111] px-4 py-4">
+            <p className="text-[#f0f0f0] font-medium mb-1">Capture settings</p>
+            <p className="text-[#666] text-sm">
+              Zyph captures every 30 seconds automatically. Pause or resume capturing from the desktop app tray icon.
+            </p>
           </div>
         </section>
 
@@ -388,6 +323,30 @@ export default function SettingsPage() {
             <div className="flex flex-wrap gap-3">
               <button
                 type="button"
+                onClick={async () => {
+                  if (!userId) return;
+                  const { data: obs } = await supabase
+                    .from("observations")
+                    .select("captured_at, app_name, summary, category")
+                    .eq("user_id", userId)
+                    .order("captured_at", { ascending: false });
+                  const { data: ins } = await supabase
+                    .from("user_profile_insights")
+                    .select(
+                      "insight_type, insight_value, confidence_score, updated_at"
+                    )
+                    .eq("user_id", userId);
+                  const blob = new Blob(
+                    [JSON.stringify({ observations: obs, insights: ins }, null, 2)],
+                    { type: "application/json" }
+                  );
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "zyph-data-export.json";
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-[#f0f0f0] border border-[#1e1e1e] hover:bg-[#141414] transition-colors duration-200"
               >
                 Export my data
