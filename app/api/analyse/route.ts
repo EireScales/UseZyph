@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import {
-  isFreeTier,
   parseSubscriptionRow,
   startOfUtcDayIso,
 } from "@/lib/subscription-shared";
@@ -89,7 +88,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Could not resolve user id" }, { status: 401 });
     }
 
-    // --- Free tier: daily capture limit (before Claude to save cost) ---
+    // --- Tier-aware daily capture limit ---
     const { data: profileForLimit } = await supabase
       .from("profiles")
       .select("subscription")
@@ -97,7 +96,14 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     const subRow = parseSubscriptionRow(profileForLimit?.subscription as Record<string, unknown> | null | undefined);
-    if (isFreeTier(subRow)) {
+
+    // Mirror = unlimited, Pro = 150/day, Free = 80/day
+    const dailyLimit =
+      subRow.status === "mirror" ? null :
+      subRow.status === "pro" ? 150 :
+      80;
+
+    if (dailyLimit !== null) {
       const dayStart = startOfUtcDayIso();
       const { count: todayCount, error: countError } = await supabase
         .from("observations")
@@ -107,7 +113,7 @@ export async function POST(req: Request) {
 
       if (countError) {
         console.error("Daily limit count error:", countError.message);
-      } else if ((todayCount ?? 0) >= 80) {
+      } else if ((todayCount ?? 0) >= dailyLimit) {
         return NextResponse.json(
           { error: "Daily limit reached", upgrade: true },
           { status: 429 }
