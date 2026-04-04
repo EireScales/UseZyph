@@ -35,6 +35,7 @@ export default function AuthPage() {
   const [oauthError, setOauthError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setOauthError(null);
@@ -65,21 +66,62 @@ export default function AuthPage() {
         });
         if (signInError) throw signInError;
         router.push("/dashboard");
+        router.refresh();
       } else {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         });
         if (signUpError) throw signUpError;
-        router.push("/onboarding");
+        setEmailSent(true);
       }
-      router.refresh();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+
+  if (emailSent) {
+    return (
+      <div
+        className="min-h-screen bg-[#000000] flex items-center justify-center px-4"
+        style={{
+          backgroundImage: `
+          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
+        `,
+          backgroundSize: "80px 80px",
+        }}
+      >
+        <div className="w-full max-w-md rounded-2xl p-8 shadow-2xl text-center" style={glassCard}>
+          <div
+            className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
+            style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.3)" }}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-3">Check your inbox</h2>
+          <p className="text-white/50 text-sm leading-relaxed mb-2">
+            We sent a confirmation link to
+          </p>
+          <p className="text-[#a78bfa] font-semibold text-sm mb-6">{email}</p>
+          <p className="text-white/30 text-xs leading-relaxed mb-8">
+            Click the link in the email to activate your account. Check your spam folder if you don&apos;t see it within a minute.
+          </p>
+          <button
+            type="button"
+            onClick={() => setEmailSent(false)}
+            className="text-sm text-white/40 hover:text-white/60 transition-colors"
+          >
+            ← Use a different email
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
