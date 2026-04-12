@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
 
-type InsightIn = {
-  insight_type?: string | null;
-  insight_value?: string | null;
-};
-
-function parseDnaJson(text: string): unknown {
+function parseDnaText(text: string): string {
   let t = text.trim();
   if (t.startsWith("```")) {
     t = t.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/s, "");
   }
-  return JSON.parse(t);
+  return t;
 }
 
 export async function POST(req: Request) {
@@ -25,37 +20,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = (await req.json()) as {
+      insights?: { insight_type?: string; insight_value?: string }[];
       topApp?: string;
       peakHour?: number;
       dominantCategory?: string;
       daysActive?: number;
-      insights?: InsightIn[];
     };
 
-    const topApp = typeof body.topApp === "string" ? body.topApp : "—";
+    const insights = Array.isArray(body.insights) ? body.insights : [];
+    const topApp = body.topApp ?? "—";
     const peakHour =
       typeof body.peakHour === "number" && Number.isFinite(body.peakHour)
-        ? Math.min(23, Math.max(0, Math.floor(body.peakHour)))
+        ? body.peakHour
         : 12;
-    const dominantCategory =
-      typeof body.dominantCategory === "string"
-        ? body.dominantCategory
-        : "Unknown";
+    const dominantCategory = body.dominantCategory ?? "Unknown";
     const daysActive =
       typeof body.daysActive === "number" && Number.isFinite(body.daysActive)
-        ? Math.max(0, Math.floor(body.daysActive))
+        ? body.daysActive
         : 0;
-    const insights = Array.isArray(body.insights) ? body.insights : [];
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey)
       return NextResponse.json({ error: "No API key" }, { status: 500 });
-
-    const insightLines = insights.map((i) => {
-      const t = i.insight_type ?? "general";
-      const v = i.insight_value ?? "";
-      return `${t}: ${v}`;
-    });
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -67,25 +53,18 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 512,
-        system: `You are Zyph's DNA analyser. Based on a user's behaviour data and insights, generate their work identity archetype.
-
-Respond with JSON only, no markdown:
-{
-  "archetype": "The [2-3 word title]",
-  "summary": "One punchy sentence describing this person's work identity (max 20 words)",
-  "traits": ["trait1", "trait2", "trait3"]
-}
-
-Archetype examples: "The Midnight Builder", "The Deep Focus Engineer", "The Creative Sprinter", "The Relentless Optimizer". Make it feel personal and accurate, not generic.`,
+        system: `You are Zyph's DNA analyser. Based on a user's behaviour data, generate their work identity archetype. Respond with JSON only, no markdown:
+{"archetype": "The [2-3 word title]", "summary": "One punchy sentence max 20 words", "traits": ["trait1", "trait2", "trait3"]}
+Examples: "The Midnight Builder", "The Deep Focus Engineer", "The Creative Sprinter". Make it personal and accurate.`,
         messages: [
           {
             role: "user",
-            content: `User data:
-- Top app: ${topApp}
-- Peak hour: ${peakHour}:00
-- Dominant category: ${dominantCategory}
-- Days active: ${daysActive}
-- Insights: ${insightLines.join(", ") || "(none yet)"}`,
+            content: `Top app: ${topApp}, Peak hour: ${peakHour}:00, Dominant category: ${dominantCategory}, Days active: ${daysActive}, Insights: ${insights
+              .map(
+                (i: { insight_type?: string; insight_value?: string }) =>
+                  `${i.insight_type ?? ""}: ${i.insight_value ?? ""}`
+              )
+              .join(", ")}`,
           },
         ],
       }),
@@ -101,30 +80,18 @@ Archetype examples: "The Midnight Builder", "The Deep Focus Engineer", "The Crea
     }
 
     const data = (await response.json()) as {
-      content?: { type: string; text?: string }[];
+      content?: { type?: string; text?: string }[];
     };
-    const text = data.content?.find((c) => c.type === "text")?.text ?? "{}";
+    const raw = data.content?.find((c) => c.type === "text")?.text ?? "{}";
+    const text = parseDnaText(typeof raw === "string" ? raw : "{}");
 
     let dna: unknown;
     try {
-      dna = parseDnaJson(text);
+      dna = JSON.parse(text);
     } catch (parseErr) {
       console.error("DNA JSON parse error:", parseErr, text);
       return NextResponse.json(
         { error: "Invalid response from model" },
-        { status: 502 }
-      );
-    }
-
-    if (
-      !dna ||
-      typeof dna !== "object" ||
-      !("archetype" in dna) ||
-      !("summary" in dna) ||
-      !("traits" in dna)
-    ) {
-      return NextResponse.json(
-        { error: "Invalid DNA payload" },
         { status: 502 }
       );
     }
