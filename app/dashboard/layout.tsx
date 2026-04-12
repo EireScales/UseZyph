@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   { href: "/dashboard/profile", label: "My Profile", icon: "User" },
   { href: "/dashboard/insights", label: "Insights", icon: "Sparkles" },
   { href: "/dashboard/chat", label: "Chat", icon: "MessageSquare" },
+  { href: "/dashboard/caught", label: "Caught in 4K", icon: "Camera" },
+  { href: "/dashboard/dna", label: "Zyph DNA", icon: "Dna" },
   { href: "/dashboard/settings", label: "Settings", icon: "Settings" },
 ];
 
@@ -35,6 +37,28 @@ function NavIcon({ name, className }: { name: string; className?: string }) {
     case "Settings":
       return (
         <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      );
+    case "Camera":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+      );
+    case "Dna":
+      return (
+        <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 15c6.667-6 13.333 0 20-6"/>
+          <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/>
+          <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/>
+          <path d="m17 6-2.5-2.5"/>
+          <path d="m14 8-1-1"/>
+          <path d="m7 18 2.5 2.5"/>
+          <path d="m3.5 14.5.5.5"/>
+          <path d="m20 9 .5.5"/>
+          <path d="m6.5 12.5 1 1"/>
+          <path d="M2 9c6.667 6 13.333 0 20 6"/>
+        </svg>
       );
     default:
       return null;
