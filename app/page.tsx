@@ -54,936 +54,876 @@ export default function Home() {
   return (
     <>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
         html { scroll-behavior: smooth; }
 
         @keyframes heroFadeUp {
-          from { opacity: 0; transform: translateY(24px); }
+          from { opacity: 0; transform: translateY(28px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes marquee {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50%      { transform: translateY(-8px); }
+        }
 
-        .hero-anim { opacity: 0; animation: heroFadeUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
-
+        .hero-anim {
+          opacity: 0;
+          animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
         .section-anim {
           opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 0.55s ease, transform 0.55s ease;
+          transform: translateY(22px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
         }
         .section-anim.section-visible { opacity: 1; transform: translateY(0); }
 
-        .btn-primary  { transition: opacity 0.18s ease, transform 0.18s ease; }
-        .btn-primary:hover  { opacity: 0.88; transform: scale(1.02); }
-        .btn-secondary { transition: background 0.18s ease, transform 0.18s ease; }
-        .btn-secondary:hover { background: rgba(255,255,255,0.06); transform: scale(1.02); }
+        .btn-dl {
+          display: inline-flex; align-items: center; gap: 8px;
+          transition: opacity 0.18s ease, transform 0.18s ease;
+        }
+        .btn-dl:hover { opacity: 0.85; transform: scale(1.025); }
 
-        .card-hover { transition: border-color 0.2s ease, transform 0.2s ease; }
-        .card-hover:hover { border-color: #333333 !important; transform: translateY(-2px); }
+        .btn-ghost {
+          transition: background 0.18s ease, transform 0.18s ease;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.07) !important; transform: scale(1.025); }
+
+        .nav-link {
+          transition: color 0.15s ease;
+        }
+        .nav-link:hover { color: #fafafa !important; }
+
+        .footer-link {
+          transition: color 0.15s ease;
+        }
+        .footer-link:hover { color: #fafafa !important; }
+
+        .stat-card {
+          transition: border-color 0.2s ease;
+        }
+        .stat-card:hover { border-color: rgba(99,102,241,0.25) !important; }
+
+        .feature-card {
+          transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .feature-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.12) !important; }
+
+        .mockup-float {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .instrument { font-family: 'Instrument Serif', Georgia, serif; }
+        .instrument-italic { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; }
       `}</style>
 
-      <div style={{ background: "var(--bg)", color: "var(--text-1)", minHeight: "100vh" }}>
+      {/* ── NAVBAR ── */}
+      <nav style={{
+        position: "sticky", top: 0, zIndex: 50,
+        height: 56,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 40px",
+        background: "rgba(4,4,4,0.85)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+      }}>
+        {/* Logo */}
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 5, textDecoration: "none", flexShrink: 0 }}>
+          <span style={{
+            fontFamily: "var(--font-sans), sans-serif",
+            fontWeight: 700, fontSize: 20, color: "#fff", letterSpacing: "-0.025em",
+          }}>
+            Zyph
+          </span>
+          <span style={{
+            width: 6, height: 6, borderRadius: "50%",
+            background: "#6366f1", display: "inline-block", marginBottom: 10,
+          }} />
+        </Link>
 
-        {/* ── NAVBAR ── */}
-        <nav style={{
-          position: "sticky", top: 0, zIndex: 50,
-          height: 56,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 40px",
-          background: "rgba(8,8,8,0.8)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--border)",
-        }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}>
-            <span style={{ fontFamily: "var(--font-sans), sans-serif", fontWeight: 700, fontSize: 18, color: "var(--text-1)", letterSpacing: "-0.02em" }}>
-              Zyph
-            </span>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--primary)", display: "inline-block", marginBottom: 8 }} />
+        {/* Center nav — hidden on mobile */}
+        <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+          <Link href="/pricing" className="nav-link" style={{ fontSize: 14, color: "#71717a", textDecoration: "none", fontWeight: 400 }}>
+            Pricing
           </Link>
+          <Link href="#features" className="nav-link" style={{ fontSize: 14, color: "#71717a", textDecoration: "none", fontWeight: 400 }}>
+            Features
+          </Link>
+          <Link href="/auth" className="nav-link" style={{ fontSize: 14, color: "#71717a", textDecoration: "none", fontWeight: 400 }}>
+            Sign in
+          </Link>
+        </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            <Link href="/auth" style={{ fontSize: 13, color: "var(--text-2)", textDecoration: "none", fontWeight: 500 }}>
-              Sign in
+        {/* Right CTAs */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <Link
+            href="/auth"
+            className="nav-link"
+            style={{ fontSize: 14, color: "#71717a", textDecoration: "none", fontWeight: 400, padding: "6px 4px" }}
+          >
+            Sign in
+          </Link>
+          <Link
+            href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
+            className="btn-dl"
+            style={{
+              padding: "8px 18px", borderRadius: 99,
+              background: "#6366f1", color: "#fff",
+              fontWeight: 600, fontSize: 13, letterSpacing: "-0.01em",
+              textDecoration: "none",
+            }}
+          >
+            Download
+          </Link>
+        </div>
+      </nav>
+
+      <main>
+
+        {/* ── HERO ── */}
+        <section style={{
+          minHeight: "100vh",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
+          paddingTop: 140, paddingBottom: 80, paddingLeft: 24, paddingRight: 24,
+          background: "#040404",
+          position: "relative", overflow: "hidden",
+        }}>
+          {/* Radial indigo glow */}
+          <div style={{
+            position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+            width: "80%", height: "60%",
+            background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(99,102,241,0.35) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }} />
+          {/* Grid overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: "repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 72px, rgba(255,255,255,0.03) 72px), repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 72px, rgba(255,255,255,0.03) 72px)",
+            pointerEvents: "none",
+          }} />
+
+          {/* Badge */}
+          <div className="hero-anim" style={{ animationDelay: "0.05s", position: "relative", marginBottom: 40 }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "6px 16px", borderRadius: 99,
+              border: "1px solid rgba(99,102,241,0.3)",
+              background: "rgba(99,102,241,0.08)",
+            }}>
+              <span style={{
+                fontSize: 12, fontWeight: 500, color: "#818cf8",
+                letterSpacing: "0.06em", textTransform: "uppercase",
+              }}>
+                Personal AI · Now in Beta
+              </span>
+            </div>
+          </div>
+
+          {/* H1 */}
+          <h1
+            className="hero-anim instrument-italic"
+            style={{
+              animationDelay: "0.15s",
+              fontSize: "clamp(52px, 8vw, 96px)",
+              color: "#fff",
+              lineHeight: 1.05,
+              letterSpacing: "-1px",
+              textAlign: "center",
+              maxWidth: 900,
+              marginBottom: 24,
+              position: "relative",
+            }}
+          >
+            The AI that was
+            <br />
+            already paying{" "}
+            <span style={{ color: "#6366f1" }}>attention.</span>
+          </h1>
+
+          {/* Subtext */}
+          <p
+            className="hero-anim"
+            style={{
+              animationDelay: "0.25s",
+              fontSize: 17, color: "#71717a",
+              maxWidth: 500, textAlign: "center",
+              lineHeight: 1.7, marginBottom: 40,
+              position: "relative",
+            }}
+          >
+            Zyph runs silently in the background, learns how you work, and builds a permanent intelligence profile. No setup. No prompts.
+          </p>
+
+          {/* CTAs */}
+          <div
+            className="hero-anim"
+            style={{
+              animationDelay: "0.35s",
+              display: "flex", flexWrap: "wrap", gap: 12,
+              justifyContent: "center", marginBottom: 20,
+              position: "relative",
+            }}
+          >
+            <Link
+              href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
+              className="btn-dl"
+              style={{
+                padding: "14px 28px", borderRadius: 99,
+                background: "#6366f1", color: "#fff",
+                fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em",
+                textDecoration: "none", whiteSpace: "nowrap",
+              }}
+            >
+              {/* Windows icon */}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0 }}>
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801" />
+              </svg>
+              Download for Windows
             </Link>
             <Link
               href="/auth"
-              className="btn-primary"
+              className="btn-ghost"
               style={{
-                fontSize: 13, fontWeight: 600, color: "#fff",
-                background: "var(--primary)",
-                padding: "7px 16px", borderRadius: 99,
-                textDecoration: "none", letterSpacing: "-0.01em",
+                padding: "14px 28px", borderRadius: 99,
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.12)",
+                color: "#fff",
+                fontWeight: 500, fontSize: 15,
+                textDecoration: "none", whiteSpace: "nowrap",
               }}
             >
-              Get started
+              Sign in free →
             </Link>
           </div>
-        </nav>
 
-        <main>
+          {/* Trust row */}
+          <div
+            className="hero-anim"
+            style={{
+              animationDelay: "0.45s",
+              display: "flex", flexWrap: "wrap", gap: 24,
+              justifyContent: "center", marginBottom: 80,
+              fontSize: 13, color: "#52525b",
+              position: "relative",
+            }}
+          >
+            <span>✦ Free to start</span>
+            <span>✦ No credit card</span>
+            <span>✦ Works in background</span>
+          </div>
 
-          {/* ── HERO ── */}
-          <section style={{
-            minHeight: "calc(100vh - 56px)",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            padding: "80px 24px 64px",
-            background: "var(--bg)",
-          }}>
-
-            {/* Beta pill */}
-            <div
-              className="hero-anim"
-              style={{
-                animationDelay: "0.05s",
-                display: "inline-flex", alignItems: "center", gap: 6,
-                padding: "5px 14px", borderRadius: 99,
-                border: "1px solid rgba(99,102,241,0.35)",
-                background: "rgba(99,102,241,0.07)",
-                marginBottom: 36,
-              }}
-            >
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--primary)" }} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--primary)", letterSpacing: "0.04em" }}>
-                NOW IN BETA
-              </span>
-            </div>
-
-            {/* H1 */}
-            <h1
-              className="hero-anim"
-              style={{
-                animationDelay: "0.15s",
-                fontFamily: "var(--font-sans), sans-serif",
-                fontWeight: 800,
-                fontSize: "clamp(48px, 7vw, 80px)",
-                lineHeight: 1.05,
-                letterSpacing: "-0.03em",
-                textAlign: "center",
-                maxWidth: 760,
-                marginBottom: 28,
-                color: "var(--text-1)",
-              }}
-            >
-              Your AI that
-              <br />
-              <span style={{ color: "var(--primary)" }}>actually knows you.</span>
-            </h1>
-
-            {/* Subheading */}
-            <p
-              className="hero-anim"
-              style={{
-                animationDelay: "0.25s",
-                fontSize: 18,
-                color: "var(--text-2)",
-                textAlign: "center",
-                maxWidth: 480,
-                lineHeight: 1.65,
-                marginBottom: 44,
-              }}
-            >
-              Zyph watches how you work and builds a personal AI profile — so every conversation starts where you left off.
-            </p>
-
-            {/* CTAs */}
-            <div
-              className="hero-anim"
-              style={{
-                animationDelay: "0.35s",
-                display: "flex", flexWrap: "wrap", gap: 12,
-                justifyContent: "center", marginBottom: 28,
-              }}
-            >
-              <Link
-                href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
-                className="btn-primary"
-                style={{
-                  padding: "14px 28px", borderRadius: 99,
-                  background: "var(--primary)", color: "#fff",
-                  fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em",
-                  textDecoration: "none", whiteSpace: "nowrap",
-                }}
-              >
-                Download for Windows
-              </Link>
-              <Link
-                href="/auth"
-                className="btn-secondary"
-                style={{
-                  padding: "14px 28px", borderRadius: 99,
-                  background: "transparent",
-                  border: "1px solid var(--border-hover)",
-                  color: "var(--text-1)",
-                  fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em",
-                  textDecoration: "none", whiteSpace: "nowrap",
-                }}
-              >
-                Sign in free
-              </Link>
-            </div>
-
-            {/* Trust pills */}
-            <div
-              className="hero-anim"
-              style={{
-                animationDelay: "0.45s",
-                display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center",
-                marginBottom: 72,
-              }}
-            >
-              {["Free to start", "No credit card", "Works in background"].map((t) => (
-                <span key={t} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--text-2)" }}>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <circle cx="7" cy="7" r="6.5" stroke="var(--border-hover)" />
-                    <path d="M4 7l2 2 4-4" stroke="var(--success)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  {t}
-                </span>
-              ))}
-            </div>
-
-            {/* Chat mockup */}
-            <div className="hero-anim" style={{ animationDelay: "0.55s", width: "100%", maxWidth: 820, display: "none" }} id="hero-mockup-desktop">
-            </div>
-            <div
-              className="hero-anim"
-              style={{
-                animationDelay: "0.55s",
-                width: "100%", maxWidth: 820,
-              }}
-            >
+          {/* Floating dashboard mockup */}
+          <div
+            className="hero-anim mockup-float"
+            style={{
+              animationDelay: "0.55s",
+              width: "100%", maxWidth: 900,
+              position: "relative",
+              boxShadow: "0 0 120px rgba(99,102,241,0.15)",
+              borderRadius: 20,
+            }}
+          >
+            <div style={{
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 20, overflow: "hidden",
+            }}>
+              {/* Browser chrome */}
               <div style={{
-                borderRadius: 16,
-                border: "1px solid var(--border)",
-                overflow: "hidden",
-                background: "var(--card)",
+                height: 40, background: "#0a0a0a",
+                display: "flex", alignItems: "center",
+                padding: "0 16px", gap: 8,
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
               }}>
-                {/* Window chrome */}
-                <div style={{
-                  padding: "10px 16px",
-                  borderBottom: "1px solid var(--border)",
-                  display: "flex", alignItems: "center", gap: 8,
-                  background: "var(--surface)",
-                }}>
-                  {["#3d3d3d", "#3d3d3d", "#3d3d3d"].map((c, i) => (
-                    <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-                  ))}
-                </div>
-
-                {/* App interior */}
-                <div style={{ display: "flex", minHeight: 340 }}>
-                  {/* Sidebar */}
-                  <aside style={{
-                    width: 168, flexShrink: 0,
-                    borderRight: "1px solid var(--border)",
-                    padding: "20px 12px",
-                  }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-1)", marginBottom: 24, paddingLeft: 8 }}>Zyph</p>
-                    <nav style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
-                      {["Home", "My Profile", "Insights", "Chat", "Settings"].map((item) => (
-                        <div
-                          key={item}
-                          style={{
-                            padding: "7px 10px", borderRadius: 8,
-                            color: item === "Chat" ? "var(--text-1)" : "var(--text-3)",
-                            background: item === "Chat" ? "rgba(99,102,241,0.1)" : "transparent",
-                          }}
-                        >
-                          {item}
-                        </div>
-                      ))}
-                    </nav>
-                  </aside>
-
-                  {/* Main chat area */}
-                  <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "24px 24px 16px" }}>
-                    <p style={{ fontSize: 13, color: "var(--text-3)", textAlign: "center", marginTop: 20, marginBottom: 20 }}>
-                      Ask anything. Zyph uses your profile to respond.
-                    </p>
-                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, marginBottom: 24 }}>
-                      {["Help me write an email", "What have you learned about me?", "Summarise my week"].map((s) => (
-                        <span
-                          key={s}
-                          style={{
-                            padding: "6px 14px", borderRadius: 99, fontSize: 12,
-                            color: "var(--text-2)", border: "1px solid var(--border)",
-                          }}
-                        >
-                          {s}
-                        </span>
-                      ))}
-                    </div>
-                    <div style={{ marginTop: "auto" }}>
-                      <div style={{
-                        display: "flex", alignItems: "center", gap: 8,
-                        padding: "10px 12px",
-                        borderRadius: 10,
-                        background: "var(--surface)",
-                        border: "1px solid var(--border)",
-                      }}>
-                        <span style={{ flex: 1, fontSize: 13, color: "var(--text-3)" }}>Message Zyph...</span>
-                        <button type="button" style={{
-                          width: 32, height: 32, borderRadius: 8, border: "none", cursor: "pointer",
-                          background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* ── MARQUEE ── */}
-          <section style={{
-            borderTop: "1px solid var(--border)",
-            borderBottom: "1px solid var(--border)",
-            padding: "18px 0",
-            overflow: "hidden",
-            background: "var(--surface)",
-          }}>
-            <div style={{ display: "flex", width: "max-content", animation: "marquee 24s linear infinite" }}>
-              {[...Array(16)].map((_, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, padding: "0 36px", opacity: 0.4 }}>
-                  <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
-                    <circle cx="50" cy="50" r="26" stroke="var(--primary)" strokeWidth="5" opacity="0.4" />
-                    <circle cx="50" cy="50" r="16" stroke="var(--primary)" strokeWidth="5" opacity="0.7" />
-                    <circle cx="50" cy="50" r="7" fill="var(--primary)" />
-                    <line x1="50" y1="16" x2="50" y2="10" stroke="var(--primary)" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
-                    <line x1="50" y1="84" x2="50" y2="90" stroke="var(--primary)" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
-                    <line x1="16" y1="50" x2="10" y2="50" stroke="var(--primary)" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
-                    <line x1="84" y1="50" x2="90" y2="50" stroke="var(--primary)" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
-                  </svg>
+                <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#333", flexShrink: 0 }} />
+                <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#333", flexShrink: 0 }} />
+                <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#333", flexShrink: 0 }} />
+                <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
                   <span style={{
-                    fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em",
-                    color: "var(--primary)",
-                    fontFamily: "var(--font-sans), sans-serif",
+                    background: "#141414", borderRadius: 6,
+                    padding: "3px 14px", fontSize: 11, color: "#555",
+                    fontFamily: "var(--font-mono), monospace",
                   }}>
-                    Zyph
+                    usezyph.com/dashboard
                   </span>
                 </div>
-              ))}
-            </div>
-          </section>
-
-          {/* ── PROBLEM ── */}
-          <section style={{ padding: "100px 40px", background: "var(--bg)" }}>
-            <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexWrap: "wrap", gap: 64, alignItems: "flex-start" }}>
-
-              {/* Left — statement */}
-              <div style={{ flex: "1 1 340px" }}>
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "var(--text-3)", textTransform: "uppercase", marginBottom: 24 }}>
-                  The Problem
-                </p>
-                <h2
-                  ref={(el) => { sectionRefs.current[0] = el; }}
-                  className="section-anim"
-                  style={{
-                    fontFamily: "var(--font-sans), sans-serif",
-                    fontWeight: 800, fontSize: "clamp(32px, 4vw, 52px)",
-                    lineHeight: 1.1, letterSpacing: "-0.03em",
-                    color: "var(--text-1)", marginBottom: 20,
-                  }}
-                >
-                  Every AI starts from zero.
-                </h2>
-                <p style={{
-                  fontSize: 22, fontWeight: 800, fontStyle: "italic",
-                  color: "var(--accent)", marginBottom: 28,
-                  paddingLeft: 16, borderLeft: "3px solid var(--accent)",
-                }}>
-                  Every. Single. Time.
-                </p>
-                <p style={{ fontSize: 16, lineHeight: 1.7, color: "var(--text-2)", maxWidth: 460 }}>
-                  You explain your role, your context, your preferences — then close the tab. Tomorrow you do it again. ChatGPT doesn&apos;t remember you. Claude doesn&apos;t know your style. You&apos;re always the new hire explaining yourself to a tool that should work for you.
-                </p>
               </div>
 
-              {/* Right — stats */}
-              <div ref={statRef} style={{ flex: "1 1 240px", display: "flex", flexDirection: "column", gap: 0 }}>
-                {[
-                  {
-                    value: statVisible ? `2–${counts.weeks} weeks` : "2–4 weeks",
-                    label: "to build your full profile",
-                  },
-                  {
-                    value: "0",
-                    label: "prompts needed to get started",
-                  },
-                  {
-                    value: "∞",
-                    label: "context retained over time",
-                  },
-                ].map((stat, i) => (
-                  <div
-                    key={stat.label}
-                    style={{
-                      padding: "28px 0",
-                      borderTop: i === 0 ? "1px solid var(--border)" : "1px solid var(--border)",
-                      borderBottom: i === 2 ? "1px solid var(--border)" : "none",
-                    }}
-                  >
-                    <p style={{
-                      fontFamily: "var(--font-sans), sans-serif",
-                      fontWeight: 800, fontSize: 40, letterSpacing: "-0.03em",
-                      color: "var(--text-1)", lineHeight: 1,
-                      marginBottom: 6,
-                    }}>
-                      {stat.value}
-                    </p>
-                    <p style={{ fontSize: 13, color: "var(--text-3)" }}>{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ── WHAT IS ZYPH ── */}
-          <section style={{ padding: "100px 40px", background: "var(--surface)" }}>
-            <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-
-              <p style={{ textAlign: "center", fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "var(--text-3)", textTransform: "uppercase", marginBottom: 24 }}>
-                WHAT IS ZYPH?
-              </p>
-
-              <div
-                ref={(el) => { sectionRefs.current[1] = el; }}
-                className="section-anim"
-                style={{ textAlign: "center", marginBottom: 16 }}
-              >
-                <h2 style={{
-                  fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 800, fontSize: "clamp(26px, 3.5vw, 44px)",
-                  letterSpacing: "-0.03em", lineHeight: 1.15,
-                  color: "var(--text-1)",
-                }}>
-                  Zyph ={" "}
-                  <span style={{ color: "var(--primary)" }}>Personal Data Engine</span>
-                  <span style={{ color: "var(--text-3)" }}> + </span>
-                  <span style={{ color: "var(--accent)" }}>Behavioural Memory Layer</span>
-                </h2>
-              </div>
-
-              <p style={{
-                textAlign: "center", fontSize: 17, color: "var(--text-2)",
-                maxWidth: 580, margin: "0 auto 64px", lineHeight: 1.65,
-              }}>
-                Most AI tools give you a blank canvas every session. Zyph gives you an AI that has been silently studying you — your patterns, your tools, your language, your pace — and remembers all of it.
-              </p>
-
-              {/* Two pillars */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginBottom: 16 }}>
-
-                {/* Pillar 1 — indigo */}
-                <div
-                  className="card-hover"
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    borderTop: "2px solid var(--primary)",
-                    borderRadius: "0 0 var(--radius-md) var(--radius-md)",
-                    padding: "28px 28px 32px",
-                    position: "relative", overflow: "hidden",
-                  }}
-                >
-                  <div style={{
-                    position: "absolute", top: -60, right: -60,
-                    width: 160, height: 160, borderRadius: "50%",
-                    background: "var(--primary)", opacity: 0.05, filter: "blur(40px)",
-                  }} />
-                  <div style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "4px 10px", borderRadius: 99,
-                    background: "var(--primary-glow)", marginBottom: 20,
-                  }}>
-                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--primary)" }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "var(--primary)", letterSpacing: "0.04em" }}>
-                      Personal Data Engine
-                    </span>
-                  </div>
-                  <h3 style={{
-                    fontFamily: "var(--font-sans), sans-serif",
-                    fontWeight: 700, fontSize: 18, color: "var(--text-1)",
-                    letterSpacing: "-0.02em", marginBottom: 12,
-                  }}>
-                    It observes. Constantly.
-                  </h3>
-                  <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.65, marginBottom: 24 }}>
-                    Every 30 seconds, Zyph silently reads your screen — every app, every document, every browser tab. It doesn&apos;t interrupt. It doesn&apos;t ask. It simply watches and extracts signal from noise.
-                  </p>
-                  <ul style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {["Screen-level context capture", "OCR across every application", "App usage & behavioural patterns", "Structured, categorised memory"].map((item) => (
-                      <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--text-2)" }}>
-                        <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--primary)", flexShrink: 0 }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Pillar 2 — orange */}
-                <div
-                  className="card-hover"
-                  style={{
-                    background: "var(--card)",
-                    border: "1px solid var(--border)",
-                    borderTop: "2px solid var(--accent)",
-                    borderRadius: "0 0 var(--radius-md) var(--radius-md)",
-                    padding: "28px 28px 32px",
-                    position: "relative", overflow: "hidden",
-                  }}
-                >
-                  <div style={{
-                    position: "absolute", top: -60, right: -60,
-                    width: 160, height: 160, borderRadius: "50%",
-                    background: "var(--accent)", opacity: 0.05, filter: "blur(40px)",
-                  }} />
-                  <div style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    padding: "4px 10px", borderRadius: 99,
-                    background: "rgba(249,115,22,0.1)", marginBottom: 20,
-                  }}>
-                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: "var(--accent)" }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.04em" }}>
-                      Behavioural Memory Layer
-                    </span>
-                  </div>
-                  <h3 style={{
-                    fontFamily: "var(--font-sans), sans-serif",
-                    fontWeight: 700, fontSize: 18, color: "var(--text-1)",
-                    letterSpacing: "-0.02em", marginBottom: 12,
-                  }}>
-                    It remembers. Everything.
-                  </h3>
-                  <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.65, marginBottom: 24 }}>
-                    Observations are distilled into a living intelligence profile — your work style, communication patterns, tools, interests, and cognitive rhythms. This profile powers every conversation, permanently.
-                  </p>
-                  <ul style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {["Persistent insight profile", "Communication style modelling", "Tool & workflow mapping", "Context that compounds over time"].map((item) => (
-                      <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--text-2)" }}>
-                        <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--accent)", flexShrink: 0 }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Result card */}
-              <div style={{
-                background: "var(--card)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-md)",
-                padding: "36px 40px",
-                textAlign: "center",
-              }}>
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "var(--text-3)", textTransform: "uppercase", marginBottom: 16 }}>
-                  The Result
-                </p>
-                <p style={{
-                  fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 800, fontSize: "clamp(20px, 2.5vw, 30px)",
-                  letterSpacing: "-0.025em", lineHeight: 1.25,
-                  color: "var(--text-1)",
-                }}>
-                  An AI that doesn&apos;t need you to explain yourself.
-                  <br />
-                  <span style={{ color: "var(--text-3)" }}>Because it was already paying attention.</span>
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* ── HOW IT WORKS ── */}
-          <section style={{ padding: "100px 40px", background: "var(--bg)" }}>
-            <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-              <p style={{ textAlign: "center", fontSize: 11, fontWeight: 600, letterSpacing: "0.12em", color: "var(--text-3)", textTransform: "uppercase", marginBottom: 24 }}>
-                HOW IT WORKS
-              </p>
-              <h2
-                ref={(el) => { sectionRefs.current[2] = el; }}
-                className="section-anim"
-                style={{
-                  fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 800, fontSize: "clamp(32px, 4vw, 52px)",
-                  letterSpacing: "-0.03em", textAlign: "center",
-                  color: "var(--text-1)", marginBottom: 64,
-                }}
-              >
-                Zyph becomes you.
-              </h2>
-
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: 1,
-                background: "var(--border)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-md)",
-                overflow: "hidden",
-              }}>
-                {[
-                  { num: "01", title: "Runs quietly", body: "Install the desktop app. It captures your screen every 30 seconds, silently." },
-                  { num: "02", title: "Reads everything", body: "OCR extracts text from every app, doc, and browser tab you use." },
-                  { num: "03", title: "Builds your profile", body: "Over 2–4 weeks, Zyph maps your communication style, interests, and patterns." },
-                  { num: "04", title: "Knows you", body: "Open chat and ask anything. No context needed. It already knows." },
-                ].map((step, i) => (
-                  <div
-                    key={step.num}
-                    ref={(el) => { sectionRefs.current[3 + i] = el; }}
-                    className="section-anim"
-                    style={{
-                      background: "var(--card)",
-                      padding: "32px 28px",
-                    }}
-                  >
-                    <p style={{
-                      fontFamily: "var(--font-sans), sans-serif",
-                      fontWeight: 800, fontSize: 48, lineHeight: 1,
-                      color: "var(--border)", marginBottom: 20,
-                      letterSpacing: "-0.04em",
-                    }}>
-                      {step.num}
-                    </p>
-                    <h3 style={{
-                      fontFamily: "var(--font-sans), sans-serif",
-                      fontWeight: 700, fontSize: 16, color: "var(--text-1)",
-                      letterSpacing: "-0.01em", marginBottom: 10,
-                    }}>
-                      {step.title}
-                    </h3>
-                    <p style={{ fontSize: 13, color: "var(--text-2)", lineHeight: 1.65 }}>{step.body}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "center", marginTop: 40 }}>
-                <Link
-                  href="/auth"
-                  className="btn-primary"
-                  style={{
-                    padding: "13px 28px", borderRadius: 99,
-                    background: "var(--primary)", color: "#fff",
-                    fontWeight: 600, fontSize: 14, letterSpacing: "-0.01em",
-                    textDecoration: "none",
-                  }}
-                >
-                  Start for free
-                </Link>
-              </div>
-            </div>
-          </section>
-
-          {/* ── VIDEO ── */}
-          <section style={{ padding: "80px 40px", background: "var(--surface)" }}>
-            <div style={{ maxWidth: 960, margin: "0 auto", textAlign: "center" }}>
-              <h2
-                ref={(el) => { sectionRefs.current[7] = el; }}
-                className="section-anim"
-                style={{
-                  fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 800, fontSize: "clamp(28px, 3.5vw, 48px)",
-                  letterSpacing: "-0.03em", color: "var(--text-1)",
-                  marginBottom: 12,
-                }}
-              >
-                See it in action
-              </h2>
-              <p
-                ref={(el) => { sectionRefs.current[8] = el; }}
-                className="section-anim"
-                style={{ fontSize: 16, color: "var(--text-2)", marginBottom: 48 }}
-              >
-                Watch how Zyph learns and adapts to you.
-              </p>
-
-              <div
-                style={{
-                  borderRadius: "var(--radius-lg)",
-                  overflow: "hidden",
-                  border: "1px solid var(--border)",
-                  aspectRatio: "16 / 9",
-                  width: "100%",
-                }}
-              >
-                <iframe
-                  className="w-full h-full"
-                  style={{ width: "100%", height: "100%", display: "block" }}
-                  src="https://www.youtube.com/embed/nsGnxbgrk14"
-                  title="See it in action"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* ── DASHBOARD MOCKUP ── */}
-          <section style={{ padding: "100px 40px", background: "var(--bg)" }}>
-            <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-              <h2
-                ref={(el) => { sectionRefs.current[9] = el; }}
-                className="section-anim"
-                style={{
-                  fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 800, fontSize: "clamp(28px, 3.5vw, 48px)",
-                  letterSpacing: "-0.03em", textAlign: "center",
-                  color: "var(--text-1)", marginBottom: 16,
-                }}
-              >
-                A dashboard that thinks like you
-              </h2>
-              <p style={{
-                textAlign: "center", fontSize: 16, color: "var(--text-2)",
-                maxWidth: 500, margin: "0 auto 52px", lineHeight: 1.65,
-              }}>
-                Track what Zyph has learned, review your insights, and chat with an AI that already has full context.
-              </p>
-
-              <div
-                ref={(el) => { sectionRefs.current[10] = el; }}
-                className="section-anim"
-                style={{
-                  borderRadius: "var(--radius-lg)",
-                  overflow: "hidden",
-                  border: "1px solid var(--border)",
-                  background: "var(--card)",
-                }}
-              >
-                {/* Chrome bar */}
+              {/* Dashboard body */}
+              <div style={{ background: "#080808", padding: "28px 28px 24px" }}>
+                {/* Top bar */}
                 <div style={{
-                  padding: "10px 16px",
-                  borderBottom: "1px solid var(--border)",
-                  display: "flex", alignItems: "center", gap: 8,
-                  background: "var(--surface)",
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  marginBottom: 20,
                 }}>
-                  {["#3d3d3d", "#3d3d3d", "#3d3d3d"].map((c, i) => (
-                    <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
+                  <h3 style={{
+                    fontFamily: "var(--font-sans), sans-serif",
+                    fontWeight: 700, fontSize: 22, color: "#fff", letterSpacing: "-0.02em",
+                  }}>
+                    Good evening, Professor
+                  </h3>
+                  <span style={{
+                    fontSize: 13, color: "#555",
+                    fontFamily: "var(--font-mono), monospace",
+                  }}>
+                    11:47 PM
+                  </span>
+                </div>
+
+                {/* Divider */}
+                <div style={{ height: 1, background: "#141414", marginBottom: 16 }} />
+
+                {/* Green plan banner */}
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  background: "rgba(34,197,94,0.08)",
+                  border: "1px solid rgba(34,197,94,0.2)",
+                  borderRadius: 10, padding: "10px 16px",
+                  marginBottom: 20,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: "#86efac" }}>
+                      You&apos;re on the Mirror plan — unlimited captures enabled.
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 12, color: "#4ade80", whiteSpace: "nowrap", marginLeft: 16, cursor: "pointer" }}>
+                    Manage plan →
+                  </span>
+                </div>
+
+                {/* Stat cards */}
+                <div style={{
+                  display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 10,
+                  marginBottom: 16,
+                }}>
+                  {[
+                    { label: "Total Observations", value: "847",    accent: "#6366f1" },
+                    { label: "Days Active",         value: "23",     accent: "#f97316" },
+                    { label: "Insights Generated",  value: "31",     accent: "#f59e0b" },
+                    { label: "Top App Used",         value: "Cursor", accent: "#22c55e" },
+                  ].map(({ label, value, accent }) => (
+                    <div key={label} style={{
+                      background: "#0e0e0e",
+                      border: `1px solid #1a1a1a`,
+                      borderLeft: `2px solid ${accent}`,
+                      borderRadius: 10, padding: "14px 14px 16px",
+                    }}>
+                      <p style={{ fontSize: 11, color: "#555", marginBottom: 8 }}>{label}</p>
+                      <p style={{ fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-0.02em" }}>{value}</p>
+                    </div>
                   ))}
                 </div>
 
-                {/* Mobile fallback */}
-                <div style={{ padding: "32px", textAlign: "center", display: "block" }} className="md:hidden">
-                  <p style={{ color: "var(--text-3)", fontSize: 14 }}>Your personal AI dashboard</p>
-                </div>
-
-                {/* Desktop layout */}
-                <div style={{ display: "flex", minHeight: 420 }}>
-                  <aside style={{
-                    width: 168, flexShrink: 0,
-                    borderRight: "1px solid var(--border)",
-                    padding: "20px 12px",
+                {/* Bottom two-col */}
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
+                  {/* Recent activity */}
+                  <div style={{
+                    background: "#0e0e0e", border: "1px solid #1a1a1a",
+                    borderRadius: 10, padding: "16px",
                   }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-1)", marginBottom: 24, paddingLeft: 8 }}>Zyph</p>
-                    <nav style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 13 }}>
-                      {["Home", "My Profile", "Insights", "Chat", "Settings"].map((item) => (
-                        <div
-                          key={item}
-                          style={{
-                            padding: "7px 10px", borderRadius: 8,
-                            color: item === "Home" ? "var(--text-1)" : "var(--text-3)",
-                          }}
-                        >
-                          {item}
-                        </div>
-                      ))}
-                    </nav>
-                  </aside>
-
-                  <div style={{ flex: 1, padding: "28px 28px 24px" }}>
-                    <h3 style={{
-                      fontFamily: "var(--font-sans), sans-serif",
-                      fontWeight: 700, fontSize: 22,
-                      color: "var(--text-1)", letterSpacing: "-0.02em",
-                      marginBottom: 24,
-                    }}>
-                      Good evening
-                    </h3>
-
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
-                      {[
-                        { label: "Total Observations", accent: "var(--primary)" },
-                        { label: "Days Active",         accent: "var(--accent)" },
-                        { label: "Insights Generated",  accent: "var(--primary)" },
-                        { label: "Top App Used",        accent: "var(--accent)" },
-                      ].map(({ label, accent }) => (
-                        <div key={label} style={{
-                          borderRadius: 10, padding: "14px 14px 16px",
-                          background: "var(--surface)",
-                          border: "1px solid var(--border)",
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 14 }}>Recent Activity</p>
+                    {[
+                      { app: "Cursor",  summary: "Worked on authentication flow, reviewed 3 PRs" },
+                      { app: "Chrome",  summary: "Researched Next.js 15 deployment patterns" },
+                      { app: "Slack",   summary: "Responded to 6 messages, team standup notes" },
+                    ].map(({ app, summary }) => (
+                      <div key={app} style={{
+                        display: "flex", gap: 10, alignItems: "flex-start",
+                        paddingBottom: 10, marginBottom: 10,
+                        borderBottom: "1px solid #141414",
+                      }}>
+                        <span style={{
+                          fontSize: 10, fontWeight: 600, color: "#6366f1",
+                          background: "rgba(99,102,241,0.12)",
+                          padding: "2px 7px", borderRadius: 4, flexShrink: 0, marginTop: 1,
                         }}>
-                          <div style={{ height: 2, width: 28, borderRadius: 2, background: accent, marginBottom: 10 }} />
-                          <p style={{ fontSize: 11, color: "var(--text-3)", marginBottom: 6 }}>{label}</p>
-                          <p style={{ fontSize: 16, fontWeight: 600, color: "var(--text-1)" }}>—</p>
-                        </div>
-                      ))}
-                    </div>
+                          {app}
+                        </span>
+                        <p style={{ fontSize: 12, color: "#555", lineHeight: 1.5 }}>{summary}</p>
+                      </div>
+                    ))}
+                  </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 10 }}>
-                      <div style={{
-                        borderRadius: 10, padding: "16px",
-                        background: "var(--surface)",
-                        border: "1px solid var(--border)",
-                      }}>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)", marginBottom: 8 }}>Recent Activity</p>
-                        <p style={{ fontSize: 12, color: "var(--text-3)" }}>No observations yet.</p>
-                      </div>
-                      <div style={{
-                        borderRadius: 10, padding: "16px",
-                        border: "1px solid rgba(249,115,22,0.25)",
-                        background: "rgba(249,115,22,0.05)",
-                      }}>
-                        <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-1)", marginBottom: 6 }}>Chat with Zyph</p>
-                        <p style={{ fontSize: 12, color: "var(--text-2)", marginBottom: 12 }}>Ask anything.</p>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: "var(--accent)" }}>Open Chat →</span>
-                      </div>
+                  {/* Chat card */}
+                  <div style={{
+                    borderRadius: 10, padding: "20px",
+                    background: "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(99,102,241,0.06) 100%)",
+                    border: "1px solid rgba(99,102,241,0.25)",
+                    display: "flex", flexDirection: "column", justifyContent: "space-between",
+                  }}>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 8 }}>Chat with Zyph</p>
+                      <p style={{ fontSize: 12, color: "#71717a", lineHeight: 1.6 }}>
+                        Ask anything. Your full profile is already loaded.
+                      </p>
+                    </div>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      padding: "9px 16px", borderRadius: 99, marginTop: 20,
+                      background: "#6366f1", cursor: "pointer",
+                    }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>Open Chat →</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* ── FEATURES ── */}
-          <section style={{ padding: "100px 40px", background: "var(--surface)" }}>
-            <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-              <h2
-                ref={(el) => { sectionRefs.current[11] = el; }}
-                className="section-anim"
-                style={{
-                  fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 800, fontSize: "clamp(28px, 3.5vw, 44px)",
-                  letterSpacing: "-0.03em", textAlign: "center",
-                  color: "var(--text-1)", marginBottom: 56,
-                }}
-              >
-                Built for people who move fast
-              </h2>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 1, background: "var(--border)", border: "1px solid var(--border)", borderRadius: "var(--radius-md)", overflow: "hidden" }}>
-                {[
-                  { icon: "🧠", accent: "var(--primary)", title: "Writes in your voice",    body: "Emails, Slack messages, proposals. All sound exactly like you." },
-                  { icon: "⚡", accent: "var(--accent)",   title: "Zero setup",              body: "No prompts, no onboarding questionnaires. Just install and work normally." },
-                  { icon: "🔒", accent: "var(--success)",  title: "Private by design",       body: "Your data is yours. Processed securely, never sold, never shared." },
-                ].map((f, i) => (
-                  <div
-                    key={f.title}
-                    ref={(el) => { sectionRefs.current[12 + i] = el; }}
-                    className="section-anim card-hover"
-                    style={{
-                      background: "var(--card)",
-                      borderTop: `2px solid ${f.accent}`,
-                      padding: "32px 28px",
-                    }}
-                  >
-                    <span style={{ fontSize: 28, display: "block", marginBottom: 20 }}>{f.icon}</span>
-                    <h3 style={{
-                      fontFamily: "var(--font-sans), sans-serif",
-                      fontWeight: 700, fontSize: 17, color: "var(--text-1)",
-                      letterSpacing: "-0.02em", marginBottom: 12,
-                    }}>
-                      {f.title}
-                    </h3>
-                    <p style={{ fontSize: 14, color: "var(--text-2)", lineHeight: 1.65 }}>{f.body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ── DOWNLOAD CTA ── */}
-          <section id="download" style={{ padding: "120px 40px", background: "var(--bg)", position: "relative", overflow: "hidden" }}>
-            {/* Indigo glow */}
-            <div style={{
-              position: "absolute", top: "0%", left: "50%",
-              transform: "translateX(-50%)",
-              width: 600, height: 300,
-              background: "radial-gradient(ellipse at center, rgba(99,102,241,0.15) 0%, transparent 70%)",
-              pointerEvents: "none",
-            }} />
-
-            <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", position: "relative" }}>
-              <h2 style={{
-                fontFamily: "var(--font-sans), sans-serif",
-                fontWeight: 800, fontSize: "clamp(32px, 5vw, 56px)",
-                letterSpacing: "-0.035em", lineHeight: 1.1,
-                color: "var(--text-1)", marginBottom: 20,
-              }}>
-                Meet the AI that gets you.
-              </h2>
-              <p style={{ fontSize: 17, color: "var(--text-2)", marginBottom: 44, lineHeight: 1.65 }}>
-                Download the desktop app and let Zyph start learning. Free to start.
-              </p>
-
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-                <Link
-                  href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
-                  className="btn-primary"
-                  style={{
-                    padding: "16px 36px", borderRadius: 99,
-                    background: "var(--primary)", color: "#fff",
-                    fontWeight: 700, fontSize: 16, letterSpacing: "-0.01em",
-                    textDecoration: "none",
-                  }}
-                >
-                  Download Desktop App
-                </Link>
-
-                <p style={{ fontSize: 12, color: "var(--text-3)", maxWidth: 380, lineHeight: 1.6 }}>
-                  Windows may show a security warning on first install — click{" "}
-                  <span style={{ color: "var(--text-2)" }}>&quot;More info&quot; → &quot;Run anyway&quot;</span>{" "}
-                  to proceed. This is normal for new apps.
-                </p>
-
-                <Link href="/auth" style={{ fontSize: 13, fontWeight: 500, color: "var(--primary)", textDecoration: "none", marginTop: 4 }}>
-                  Also available on web →
-                </Link>
-              </div>
-            </div>
-          </section>
-
-          {/* ── FOOTER ── */}
-          <footer style={{
-            borderTop: "1px solid var(--border)",
-            background: "var(--bg)",
-            padding: "0 40px",
-            height: 64,
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-            flexWrap: "wrap", gap: 16,
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <Link href="/" style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}>
+        {/* ── MARQUEE ── */}
+        <section style={{
+          background: "#060606",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          padding: "16px 0",
+          overflow: "hidden",
+        }}>
+          <div style={{ display: "flex", width: "max-content", animation: "marquee 28s linear infinite" }}>
+            {[...Array(16)].map((_, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0, padding: "0 40px", opacity: 0.2 }}>
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none">
+                  <circle cx="50" cy="50" r="26" stroke="#6366f1" strokeWidth="5" opacity="0.4" />
+                  <circle cx="50" cy="50" r="16" stroke="#6366f1" strokeWidth="5" opacity="0.7" />
+                  <circle cx="50" cy="50" r="7" fill="#6366f1" />
+                  <line x1="50" y1="16" x2="50" y2="10" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+                  <line x1="50" y1="84" x2="50" y2="90" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+                  <line x1="16" y1="50" x2="10" y2="50" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+                  <line x1="84" y1="50" x2="90" y2="50" stroke="#6366f1" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+                </svg>
                 <span style={{
                   fontFamily: "var(--font-sans), sans-serif",
-                  fontWeight: 700, fontSize: 15, color: "var(--text-1)", letterSpacing: "-0.02em",
+                  fontSize: 14, fontWeight: 700, color: "#6366f1", letterSpacing: "-0.01em",
                 }}>
                   Zyph
                 </span>
-                <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--primary)", display: "inline-block", marginBottom: 6 }} />
-              </Link>
-              <span style={{ fontSize: 12, color: "var(--text-3)", marginLeft: 12 }}>© 2025 Zyph. All rights reserved.</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── PROBLEM ── */}
+        <section style={{ background: "#040404", padding: "128px 40px" }}>
+          <div style={{
+            maxWidth: 1100, margin: "0 auto",
+            display: "flex", flexWrap: "wrap", gap: 80, alignItems: "flex-start",
+          }}>
+            {/* Left */}
+            <div style={{ flex: "1 1 360px" }}>
+              <p style={{
+                fontSize: 11, fontWeight: 600, letterSpacing: "0.14em",
+                color: "#52525b", textTransform: "uppercase", marginBottom: 28,
+              }}>
+                The Problem
+              </p>
+              <h2
+                ref={(el) => { sectionRefs.current[0] = el; }}
+                className="section-anim instrument-italic"
+                style={{
+                  fontSize: "clamp(36px, 4.5vw, 56px)",
+                  color: "#fff", lineHeight: 1.1,
+                  marginBottom: 20,
+                }}
+              >
+                Every AI you use forgets you exist.
+              </h2>
+              <p style={{
+                fontSize: 28, fontStyle: "italic", fontFamily: "'Instrument Serif', Georgia, serif",
+                color: "#f97316", marginBottom: 28,
+              }}>
+                Every. Single. Session.
+              </p>
+              <p style={{ fontSize: 16, color: "#71717a", maxWidth: 480, lineHeight: 1.8 }}>
+                You explain your role, your tools, your preferences — then close the tab. Tomorrow, you start from zero again. ChatGPT doesn&apos;t remember you. Claude doesn&apos;t know your style.
+              </p>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+
+            {/* Right — stats */}
+            <div ref={statRef} style={{ flex: "1 1 260px" }}>
               {[
-                { href: "/auth",    label: "Sign In" },
-                { href: "/privacy", label: "Privacy" },
-                { href: "/terms",   label: "Terms" },
-              ].map(({ href, label }) => (
-                <Link key={href} href={href} style={{ fontSize: 13, color: "var(--text-3)", textDecoration: "none" }}>
-                  {label}
-                </Link>
+                {
+                  value: statVisible ? `2–${counts.weeks} weeks` : "2–4 weeks",
+                  label: "to build your complete profile",
+                },
+                { value: "0 prompts", label: "needed to get started" },
+                { value: "∞",        label: "context retained, permanently" },
+              ].map((stat, i) => (
+                <div
+                  key={stat.label}
+                  className="stat-card"
+                  style={{
+                    padding: "28px 4px",
+                    borderTop: "1px solid rgba(255,255,255,0.06)",
+                    borderBottom: i === 2 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                  }}
+                >
+                  <p className="instrument-italic" style={{
+                    fontSize: 48, color: "#fff", lineHeight: 1,
+                    marginBottom: 8, letterSpacing: "-1px",
+                  }}>
+                    {stat.value}
+                  </p>
+                  <p style={{ fontSize: 14, color: "#71717a" }}>{stat.label}</p>
+                </div>
               ))}
             </div>
-          </footer>
+          </div>
+        </section>
 
-        </main>
-      </div>
+        {/* ── WHAT IS ZYPH ── */}
+        <section style={{ background: "#060606", padding: "128px 40px" }}>
+          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+            <p style={{
+              textAlign: "center", fontSize: 11, fontWeight: 600,
+              letterSpacing: "0.14em", color: "#52525b",
+              textTransform: "uppercase", marginBottom: 28,
+            }}>
+              What is Zyph?
+            </p>
+
+            <div
+              ref={(el) => { sectionRefs.current[1] = el; }}
+              className="section-anim"
+              style={{ textAlign: "center", marginBottom: 20 }}
+            >
+              <h2 className="instrument-italic" style={{
+                fontSize: "clamp(30px, 4vw, 52px)",
+                color: "#fff", lineHeight: 1.15, letterSpacing: "-0.5px",
+              }}>
+                Zyph ={" "}
+                <span style={{ color: "#6366f1" }}>Personal Data Engine</span>
+                <span style={{ color: "#3f3f46" }}> + </span>
+                <span style={{ color: "#f97316" }}>Behavioural Memory Layer</span>
+              </h2>
+            </div>
+
+            <p style={{
+              textAlign: "center", fontSize: 17, color: "#71717a",
+              maxWidth: 580, margin: "0 auto 64px", lineHeight: 1.7,
+            }}>
+              Most AI tools give you a blank canvas every session. Zyph gives you an AI that has been silently studying you — your patterns, your tools, your language, your pace — and remembers all of it.
+            </p>
+
+            {/* Two pillars */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16, marginBottom: 16 }}>
+              {/* Indigo card */}
+              <div
+                className="feature-card"
+                style={{
+                  background: "#0a0a0e",
+                  border: "1px solid rgba(99,102,241,0.2)",
+                  borderRadius: 20, padding: 32,
+                  position: "relative", overflow: "hidden",
+                }}
+              >
+                <div style={{
+                  position: "absolute", top: -80, right: -80,
+                  width: 200, height: 200, borderRadius: "50%",
+                  background: "#6366f1", opacity: 0.04, filter: "blur(60px)",
+                }} />
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "4px 12px", borderRadius: 99,
+                  background: "rgba(99,102,241,0.12)",
+                  marginBottom: 24,
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#6366f1" }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#818cf8", letterSpacing: "0.04em" }}>
+                    Personal Data Engine
+                  </span>
+                </div>
+                <h3 style={{
+                  fontFamily: "var(--font-sans), sans-serif",
+                  fontWeight: 700, fontSize: 22, color: "#fff",
+                  letterSpacing: "-0.02em", marginBottom: 14,
+                }}>
+                  It observes. Constantly.
+                </h3>
+                <p style={{ fontSize: 15, color: "#71717a", lineHeight: 1.7, marginBottom: 28 }}>
+                  Every 30 seconds, Zyph silently reads your screen — every app, every document, every browser tab. It doesn&apos;t interrupt. It doesn&apos;t ask. It simply watches and extracts signal from noise.
+                </p>
+                <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {["Screen-level context capture", "OCR across every application", "App usage & behavioural patterns", "Structured, categorised memory"].map((item) => (
+                    <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#a1a1aa" }}>
+                      <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#6366f1", flexShrink: 0 }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Orange card */}
+              <div
+                className="feature-card"
+                style={{
+                  background: "#0a0a0e",
+                  border: "1px solid rgba(249,115,22,0.2)",
+                  borderRadius: 20, padding: 32,
+                  position: "relative", overflow: "hidden",
+                }}
+              >
+                <div style={{
+                  position: "absolute", top: -80, right: -80,
+                  width: 200, height: 200, borderRadius: "50%",
+                  background: "#f97316", opacity: 0.04, filter: "blur(60px)",
+                }} />
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  padding: "4px 12px", borderRadius: 99,
+                  background: "rgba(249,115,22,0.12)",
+                  marginBottom: 24,
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#f97316" }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#fb923c", letterSpacing: "0.04em" }}>
+                    Behavioural Memory Layer
+                  </span>
+                </div>
+                <h3 style={{
+                  fontFamily: "var(--font-sans), sans-serif",
+                  fontWeight: 700, fontSize: 22, color: "#fff",
+                  letterSpacing: "-0.02em", marginBottom: 14,
+                }}>
+                  It remembers. Everything.
+                </h3>
+                <p style={{ fontSize: 15, color: "#71717a", lineHeight: 1.7, marginBottom: 28 }}>
+                  Observations are distilled into a living intelligence profile — your work style, communication patterns, tools, interests, and cognitive rhythms. This profile powers every conversation, permanently.
+                </p>
+                <ul style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {["Persistent insight profile", "Communication style modelling", "Tool & workflow mapping", "Context that compounds over time"].map((item) => (
+                    <li key={item} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14, color: "#a1a1aa" }}>
+                      <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#f97316", flexShrink: 0 }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom statement */}
+            <div style={{
+              background: "#0e0e0e",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 20, padding: "40px 48px",
+              textAlign: "center",
+            }}>
+              <p style={{
+                fontSize: 11, fontWeight: 600, letterSpacing: "0.14em",
+                color: "#52525b", textTransform: "uppercase", marginBottom: 20,
+              }}>
+                The Result
+              </p>
+              <p className="instrument-italic" style={{
+                fontSize: "clamp(20px, 2.5vw, 28px)",
+                color: "#fff", lineHeight: 1.3,
+              }}>
+                An AI that doesn&apos;t need you to explain yourself.{" "}
+                <span style={{ color: "#52525b" }}>Because it was already paying attention.</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── VIDEO ── */}
+        <section style={{ background: "#040404", padding: "96px 40px" }}>
+          <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
+            <h2
+              ref={(el) => { sectionRefs.current[7] = el; }}
+              className="section-anim instrument-italic"
+              style={{
+                fontSize: "clamp(32px, 4vw, 48px)",
+                color: "#fff", marginBottom: 16,
+              }}
+            >
+              See it in action
+            </h2>
+            <p
+              ref={(el) => { sectionRefs.current[8] = el; }}
+              className="section-anim"
+              style={{ fontSize: 16, color: "#71717a", marginBottom: 48 }}
+            >
+              Watch Zyph learn and adapt in real time.
+            </p>
+            <div style={{
+              borderRadius: 20, overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.08)",
+              aspectRatio: "16 / 9", width: "100%",
+            }}>
+              <iframe
+                style={{ width: "100%", height: "100%", display: "block" }}
+                src="https://www.youtube.com/embed/nsGnxbgrk14"
+                title="See it in action"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── FEATURES ── */}
+        <section id="features" style={{ background: "#060606", padding: "128px 40px" }}>
+          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
+            <h2
+              ref={(el) => { sectionRefs.current[11] = el; }}
+              className="section-anim instrument-italic"
+              style={{
+                fontSize: "clamp(32px, 4vw, 48px)",
+                color: "#fff", textAlign: "center", marginBottom: 60,
+              }}
+            >
+              Built for people who move fast
+            </h2>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+              {[
+                {
+                  icon: "🧠",
+                  title: "Writes in your voice",
+                  body: "Emails, Slack messages, proposals. All sound exactly like you.",
+                },
+                {
+                  icon: "⚡",
+                  title: "Zero setup",
+                  body: "No prompts, no onboarding questionnaires. Just install and work normally.",
+                },
+                {
+                  icon: "🔒",
+                  title: "Private by design",
+                  body: "Your data is yours. Processed securely, never sold, never shared.",
+                },
+              ].map((f, i) => (
+                <div
+                  key={f.title}
+                  ref={(el) => { sectionRefs.current[12 + i] = el; }}
+                  className="section-anim feature-card"
+                  style={{
+                    background: "#0a0a0a",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                    borderRadius: 20, padding: 32,
+                  }}
+                >
+                  <span style={{ fontSize: 32, display: "block", marginBottom: 24 }}>{f.icon}</span>
+                  <h3 style={{
+                    fontFamily: "var(--font-sans), sans-serif",
+                    fontWeight: 700, fontSize: 20, color: "#fff",
+                    letterSpacing: "-0.02em", marginBottom: 14,
+                  }}>
+                    {f.title}
+                  </h3>
+                  <p style={{ fontSize: 15, color: "#71717a", lineHeight: 1.7 }}>{f.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── DOWNLOAD CTA ── */}
+        <section id="download" style={{
+          background: "linear-gradient(to bottom, #040404, #080818)",
+          padding: "128px 40px",
+          position: "relative", overflow: "hidden",
+          textAlign: "center",
+        }}>
+          {/* Radial glow */}
+          <div style={{
+            position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+            width: 700, height: 400,
+            background: "radial-gradient(ellipse at center, rgba(99,102,241,0.18) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }} />
+
+          <div style={{ maxWidth: 700, margin: "0 auto", position: "relative" }}>
+            <h2
+              ref={(el) => { sectionRefs.current[9] = el; }}
+              className="section-anim instrument-italic"
+              style={{
+                fontSize: "clamp(40px, 6vw, 64px)",
+                color: "#fff", lineHeight: 1.05,
+                letterSpacing: "-1px", marginBottom: 24,
+              }}
+            >
+              Meet the AI that gets you.
+            </h2>
+            <p style={{ fontSize: 18, color: "#71717a", marginBottom: 48, lineHeight: 1.65 }}>
+              Download the desktop app and let Zyph start learning. Free to start.
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+              <Link
+                href="https://github.com/EireScales/UseZyph/releases/download/v1.0.0/Zyph.Setup.1.0.0.exe"
+                className="btn-dl"
+                style={{
+                  padding: "16px 40px", borderRadius: 99,
+                  background: "#6366f1", color: "#fff",
+                  fontWeight: 600, fontSize: 16, letterSpacing: "-0.01em",
+                  textDecoration: "none",
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="white" style={{ flexShrink: 0 }}>
+                  <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801" />
+                </svg>
+                Download Desktop App
+              </Link>
+
+              <p style={{ fontSize: 12, color: "#3f3f46", maxWidth: 400, lineHeight: 1.7 }}>
+                Windows may show a security warning on first install — click{" "}
+                <span style={{ color: "#71717a" }}>&quot;More info&quot; → &quot;Run anyway&quot;</span>{" "}
+                to proceed. This is normal for new apps.
+              </p>
+
+              <Link
+                href="/auth"
+                style={{ fontSize: 14, fontWeight: 500, color: "#6366f1", textDecoration: "none" }}
+              >
+                Also available on web →
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FOOTER ── */}
+        <footer style={{
+          background: "#040404",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          height: 72,
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 48px",
+          flexWrap: "wrap", gap: 12,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Link href="/" style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}>
+              <span style={{
+                fontFamily: "var(--font-sans), sans-serif",
+                fontWeight: 700, fontSize: 16, color: "#fff", letterSpacing: "-0.02em",
+              }}>
+                Zyph
+              </span>
+              <span style={{
+                width: 5, height: 5, borderRadius: "50%",
+                background: "#6366f1", display: "inline-block", marginBottom: 8,
+              }} />
+            </Link>
+            <span style={{ fontSize: 13, color: "#52525b", marginLeft: 14 }}>© 2025 Zyph</span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+            {[
+              { href: "/privacy", label: "Privacy" },
+              { href: "/terms",   label: "Terms" },
+              { href: "/auth",    label: "Sign In" },
+            ].map(({ href, label }) => (
+              <Link key={href} href={href} className="footer-link" style={{ fontSize: 13, color: "#52525b", textDecoration: "none" }}>
+                {label}
+              </Link>
+            ))}
+          </div>
+        </footer>
+
+      </main>
     </>
   );
 }
