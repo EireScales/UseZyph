@@ -22,7 +22,7 @@ type ProfileRow = {
 type Toast = { type: "success" | "error"; message: string } | null;
 
 const inputClass =
-  "w-full px-4 py-2.5 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] placeholder-[#666] focus:outline-none focus:border-[#7c3aed] focus:ring-0 transition-colors duration-200";
+  "w-full px-4 py-2.5 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] placeholder-[#666] focus:outline-none focus:border-[#6366f1] focus:ring-0 transition-colors duration-200";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -176,7 +176,8 @@ export default function SettingsPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div
-          className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
           aria-label="Loading"
         />
       </div>
@@ -206,7 +207,7 @@ export default function SettingsPage() {
             <div
               className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0"
               style={{
-                background: "linear-gradient(135deg, #7c3aed 0%, #e8837a 100%)",
+                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
               }}
             >
               {initial}
@@ -262,7 +263,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={handleManageSubscription}
                     disabled={portalLoading}
-                    className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#7c3aed] hover:opacity-90 disabled:opacity-50 transition-opacity duration-200"
+                    className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#6366f1] hover:opacity-90 disabled:opacity-50 transition-opacity duration-200"
                   >
                     {portalLoading ? "Opening…" : "Manage subscription"}
                   </button>
@@ -316,7 +317,7 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setDataRetentionDays(Number(e.target.value) || 90)
                 }
-                className="w-20 px-3 py-2 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] focus:outline-none focus:border-[#7c3aed] text-sm"
+                className="w-20 px-3 py-2 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] focus:outline-none focus:border-[#6366f1] text-sm"
               />
               <span className="text-[#666] text-sm">days</span>
             </div>
@@ -368,12 +369,13 @@ export default function SettingsPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-3 rounded-lg font-medium text-white bg-[#7c3aed] hover:opacity-90 disabled:opacity-50 transition-all duration-200 flex items-center gap-2"
+            className="px-6 py-3 rounded-lg font-medium text-white bg-[#6366f1] hover:opacity-90 disabled:opacity-50 transition-all duration-200 flex items-center gap-2"
           >
             {saving ? (
               <>
                 <span
-                  className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"
+                  className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
+                style={{ borderColor: "#fff", borderTopColor: "transparent" }}
                   aria-hidden
                 />
                 Saving…

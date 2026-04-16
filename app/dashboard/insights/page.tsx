@@ -13,8 +13,8 @@ type InsightRow = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  communication: "#7c3aed",
-  interests: "#e8837a",
+  communication: "#6366f1",
+  interests: "#f97316",
   "work style": "#f59e0b",
   General: "#22c55e",
 };
@@ -95,33 +95,26 @@ export default function InsightsPage() {
         );
 
   const statCards = [
-    {
-      label: "Total insights",
-      value: totalCount.toString(),
-      border: "#7c3aed",
-    },
-    {
-      label: "Categories",
-      value: categoriesCount.toString(),
-      border: "#e8837a",
-    },
+    { label: "Total insights", value: totalCount.toString(), accent: "#6366f1" },
+    { label: "Categories", value: categoriesCount.toString(), accent: "#f97316" },
     {
       label: "Avg confidence",
       value: avgConfidence != null ? `${(avgConfidence * 100).toFixed(0)}%` : "—",
-      border: "#f59e0b",
+      accent: "#f59e0b",
     },
     {
       label: "Last updated",
       value: recentDate ? new Date(recentDate).toLocaleDateString() : "—",
-      border: "#22c55e",
+      accent: "#22c55e",
     },
   ];
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center" }}>
         <div
-          className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
           aria-label="Loading"
         />
       </div>
@@ -129,73 +122,80 @@ export default function InsightsPage() {
   }
 
   return (
-    <div
-      className="p-6 md:p-8"
-      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
-    >
+    <div style={{ padding: "32px 40px", animation: "dashboardFadeIn 0.3s ease forwards" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+      `}</style>
 
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-semibold text-[#f0f0f0] mb-6">
+      <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+        <h1 style={{ fontSize: "24px", fontWeight: 600, color: "#F2F2F2", marginBottom: "24px", fontFamily: "Inter, sans-serif", letterSpacing: "-0.02em" }}>
           Your Insights
         </h1>
 
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: "28px" }}>
           {statCards.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl p-5 transition-all duration-200 hover:border-[#2a2a2a]"
               style={{
-                background: "#111111",
-                border: "1px solid #1e1e1e",
-                borderLeft: "2px solid " + stat.border,
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderLeft: `3px solid ${stat.accent}`,
+                borderRadius: "10px",
+                padding: "18px",
               }}
             >
-              <p className="text-[#555] text-[11px] uppercase tracking-widest mb-1">
+              <p style={{ fontSize: "11px", color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px", fontFamily: "Inter, sans-serif" }}>
                 {stat.label}
               </p>
-              <p
-                className="text-lg font-medium text-[#f0f0f0] truncate"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
+              <p style={{ fontSize: "18px", fontWeight: 600, color: "#F2F2F2", fontVariantNumeric: "tabular-nums", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {stat.value}
               </p>
             </div>
           ))}
-        </section>
+        </div>
 
         {insights.length === 0 ? (
           <div
-            className="rounded-xl p-16 flex flex-col items-center justify-center text-center border border-[#1e1e1e]"
-            style={{ background: "#111111" }}
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "10px",
+              padding: "64px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
           >
-            <div className="relative w-24 h-24 mb-6">
+            <div style={{ position: "relative", width: "80px", height: "80px", marginBottom: "24px" }}>
               <span
-                className="absolute inset-0 rounded-full bg-[#7c3aed]/20 animate-pulse"
-                style={{ animationDuration: "2s" }}
+                className="absolute inset-0 rounded-full animate-pulse"
+                style={{ background: "rgba(99,102,241,0.12)", animationDuration: "2s" }}
               />
               <span
-                className="absolute inset-2 rounded-full bg-[#7c3aed]/30 animate-pulse"
-                style={{ animationDuration: "2s", animationDelay: "0.2s" }}
+                className="absolute inset-2 rounded-full animate-pulse"
+                style={{ background: "rgba(99,102,241,0.18)", animationDuration: "2s", animationDelay: "0.2s" }}
               />
               <span
-                className="absolute inset-4 rounded-full bg-[#7c3aed]/40 animate-pulse"
-                style={{ animationDuration: "2s", animationDelay: "0.4s" }}
+                className="absolute inset-4 rounded-full animate-pulse"
+                style={{ background: "rgba(99,102,241,0.24)", animationDuration: "2s", animationDelay: "0.4s" }}
               />
             </div>
-            <h2 className="text-xl font-semibold text-[#f0f0f0] mb-2">
+            <h2 style={{ fontSize: "18px", fontWeight: 600, color: "#F2F2F2", marginBottom: "8px", fontFamily: "Inter, sans-serif" }}>
               Zyph is still learning
             </h2>
-            <p className="text-[#666] text-sm max-w-sm mb-4">
+            <p style={{ color: "#8a8f98", fontSize: "13px", maxWidth: "320px", marginBottom: "10px", lineHeight: 1.6, fontFamily: "Inter, sans-serif" }}>
               Keep working as normal. Insights appear here after 2–4 weeks.
             </p>
-            <p className="text-[#666] text-sm max-w-sm">
+            <p style={{ color: "#525252", fontSize: "13px", maxWidth: "320px", lineHeight: 1.6, fontFamily: "Inter, sans-serif" }}>
               Insights appear here as Zyph learns from your activity.
             </p>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-6">
-            <aside className="lg:w-48 shrink-0">
-              <p className="text-[#555] text-xs uppercase tracking-wider mb-3">
+            <aside style={{ width: "176px", flexShrink: 0 }}>
+              <p style={{ fontSize: "11px", color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px", fontFamily: "Inter, sans-serif" }}>
                 Category
               </p>
               <div className="flex flex-wrap gap-2 lg:flex-col">
@@ -206,11 +206,18 @@ export default function InsightsPage() {
                       key={cat}
                       type="button"
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                        isActive
-                          ? "bg-[#7c3aed] text-white"
-                          : "bg-[#141414] text-[#666] border border-[#1e1e1e] hover:border-[#333] hover:bg-[#1a1a1a]"
-                      }`}
+                      style={{
+                        padding: "6px 14px",
+                        borderRadius: "100px",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        border: isActive ? "none" : "1px solid rgba(255,255,255,0.07)",
+                        background: isActive ? "#6366f1" : "rgba(255,255,255,0.02)",
+                        color: isActive ? "#fff" : "#8a8f98",
+                        fontFamily: "Inter, sans-serif",
+                        transition: "all 0.15s",
+                      }}
                     >
                       {cat}
                     </button>
@@ -219,46 +226,53 @@ export default function InsightsPage() {
               </div>
             </aside>
 
-            <div className="flex-1 min-w-0 space-y-4">
+            <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
               {filteredInsights.map((insight) => {
                 const cat = insight.insight_type || "General";
-                const color = CATEGORY_COLORS[cat] || "#7c3aed";
+                const color = CATEGORY_COLORS[cat] || "#6366f1";
                 const conf = insight.confidence_score != null ? Number(insight.confidence_score) : 0;
                 const pct = Math.min(100, Math.round(conf * 100));
                 const text = insight.insight_value || "—";
                 return (
                   <div
                     key={insight.id}
-                    className="rounded-xl p-4 transition-all duration-200 hover:border-[#2a2a2a] hover:-translate-y-0.5"
                     style={{
-                      background: "#111111",
-                      border: "1px solid #1e1e1e",
+                      background: "rgba(255,255,255,0.02)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      borderRadius: "10px",
+                      padding: "16px",
                     }}
                   >
-                    <div className="flex items-center justify-between gap-2 mb-2">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", marginBottom: "8px" }}>
                       <span
-                        className="px-2 py-0.5 rounded text-xs font-medium"
                         style={{
-                          background: `${color}20`,
+                          padding: "3px 8px",
+                          borderRadius: "5px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          background: `${color}18`,
                           color,
+                          fontFamily: "Inter, sans-serif",
                         }}
                       >
                         {cat}
                       </span>
-                      <span
-                        className="text-xs text-[#666]"
-                        style={{ fontFamily: "var(--font-mono)" }}
-                      >
+                      <span style={{ fontSize: "12px", color: "#525252", fontFamily: "monospace" }}>
                         {pct}%
                       </span>
                     </div>
-                    <p className="text-[#f0f0f0] text-[15px] leading-relaxed mb-3">
+                    <p style={{ color: "#F2F2F2", fontSize: "14px", lineHeight: 1.6, marginBottom: "12px", fontFamily: "Inter, sans-serif" }}>
                       {text}
                     </p>
-                    <div className="h-1 rounded-full overflow-hidden bg-[#1a1a1a]">
+                    <div style={{ height: "3px", borderRadius: "2px", background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
                       <div
-                        className="h-full rounded-full bg-[#7c3aed] transition-all duration-300"
-                        style={{ width: `${pct}%` }}
+                        style={{
+                          height: "100%",
+                          borderRadius: "2px",
+                          background: "#6366f1",
+                          width: `${pct}%`,
+                          transition: "width 0.3s",
+                        }}
                       />
                     </div>
                   </div>

@@ -125,7 +125,8 @@ export default function ChatPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div
-          className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
           aria-label="Loading"
         />
       </div>
@@ -134,15 +135,15 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)] lg:h-[calc(100vh-0px)]">
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');`}</style>
       <header
-        className="flex items-center justify-between px-6 py-4 shrink-0 border-b border-[#1a1a1a]"
-        style={{ background: "#0d0d0d" }}
+        className="flex items-center justify-between px-6 py-4 shrink-0"
+        style={{ background: "#08090a", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
-        <div className="flex items-center gap-3">
-          <span className="text-lg font-semibold text-[#f0f0f0]">Zyph</span>
+        <div className="flex items-center gap-2">
+          <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "19px", color: "#F2F2F2", letterSpacing: "-0.02em" }}>Zyph</span>
           <span
-            className="w-2 h-2 rounded-full bg-[#22c55e] shrink-0 animate-pulse"
-            style={{ boxShadow: "0 0 8px #22c55e" }}
+            style={{ display: "inline-block", width: "5px", height: "5px", borderRadius: "50%", background: "#22c55e", flexShrink: 0, boxShadow: "0 0 6px rgba(34,197,94,0.6)" }}
             aria-hidden
           />
         </div>
@@ -168,8 +169,8 @@ export default function ChatPage() {
         <div className="max-w-3xl mx-auto w-full chat-scrollbar">
           {messages.length === 0 && !loading && (
             <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
-              <p className="text-[24px] text-[#555] mb-2">Ask anything.</p>
-              <p className="text-sm text-[#666] mb-8">
+                  <p style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "28px", color: "#8a8f98", marginBottom: "8px", letterSpacing: "-0.01em" }}>Ask anything.</p>
+              <p style={{ fontSize: "13px", color: "#525252", marginBottom: "28px", fontFamily: "Inter, sans-serif" }}>
                 Zyph uses your profile to respond.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
@@ -178,7 +179,7 @@ export default function ChatPage() {
                     key={s}
                     type="button"
                     onClick={() => sendMessage(s)}
-                    className="px-4 py-2.5 rounded-full text-sm text-[#f0f0f0] border border-[#1e1e1e] bg-[#141414] hover:border-[#333] hover:bg-[#1a1a1a] transition-all duration-200"
+                    className="px-4 py-2.5 rounded-full text-sm text-[#8a8f98] border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(255,255,255,0.12)] hover:text-[#F2F2F2] transition-all duration-200"
                   >
                     {s}
                   </button>
@@ -208,13 +209,13 @@ export default function ChatPage() {
                     style={
                       msg.role === "user"
                         ? {
-                            background: "linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%)",
+                            background: "#6366f1",
                             color: "#fff",
                           }
                         : {
-                            background: "#141414",
-                            border: "1px solid #1e1e1e",
-                            color: "#e0e0e0",
+                            background: "rgba(255,255,255,0.03)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            color: "#F2F2F2",
                           }
                     }
                   >
@@ -233,13 +234,13 @@ export default function ChatPage() {
                   <div
                     className="rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center"
                     style={{
-                      background: "#141414",
-                      border: "1px solid #1e1e1e",
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   >
-                    <span className="w-2 h-2 rounded-full bg-[#666] animate-pulse" style={{ animationDelay: "0ms" }} />
-                    <span className="w-2 h-2 rounded-full bg-[#666] animate-pulse" style={{ animationDelay: "150ms" }} />
-                    <span className="w-2 h-2 rounded-full bg-[#666] animate-pulse" style={{ animationDelay: "300ms" }} />
+                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "rgba(99,102,241,0.6)", animationDelay: "0ms" }} />
+                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "rgba(99,102,241,0.6)", animationDelay: "150ms" }} />
+                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "rgba(99,102,241,0.6)", animationDelay: "300ms" }} />
                   </div>
                 </div>
               </div>
@@ -250,12 +251,12 @@ export default function ChatPage() {
       </div>
 
       <div
-        className="shrink-0 p-4 border-t border-[#1a1a1a]"
-        style={{ background: "#0d0d0d" }}
+        className="shrink-0 p-4"
+        style={{ background: "#08090a", borderTop: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="max-w-3xl mx-auto w-full">
           <form onSubmit={handleSubmit} className="flex gap-3 items-end">
-            <div className="flex-1 rounded-xl px-4 py-3 min-h-[48px] flex items-center gap-2 border border-[#1e1e1e] bg-[#141414] focus-within:border-[#7c3aed] transition-colors duration-200">
+            <div className="flex-1 rounded-xl px-4 py-3 min-h-[48px] flex items-center gap-2 border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] focus-within:border-[#6366f1] transition-colors duration-200">
               <input
                 ref={inputRef}
                 type="text"
@@ -274,7 +275,7 @@ export default function ChatPage() {
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity duration-200 bg-[#7c3aed] hover:opacity-90"
+                className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity duration-200 bg-[#6366f1] hover:opacity-90"
                 aria-label="Send"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

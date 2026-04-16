@@ -20,11 +20,11 @@ type InsightRow = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  communication: "#7c3aed",
-  interests: "#e8837a",
+  communication: "#6366f1",
+  interests: "#f97316",
   "work style": "#f59e0b",
-  work: "#7c3aed",
-  creative: "#e8837a",
+  work: "#6366f1",
+  creative: "#f97316",
   learning: "#f59e0b",
   other: "#22c55e",
   general: "#22c55e",
@@ -33,7 +33,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 function getCategoryColor(category: string): string {
   const k = category.trim().toLowerCase();
-  return CATEGORY_COLORS[k] || CATEGORY_COLORS[category] || "#7c3aed";
+  return CATEGORY_COLORS[k] || CATEGORY_COLORS[category] || "#6366f1";
 }
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
@@ -52,12 +52,12 @@ function ConfidenceRing({ value }: { value: number | null }) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 py-2">
         <div
-          className="rounded-full border-2 border-dashed border-[#2a2a2a] flex items-center justify-center text-[#555] text-xs"
-          style={{ width: size, height: size }}
+          className="rounded-full flex items-center justify-center text-xs"
+          style={{ width: size, height: size, border: "2px dashed rgba(255,255,255,0.1)", color: "#525252" }}
         >
           —
         </div>
-        <span className="text-xs text-[#666] uppercase tracking-wider">
+        <span style={{ fontSize: "11px", color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "Inter, sans-serif" }}>
           Confidence
         </span>
       </div>
@@ -79,7 +79,7 @@ function ConfidenceRing({ value }: { value: number | null }) {
             cy={size / 2}
             r={r}
             fill="none"
-            stroke="#1e1e1e"
+            stroke="rgba(255,255,255,0.06)"
             strokeWidth={stroke}
           />
           <circle
@@ -87,21 +87,19 @@ function ConfidenceRing({ value }: { value: number | null }) {
             cy={size / 2}
             r={r}
             fill="none"
-            stroke="#7c3aed"
+            stroke="#6366f1"
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={c}
             strokeDashoffset={offset}
-            style={{
-              filter: "drop-shadow(0 0 6px rgba(124,58,237,0.55))",
-            }}
+            style={{ filter: "drop-shadow(0 0 6px rgba(99,102,241,0.55))" }}
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl font-bold tabular-nums text-white">{pct}%</span>
+          <span style={{ fontSize: "20px", fontWeight: 700, color: "#F2F2F2", fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
         </div>
       </div>
-      <span className="text-xs text-[#888] uppercase tracking-wider">
+      <span style={{ fontSize: "11px", color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "Inter, sans-serif" }}>
         Avg confidence
       </span>
     </div>
@@ -290,9 +288,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center" }}>
         <div
-          className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
           aria-label="Loading"
         />
       </div>
@@ -305,56 +304,62 @@ export default function ProfilePage() {
   const displayName = profile?.display_name?.trim() || "Add your name";
   const categoryCount = Object.keys(groupedByCategory).length;
 
-  const appBadgeColors = [
-    "#7c3aed",
-    "#e8837a",
-    "#f59e0b",
-    "#22c55e",
-    "#38bdf8",
-  ];
+  const appBadgeColors = ["#6366f1", "#f97316", "#f59e0b", "#22c55e", "#38bdf8"];
 
   return (
-    <div
-      className="min-w-0 pb-8"
-      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
-    >
-      {/* Full-width hero */}
-      <div
-        className="relative w-screen max-w-none left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mb-10 overflow-hidden border-b border-[#1f1f2e]"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(124,58,237,0.22) 0%, rgba(91,33,182,0.12) 40%, rgba(10,10,14,0.95) 100%), radial-gradient(ellipse 80% 60% at 20% 0%, rgba(124,58,237,0.25), transparent 55%)",
-        }}
-      >
+    <div style={{ padding: "32px 40px", animation: "dashboardFadeIn 0.3s ease forwards" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+      `}</style>
+
+      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+
+        {/* Profile card */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)`,
-            backgroundSize: "48px 48px",
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: "12px",
+            padding: "24px 28px",
+            marginBottom: "28px",
           }}
-          aria-hidden
-        />
-        <div className="relative mx-auto max-w-4xl px-6 md:px-8 py-10 md:py-12">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-8">
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <div
-              className="h-24 w-24 shrink-0 rounded-2xl flex items-center justify-center text-4xl font-bold text-white shadow-lg"
               style={{
-                background:
-                  "linear-gradient(145deg, #7c3aed 0%, #5b21b6 45%, #e8837a 100%)",
-                boxShadow:
-                  "0 0 0 1px rgba(255,255,255,0.08), 0 20px 50px -12px rgba(124,58,237,0.55)",
+                width: "68px",
+                height: "68px",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "26px",
+                fontWeight: 700,
+                color: "#fff",
+                flexShrink: 0,
+                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
               }}
             >
               {initial}
             </div>
-            <div className="flex-1 min-w-0">
+            <div style={{ flex: 1, minWidth: 0 }}>
               {editingName ? (
                 <div className="flex flex-wrap items-center gap-2">
                   <input
                     type="text"
                     value={editNameValue}
                     onChange={(e) => setEditNameValue(e.target.value)}
-                    className="px-3 py-2 rounded-lg bg-[#111]/80 border border-[#2a2a3a] text-[#f0f0f0] text-lg font-semibold focus:outline-none focus:border-[#a78bfa] focus:ring-1 focus:ring-[#7c3aed]/40 transition-colors duration-200"
+                    style={{
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      color: "#F2F2F2",
+                      fontSize: "18px",
+                      fontWeight: 600,
+                      outline: "none",
+                      fontFamily: "Inter, sans-serif",
+                    }}
                     placeholder="Display name"
                     autoFocus
                   />
@@ -362,7 +367,18 @@ export default function ProfilePage() {
                     type="button"
                     onClick={handleSaveName}
                     disabled={savingName}
-                    className="px-3 py-2 rounded-lg bg-[#7c3aed] text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-all duration-200 shadow-md shadow-violet-900/30"
+                    style={{
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                      background: "#6366f1",
+                      color: "#fff",
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: savingName ? 0.5 : 1,
+                      fontFamily: "Inter, sans-serif",
+                    }}
                   >
                     {savingName ? "Saving…" : "Save"}
                   </button>
@@ -372,7 +388,16 @@ export default function ProfilePage() {
                       setEditingName(false);
                       setEditNameValue(profile?.display_name ?? "");
                     }}
-                    className="px-3 py-2 rounded-lg text-[#a3a3a3] hover:bg-white/5 text-sm transition-colors duration-200"
+                    style={{
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      background: "transparent",
+                      color: "#8a8f98",
+                      fontSize: "13px",
+                      border: "none",
+                      cursor: "pointer",
+                      fontFamily: "Inter, sans-serif",
+                    }}
                   >
                     Cancel
                   </button>
@@ -384,98 +409,63 @@ export default function ProfilePage() {
                     setEditNameValue(profile?.display_name ?? "");
                     setEditingName(true);
                   }}
-                  className="text-2xl md:text-3xl font-bold text-white hover:text-violet-100 transition-colors duration-200 text-left tracking-tight"
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}
                 >
-                  {displayName}
+                  <span style={{ fontSize: "20px", fontWeight: 600, color: "#F2F2F2", fontFamily: "Inter, sans-serif", letterSpacing: "-0.02em" }}>
+                    {displayName}
+                  </span>
                 </button>
               )}
               {userEmail && (
-                <p className="text-[#b4b4c0] text-sm mt-2 truncate max-w-full">
+                <p style={{ color: "#8a8f98", fontSize: "13px", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "Inter, sans-serif" }}>
                   {userEmail}
                 </p>
               )}
-              <p className="text-[#8b8b9a] text-xs mt-1.5 flex items-center gap-2">
-                <span
-                  className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400/90"
-                  style={{ boxShadow: "0 0 8px rgba(52,211,153,0.5)" }}
-                />
+              <p style={{ color: "#525252", fontSize: "12px", marginTop: "6px", display: "flex", alignItems: "center", gap: "6px", fontFamily: "Inter, sans-serif" }}>
+                <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e", flexShrink: 0, boxShadow: "0 0 6px rgba(34,197,94,0.5)" }} />
                 Member since {memberSince || "—"}
               </p>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-6 md:px-8">
         {/* Stats + confidence ring */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12 items-stretch">
-          <div
-            className="rounded-2xl p-6 relative overflow-hidden"
-            style={{
-              background: "#111111",
-              border: "1px solid #1e1e1e",
-              borderLeft: "4px solid #7c3aed",
-              boxShadow:
-                "0 0 32px -8px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.04)",
-            }}
-          >
-            <p className="text-[#737373] text-xs font-medium uppercase tracking-wider mb-2">
-              Total observations
-            </p>
-            <p
-              className="text-3xl md:text-4xl font-bold text-white tabular-nums"
-              style={{ fontFamily: "var(--font-mono)" }}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" style={{ marginBottom: "32px" }}>
+          {[
+            { label: "Total observations", value: totalObservations.toLocaleString(), accent: "#6366f1" },
+            { label: "Days observed", value: daysObserved.toString(), accent: "#f97316" },
+            { label: "Insight categories", value: categoryCount.toString(), sub: `${insights.length} total insights`, accent: "#f59e0b" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderLeft: `3px solid ${stat.accent}`,
+                borderRadius: "10px",
+                padding: "20px",
+              }}
             >
-              {totalObservations.toLocaleString()}
-            </p>
-          </div>
+              <p style={{ fontSize: "11px", color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px", fontFamily: "Inter, sans-serif" }}>
+                {stat.label}
+              </p>
+              <p style={{ fontSize: "30px", fontWeight: 700, color: "#F2F2F2", fontVariantNumeric: "tabular-nums", lineHeight: 1 }}>
+                {stat.value}
+              </p>
+              {stat.sub && (
+                <p style={{ fontSize: "12px", color: "#525252", marginTop: "6px", fontFamily: "Inter, sans-serif" }}>{stat.sub}</p>
+              )}
+            </div>
+          ))}
           <div
-            className="rounded-2xl p-6 relative overflow-hidden"
             style={{
-              background: "#111111",
-              border: "1px solid #1e1e1e",
-              borderLeft: "4px solid #e8837a",
-              boxShadow:
-                "0 0 32px -8px rgba(232,131,122,0.3), inset 0 1px 0 rgba(255,255,255,0.04)",
-            }}
-          >
-            <p className="text-[#737373] text-xs font-medium uppercase tracking-wider mb-2">
-              Days observed
-            </p>
-            <p
-              className="text-3xl md:text-4xl font-bold text-white tabular-nums"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {daysObserved}
-            </p>
-          </div>
-          <div
-            className="rounded-2xl p-6 relative overflow-hidden"
-            style={{
-              background: "#111111",
-              border: "1px solid #1e1e1e",
-              borderLeft: "4px solid #f59e0b",
-              boxShadow:
-                "0 0 32px -8px rgba(245,158,11,0.28), inset 0 1px 0 rgba(255,255,255,0.04)",
-            }}
-          >
-            <p className="text-[#737373] text-xs font-medium uppercase tracking-wider mb-2">
-              Insight categories
-            </p>
-            <p
-              className="text-3xl md:text-4xl font-bold text-white tabular-nums"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {categoryCount}
-            </p>
-            <p className="text-[#555] text-xs mt-2">{insights.length} total insights</p>
-          </div>
-          <div
-            className="rounded-2xl p-6 flex items-center justify-center"
-            style={{
-              background: "#111111",
-              border: "1px solid #1e1e1e",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "10px",
+              padding: "20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <ConfidenceRing value={confidenceAvg} />
@@ -483,25 +473,34 @@ export default function ProfilePage() {
         </div>
 
         {/* Insights */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold text-white mb-5 tracking-tight">
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#F2F2F2", marginBottom: "14px", fontFamily: "Inter, sans-serif" }}>
             What Zyph has learned about you
           </h2>
           {Object.keys(groupedByCategory).length === 0 ? (
             <div
-              className="rounded-2xl p-14 flex flex-col items-center justify-center text-center border border-[#1e1e1e]"
-              style={{ background: "#111111" }}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: "10px",
+                padding: "56px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
             >
               <div
-                className="w-16 h-16 rounded-full bg-[#7c3aed]/30 animate-pulse mb-4"
-                style={{ boxShadow: "0 0 24px rgba(124,58,237,0.3)" }}
+                className="animate-pulse"
+                style={{ width: "44px", height: "44px", borderRadius: "50%", background: "rgba(99,102,241,0.18)", marginBottom: "14px" }}
               />
-              <p className="text-[#888] text-sm max-w-sm">
+              <p style={{ color: "#8a8f98", fontSize: "13px", fontFamily: "Inter, sans-serif", lineHeight: 1.6 }}>
                 No insights yet. Keep using Zyph to build your profile.
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {Object.entries(groupedByCategory).map(([category, items]) => {
                 const color = getCategoryColor(category);
                 const { r, g, b } = hexToRgb(color);
@@ -509,38 +508,56 @@ export default function ProfilePage() {
                 return (
                   <div
                     key={category}
-                    className="rounded-2xl overflow-hidden transition-all duration-200 border border-[#1e1e1e]"
                     style={{
-                      background: `linear-gradient(135deg, rgba(${r},${g},${b},0.09) 0%, #111111 55%)`,
-                      boxShadow: `inset 0 0 0 1px rgba(${r},${g},${b},0.12)`,
+                      background: `rgba(${r},${g},${b},0.04)`,
+                      border: `1px solid rgba(${r},${g},${b},0.12)`,
+                      borderRadius: "10px",
+                      overflow: "hidden",
                     }}
                   >
                     <button
                       type="button"
                       onClick={() => toggleCategory(category)}
-                      className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.03] transition-colors duration-200"
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "13px 18px",
+                        background: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        textAlign: "left",
+                      }}
                     >
-                      <span
-                        className="font-semibold text-white flex items-center gap-2"
-                      >
+                      <span style={{ fontWeight: 600, color: "#F2F2F2", display: "flex", alignItems: "center", gap: "8px", fontFamily: "Inter, sans-serif", fontSize: "13px" }}>
                         <span
-                          className="h-2 w-2 rounded-full shrink-0"
                           style={{
+                            width: "7px",
+                            height: "7px",
+                            borderRadius: "50%",
+                            flexShrink: 0,
                             background: color,
-                            boxShadow: `0 0 10px ${color}99`,
+                            boxShadow: `0 0 8px ${color}88`,
                           }}
                         />
                         {category}
                       </span>
                       <span
-                        className="text-xs px-2.5 py-1 rounded-full text-[#b4b4c0]"
-                        style={{ background: "rgba(0,0,0,0.35)" }}
+                        style={{
+                          fontSize: "12px",
+                          padding: "3px 10px",
+                          borderRadius: "100px",
+                          color: "#8a8f98",
+                          background: "rgba(255,255,255,0.05)",
+                          fontFamily: "Inter, sans-serif",
+                        }}
                       >
                         {items.length} insight{items.length !== 1 ? "s" : ""}
                       </span>
                     </button>
                     {isExpanded && (
-                      <div className="px-5 pb-5 pt-0 flex flex-wrap gap-2">
+                      <div style={{ padding: "0 18px 18px", display: "flex", flexWrap: "wrap", gap: "8px" }}>
                         {items.map((insight) => {
                           const conf =
                             insight.confidence_score != null
@@ -551,28 +568,37 @@ export default function ProfilePage() {
                           return (
                             <div
                               key={insight.id}
-                              className="group flex flex-col gap-2 rounded-xl px-3 py-2.5 max-w-full"
                               style={{
-                                background: "rgba(0,0,0,0.35)",
-                                border: `1px solid rgba(${r},${g},${b},0.2)`,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "8px",
+                                background: "rgba(0,0,0,0.25)",
+                                border: `1px solid rgba(${r},${g},${b},0.15)`,
+                                borderRadius: "8px",
+                                padding: "10px 12px",
                               }}
                             >
                               <span
-                                className="inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium text-[#f0f0f0] leading-snug"
                                 style={{
-                                  background: `rgba(${r},${g},${b},0.18)`,
-                                  border: `1px solid rgba(${r},${g},${b},0.35)`,
+                                  fontSize: "12px",
+                                  fontWeight: 500,
+                                  color: "#F2F2F2",
+                                  background: `rgba(${r},${g},${b},0.15)`,
+                                  border: `1px solid rgba(${r},${g},${b},0.25)`,
+                                  borderRadius: "100px",
+                                  padding: "4px 10px",
+                                  fontFamily: "Inter, sans-serif",
                                 }}
                               >
                                 {text}
                               </span>
-                              <div className="h-1 rounded-full overflow-hidden bg-[#1a1a1a] w-full min-w-[120px]">
+                              <div style={{ height: "3px", borderRadius: "2px", background: "rgba(255,255,255,0.06)", overflow: "hidden", minWidth: "120px" }}>
                                 <div
-                                  className="h-full rounded-full transition-all duration-300"
                                   style={{
+                                    height: "100%",
+                                    borderRadius: "2px",
                                     width: `${pct}%`,
                                     background: color,
-                                    boxShadow: `0 0 8px ${color}66`,
                                   }}
                                 />
                               </div>
@@ -589,68 +615,87 @@ export default function ProfilePage() {
         </section>
 
         {/* Recent Observations Timeline */}
-        <section className="mb-12">
-          <h2 className="text-xl font-semibold text-white mb-5 tracking-tight">
+        <section style={{ marginBottom: "40px" }}>
+          <h2 style={{ fontSize: "15px", fontWeight: 600, color: "#F2F2F2", marginBottom: "14px", fontFamily: "Inter, sans-serif" }}>
             Recent observations
           </h2>
           <div
-            className="rounded-2xl p-6 md:p-8 relative overflow-hidden"
             style={{
-              background: "#111111",
-              border: "1px solid #1e1e1e",
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "10px",
+              padding: "24px",
             }}
           >
             {observations.length === 0 ? (
-              <p className="text-[#888] text-sm">
+              <p style={{ color: "#8a8f98", fontSize: "13px", fontFamily: "Inter, sans-serif" }}>
                 No observations yet. Use the desktop app to start.
               </p>
             ) : (
-              <ul className="relative pl-1">
+              <ul style={{ position: "relative", paddingLeft: "4px" }}>
                 <span
-                  className="absolute left-[11px] top-3 bottom-8 w-[2px] rounded-full pointer-events-none"
                   style={{
-                    background:
-                      "linear-gradient(180deg, rgba(124,58,237,0.65) 0%, rgba(124,58,237,0.15) 100%)",
+                    position: "absolute",
+                    left: "11px",
+                    top: "12px",
+                    bottom: "32px",
+                    width: "2px",
+                    borderRadius: "2px",
+                    pointerEvents: "none",
+                    background: "linear-gradient(180deg, rgba(99,102,241,0.5) 0%, rgba(99,102,241,0.06) 100%)",
                   }}
                   aria-hidden
                 />
                 {displayObservations.map((obs, idx) => {
-                  const badgeColor =
-                    appBadgeColors[idx % appBadgeColors.length];
+                  const badgeColor = appBadgeColors[idx % appBadgeColors.length];
                   return (
                     <li
                       key={obs.id}
-                      className="relative flex gap-4 pl-10 pb-8 last:pb-0"
+                      style={{ position: "relative", display: "flex", gap: "16px", paddingLeft: "40px", paddingBottom: "28px" }}
+                      className="last:pb-0"
                     >
                       <span
-                        className="absolute left-0 top-1.5 w-6 h-6 rounded-full shrink-0 border-[3px] border-[#111] z-10"
                         style={{
+                          position: "absolute",
+                          left: 0,
+                          top: "6px",
+                          width: "22px",
+                          height: "22px",
+                          borderRadius: "50%",
+                          flexShrink: 0,
                           background: badgeColor,
-                          boxShadow: `0 0 0 2px rgba(124,58,237,0.35), 0 0 12px ${badgeColor}55`,
+                          border: "3px solid #08090a",
+                          zIndex: 10,
+                          boxShadow: `0 0 10px ${badgeColor}44`,
                         }}
                       />
-                      <div className="min-w-0 flex-1 pt-0.5">
+                      <div style={{ minWidth: 0, flex: 1, paddingTop: "2px" }}>
                         {obs.app_name && (
                           <span
-                            className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wide mb-2"
                             style={{
-                              background: `${badgeColor}22`,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              padding: "3px 8px",
+                              borderRadius: "5px",
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.06em",
+                              marginBottom: "6px",
+                              background: `${badgeColor}18`,
                               color: badgeColor,
-                              border: `1px solid ${badgeColor}44`,
+                              border: `1px solid ${badgeColor}33`,
+                              fontFamily: "Inter, sans-serif",
                             }}
                           >
                             {obs.app_name}
                           </span>
                         )}
-                        <p className="text-[#f0f0f0] text-sm leading-relaxed font-medium">
+                        <p style={{ color: "#F2F2F2", fontSize: "13px", lineHeight: 1.6, fontWeight: 500, fontFamily: "Inter, sans-serif" }}>
                           {obs.summary || "Activity"}
                         </p>
-                        <p
-                          className="text-[#737373] text-xs mt-2 tabular-nums"
-                          style={{ fontFamily: "var(--font-mono)" }}
-                        >
-                          {formatNiceDate(obs.captured_at)} ·{" "}
-                          {formatTimeAgo(obs.captured_at)}
+                        <p style={{ color: "#525252", fontSize: "12px", marginTop: "6px", fontFamily: "monospace" }}>
+                          {formatNiceDate(obs.captured_at)} · {formatTimeAgo(obs.captured_at)}
                         </p>
                       </div>
                     </li>
@@ -662,7 +707,17 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setObservationsLimit((n) => n + 10)}
-                className="mt-6 text-sm font-medium text-[#a78bfa] hover:text-violet-300 transition-colors duration-200"
+                style={{
+                  marginTop: "20px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: "#818cf8",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  fontFamily: "Inter, sans-serif",
+                }}
               >
                 Load more
               </button>
@@ -671,11 +726,21 @@ export default function ProfilePage() {
         </section>
 
         {/* Danger zone */}
-        <div className="pt-2">
+        <div>
           <button
             type="button"
             onClick={() => setClearModalOpen(true)}
-            className="px-5 py-2.5 rounded-xl text-sm font-medium text-red-400 border border-red-900/50 bg-transparent hover:bg-red-950/50 transition-colors duration-200"
+            style={{
+              padding: "10px 20px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 500,
+              color: "#f87171",
+              background: "transparent",
+              border: "1px solid rgba(239,68,68,0.3)",
+              cursor: "pointer",
+              fontFamily: "Inter, sans-serif",
+            }}
           >
             Clear all my data
           </button>
@@ -684,26 +749,42 @@ export default function ProfilePage() {
 
       {clearModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70"
+          style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px", background: "rgba(0,0,0,0.72)" }}
           onClick={() => !clearing && setClearModalOpen(false)}
         >
           <div
-            className="rounded-xl p-6 max-w-md w-full shadow-xl border border-[#1e1e1e] bg-[#111111]"
+            style={{
+              borderRadius: "12px",
+              padding: "24px",
+              maxWidth: "420px",
+              width: "100%",
+              background: "#0f1011",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-[#f0f0f0] mb-2">
+            <h3 style={{ fontSize: "17px", fontWeight: 600, color: "#F2F2F2", marginBottom: "8px", fontFamily: "Inter, sans-serif" }}>
               Clear all my data?
             </h3>
-            <p className="text-[#666] text-sm mb-6">
+            <p style={{ color: "#8a8f98", fontSize: "13px", marginBottom: "24px", lineHeight: 1.6, fontFamily: "Inter, sans-serif" }}>
               This will permanently delete your observations and profile
               insights. This cannot be undone.
             </p>
-            <div className="flex gap-3 justify-end">
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
               <button
                 type="button"
                 onClick={() => setClearModalOpen(false)}
                 disabled={clearing}
-                className="px-4 py-2 rounded-lg text-[#999] hover:bg-[#141414] transition-colors duration-200"
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  color: "#8a8f98",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  fontFamily: "Inter, sans-serif",
+                }}
               >
                 Cancel
               </button>
@@ -711,7 +792,17 @@ export default function ProfilePage() {
                 type="button"
                 onClick={handleClearData}
                 disabled={clearing}
-                className="px-4 py-2 rounded-lg text-red-400 border border-red-900/50 bg-transparent hover:bg-red-950/50 disabled:opacity-50 transition-colors duration-200"
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: "8px",
+                  color: "#f87171",
+                  background: "transparent",
+                  border: "1px solid rgba(239,68,68,0.3)",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  opacity: clearing ? 0.5 : 1,
+                  fontFamily: "Inter, sans-serif",
+                }}
               >
                 {clearing ? "Clearing…" : "Yes, clear everything"}
               </button>
