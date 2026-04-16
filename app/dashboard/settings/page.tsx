@@ -21,9 +21,6 @@ type ProfileRow = {
 
 type Toast = { type: "success" | "error"; message: string } | null;
 
-const inputClass =
-  "w-full px-4 py-2.5 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] placeholder-[#666] focus:outline-none focus:border-[#6366f1] focus:ring-0 transition-colors duration-200";
-
 export default function SettingsPage() {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
@@ -36,9 +33,7 @@ export default function SettingsPage() {
   const [dataRetentionDays, setDataRetentionDays] = useState(90);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [subscription, setSubscription] = useState<SubscriptionRow | null>(
-    null
-  );
+  const [subscription, setSubscription] = useState<SubscriptionRow | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
@@ -174,7 +169,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center" }}>
         <div
           className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
           style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
@@ -186,70 +181,124 @@ export default function SettingsPage() {
 
   const initial = displayName?.[0]?.toUpperCase() || "?";
 
-  return (
-    <div
-      className="p-6 md:p-8 pb-24"
-      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
-    >
+  const inputStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    fontSize: "14px",
+    color: "#F2F2F2",
+    width: "100%",
+    outline: "none",
+    fontFamily: "Inter, sans-serif",
+    transition: "border-color 0.15s, background 0.15s",
+  };
 
-      <div className="max-w-[680px] mx-auto">
-        <h1 className="text-[28px] font-semibold text-[#f0f0f0] mb-8">
+  const sectionLabelStyle: React.CSSProperties = {
+    fontSize: "11px",
+    fontWeight: 600,
+    color: "#525252",
+    textTransform: "uppercase",
+    letterSpacing: "0.1em",
+    marginBottom: "12px",
+    fontFamily: "Inter, sans-serif",
+  };
+
+  const cardStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.02)",
+    border: "1px solid rgba(255,255,255,0.07)",
+    borderRadius: "10px",
+    padding: "20px 24px",
+  };
+
+  return (
+    <div style={{ padding: "32px 40px", animation: "dashboardFadeIn 0.3s ease forwards", fontFamily: "Inter, sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        .settings-input:focus { border-color: rgba(99,102,241,0.5) !important; background: rgba(255,255,255,0.06) !important; }
+        .export-btn:hover { background: rgba(255,255,255,0.04) !important; }
+        .delete-btn:hover { background: rgba(239,68,68,0.06) !important; }
+        .save-btn:hover:not(:disabled) { opacity: 0.88; }
+        .cancel-btn:hover { color: #8a8f98 !important; }
+        .confirm-delete-btn:hover { background: rgba(239,68,68,0.08) !important; }
+        .pricing-btn:hover { opacity: 0.88; }
+        .manage-sub-btn:hover:not(:disabled) { opacity: 0.88; }
+      `}</style>
+
+      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+
+        <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#F2F2F2", letterSpacing: "-0.02em", marginBottom: "32px" }}>
           Settings
         </h1>
 
         {/* Account */}
-        <section className="mb-10">
-          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
-            Account
-          </h2>
-          <div className="h-px bg-[#1a1a1a] mb-6" />
-          <div className="flex items-start gap-6 mb-6">
-            <div
-              className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold text-white shrink-0"
-              style={{
-                background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)",
-              }}
-            >
-              {initial}
-            </div>
-            <div className="flex-1 space-y-4 min-w-0">
-              <div>
-                <label className="block text-xs text-[#666] mb-1.5">
-                  Display name
-                </label>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className={inputClass}
-                  placeholder="Your name"
-                />
+        <section style={{ marginBottom: "32px" }}>
+          <p style={sectionLabelStyle}>Account</p>
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", marginBottom: "20px" }} />
+          <div style={cardStyle}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "20px" }}>
+              {/* Avatar */}
+              <div
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "10px",
+                  background: "linear-gradient(135deg, #6366f1, #818cf8)",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                {initial}
               </div>
-              <div>
-                <label className="block text-xs text-[#666] mb-1.5">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  readOnly
-                  className={`${inputClass} opacity-80 cursor-not-allowed`}
-                  placeholder="Email"
-                />
+
+              {/* Fields */}
+              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 500, color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "5px" }}>
+                    Display name
+                  </label>
+                  <input
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="settings-input"
+                    style={inputStyle}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 500, color: "#525252", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "5px" }}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    readOnly
+                    style={{ ...inputStyle, opacity: 0.5, cursor: "not-allowed" }}
+                    placeholder="Email"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Subscription */}
-        <section className="mb-10">
-          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
-            Subscription
-          </h2>
-          <div className="h-px bg-[#1a1a1a] mb-6" />
-          <div className="rounded-xl border border-[#1e1e1e] bg-[#111] px-4 py-4 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+        <section style={{ marginBottom: "32px" }}>
+          <p style={sectionLabelStyle}>Subscription</p>
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", marginBottom: "20px" }} />
+          <div style={cardStyle}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
               <div>
-                <p className="text-[#f0f0f0] font-medium">Billing</p>
-                <p className="text-[#666] text-sm mt-0.5">
+                <p style={{ fontSize: "15px", fontWeight: 600, color: "#F2F2F2", marginBottom: "4px" }}>
+                  Billing
+                </p>
+                <p style={{ fontSize: "13px", color: "#8a8f98", lineHeight: 1.55 }}>
                   {!subscription?.status || subscription.status === "free"
                     ? "Subscribe to Pro or Mirror to unlock higher limits and full history."
                     : subscription.stripe_customer_id
@@ -257,27 +306,66 @@ export default function SettingsPage() {
                       : "Your plan is active."}
                 </p>
               </div>
+
               {subscription?.status && subscription.status !== "free" ? (
                 subscription.stripe_customer_id ? (
                   <button
                     type="button"
                     onClick={handleManageSubscription}
                     disabled={portalLoading}
-                    className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#6366f1] hover:opacity-90 disabled:opacity-50 transition-opacity duration-200"
+                    className="manage-sub-btn"
+                    style={{
+                      flexShrink: 0,
+                      background: "#6366f1",
+                      color: "#fff",
+                      borderRadius: "8px",
+                      padding: "8px 16px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: portalLoading ? 0.5 : 1,
+                      fontFamily: "Inter, sans-serif",
+                      transition: "opacity 0.15s",
+                    }}
                   >
                     {portalLoading ? "Opening…" : "Manage subscription"}
                   </button>
                 ) : (
-                  <div className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#22c55e] border border-[#22c55e]/30 bg-[#22c55e]/10 inline-block">
-                    {subscription.status === "mirror"
-                      ? "Mirror plan — active"
-                      : "Pro plan — active"}
-                  </div>
+                  <span
+                    style={{
+                      background: "rgba(34,197,94,0.08)",
+                      border: "1px solid rgba(34,197,94,0.15)",
+                      color: "#86efac",
+                      borderRadius: "99px",
+                      padding: "5px 14px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {subscription.status === "mirror" ? "Mirror plan — active" : "Pro plan — active"}
+                  </span>
                 )
               ) : (
                 <a
                   href="/pricing"
-                  className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#7c3aed] hover:opacity-90 transition-opacity duration-200 inline-block text-center"
+                  className="pricing-btn"
+                  style={{
+                    flexShrink: 0,
+                    background: "#6366f1",
+                    color: "#fff",
+                    borderRadius: "8px",
+                    padding: "8px 16px",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    border: "none",
+                    cursor: "pointer",
+                    textDecoration: "none",
+                    display: "inline-block",
+                    fontFamily: "Inter, sans-serif",
+                    transition: "opacity 0.15s",
+                  }}
                 >
                   View pricing
                 </a>
@@ -287,95 +375,143 @@ export default function SettingsPage() {
         </section>
 
         {/* Desktop App */}
-        <section className="mb-10">
-          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
-            Desktop App
-          </h2>
-          <div className="h-px bg-[#1a1a1a] mb-6" />
-          <div className="rounded-xl border border-[#1e1e1e] bg-[#111] px-4 py-4">
-            <p className="text-[#f0f0f0] font-medium mb-1">Capture settings</p>
-            <p className="text-[#666] text-sm">
+        <section style={{ marginBottom: "32px" }}>
+          <p style={sectionLabelStyle}>Desktop App</p>
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", marginBottom: "20px" }} />
+          <div style={cardStyle}>
+            <p style={{ fontSize: "15px", fontWeight: 600, color: "#F2F2F2", marginBottom: "6px" }}>
+              Capture settings
+            </p>
+            <p style={{ fontSize: "13px", color: "#8a8f98", lineHeight: 1.65 }}>
               Zyph captures every 30 seconds automatically. Pause or resume capturing from the desktop app tray icon.
             </p>
           </div>
         </section>
 
         {/* Data & Privacy */}
-        <section className="mb-10">
-          <h2 className="text-sm font-medium text-[#666] uppercase tracking-wider mb-4">
-            Data & Privacy
-          </h2>
-          <div className="h-px bg-[#1a1a1a] mb-6" />
-          <div className="space-y-6">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <label className="text-xs text-[#666]">Data retention</label>
-              <input
-                type="number"
-                min={7}
-                max={365}
-                value={dataRetentionDays}
-                onChange={(e) =>
-                  setDataRetentionDays(Number(e.target.value) || 90)
-                }
-                className="w-20 px-3 py-2 rounded-lg bg-[#111] border border-[#1e1e1e] text-[#f0f0f0] focus:outline-none focus:border-[#6366f1] text-sm"
-              />
-              <span className="text-[#666] text-sm">days</span>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={async () => {
-                  if (!userId) return;
-                  const { data: obs } = await supabase
-                    .from("observations")
-                    .select("captured_at, app_name, summary, category")
-                    .eq("user_id", userId)
-                    .order("captured_at", { ascending: false });
-                  const { data: ins } = await supabase
-                    .from("user_profile_insights")
-                    .select(
-                      "insight_type, insight_value, confidence_score, updated_at"
-                    )
-                    .eq("user_id", userId);
-                  const blob = new Blob(
-                    [JSON.stringify({ observations: obs, insights: ins }, null, 2)],
-                    { type: "application/json" }
-                  );
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = "zyph-data-export.json";
-                  a.click();
-                  URL.revokeObjectURL(url);
-                }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-[#f0f0f0] border border-[#1e1e1e] hover:bg-[#141414] transition-colors duration-200"
-              >
-                Export my data
-              </button>
-              <button
-                type="button"
-                onClick={() => setDeleteModalOpen(true)}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-red-400 border border-red-900/60 bg-transparent hover:bg-red-950/50 transition-colors duration-200"
-              >
-                Delete all data
-              </button>
-            </div>
+        <section style={{ marginBottom: "32px" }}>
+          <p style={sectionLabelStyle}>Data & Privacy</p>
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", marginBottom: "20px" }} />
+
+          {/* Data retention */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
+            <label style={{ fontSize: "13px", color: "#8a8f98", fontFamily: "Inter, sans-serif" }}>
+              Data retention
+            </label>
+            <input
+              type="number"
+              min={7}
+              max={365}
+              value={dataRetentionDays}
+              onChange={(e) => setDataRetentionDays(Number(e.target.value) || 90)}
+              className="settings-input"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#F2F2F2",
+                borderRadius: "6px",
+                padding: "6px 10px",
+                width: "70px",
+                fontSize: "14px",
+                textAlign: "center",
+                outline: "none",
+                fontFamily: "Inter, sans-serif",
+              }}
+            />
+            <span style={{ fontSize: "13px", color: "#525252", fontFamily: "Inter, sans-serif" }}>days</span>
+          </div>
+
+          {/* Action buttons */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            <button
+              type="button"
+              onClick={async () => {
+                if (!userId) return;
+                const { data: obs } = await supabase
+                  .from("observations")
+                  .select("captured_at, app_name, summary, category")
+                  .eq("user_id", userId)
+                  .order("captured_at", { ascending: false });
+                const { data: ins } = await supabase
+                  .from("user_profile_insights")
+                  .select("insight_type, insight_value, confidence_score, updated_at")
+                  .eq("user_id", userId);
+                const blob = new Blob(
+                  [JSON.stringify({ observations: obs, insights: ins }, null, 2)],
+                  { type: "application/json" }
+                );
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "zyph-data-export.json";
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="export-btn"
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#8a8f98",
+                borderRadius: "8px",
+                padding: "9px 16px",
+                fontSize: "13px",
+                cursor: "pointer",
+                fontFamily: "Inter, sans-serif",
+                transition: "background 0.15s",
+              }}
+            >
+              Export my data
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeleteModalOpen(true)}
+              className="delete-btn"
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(239,68,68,0.2)",
+                color: "#ef4444",
+                borderRadius: "8px",
+                padding: "9px 16px",
+                fontSize: "13px",
+                cursor: "pointer",
+                fontFamily: "Inter, sans-serif",
+                transition: "background 0.15s",
+              }}
+            >
+              Delete all data
+            </button>
           </div>
         </section>
 
         {/* Save button */}
-        <div className="flex justify-end">
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px" }}>
           <button
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-3 rounded-lg font-medium text-white bg-[#6366f1] hover:opacity-90 disabled:opacity-50 transition-all duration-200 flex items-center gap-2"
+            className="save-btn"
+            style={{
+              background: "#6366f1",
+              color: "#fff",
+              borderRadius: "8px",
+              padding: "11px 28px",
+              fontSize: "14px",
+              fontWeight: 600,
+              border: "none",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              opacity: saving ? 0.5 : 1,
+              fontFamily: "Inter, sans-serif",
+              transition: "opacity 0.15s",
+            }}
           >
             {saving ? (
               <>
                 <span
                   className="w-4 h-4 rounded-full border-2 border-t-transparent animate-spin"
-                style={{ borderColor: "#fff", borderTopColor: "transparent" }}
+                  style={{ borderColor: "#fff", borderTopColor: "transparent" }}
                   aria-hidden
                 />
                 Saving…
@@ -387,44 +523,91 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Toasts */}
+      {/* Toast */}
       {toast && (
         <div
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border border-[#1e1e1e] shadow-lg"
-          style={{ background: "#111111" }}
+          style={{
+            position: "fixed",
+            bottom: "24px",
+            right: "24px",
+            zIndex: 50,
+            background: "#0e0e0e",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "10px",
+            padding: "12px 16px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontSize: "13px",
+            color: "#F2F2F2",
+            fontFamily: "Inter, sans-serif",
+          }}
         >
           <span
-            className={`w-2 h-2 rounded-full shrink-0 ${
-              toast.type === "success" ? "bg-[#22c55e]" : "bg-red-500"
-            }`}
+            style={{
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              flexShrink: 0,
+              background: toast.type === "success" ? "#22c55e" : "#ef4444",
+            }}
           />
-          <span className="text-sm text-[#f0f0f0]">{toast.message}</span>
+          {toast.message}
         </div>
       )}
 
       {/* Delete modal */}
       {deleteModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            background: "rgba(0,0,0,0.75)",
+            backdropFilter: "blur(8px)",
+          }}
           onClick={() => !deleting && setDeleteModalOpen(false)}
         >
           <div
-            className="rounded-xl p-6 max-w-md w-full border border-[#1e1e1e] bg-[#111111]"
+            style={{
+              background: "#0c0c0f",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: "14px",
+              padding: "28px",
+              maxWidth: "420px",
+              width: "100%",
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-[#f0f0f0] mb-2">
+            <h3 style={{ fontSize: "18px", fontWeight: 600, color: "#F2F2F2", letterSpacing: "-0.01em", marginBottom: "8px", fontFamily: "Inter, sans-serif" }}>
               Delete all data?
             </h3>
-            <p className="text-[#666] text-sm mb-6">
+            <p style={{ fontSize: "14px", color: "#8a8f98", lineHeight: 1.65, marginBottom: "24px", fontFamily: "Inter, sans-serif" }}>
               This will permanently delete all observations and insights. Your
               account will remain; only learned data is removed.
             </p>
-            <div className="flex gap-3 justify-end">
+            <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
               <button
                 type="button"
                 onClick={() => setDeleteModalOpen(false)}
                 disabled={deleting}
-                className="px-4 py-2 rounded-lg text-[#999] hover:bg-[#141414] transition-colors duration-200"
+                className="cancel-btn"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#525252",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  padding: "9px 16px",
+                  borderRadius: "8px",
+                  fontFamily: "Inter, sans-serif",
+                  transition: "color 0.15s",
+                }}
               >
                 Cancel
               </button>
@@ -432,7 +615,19 @@ export default function SettingsPage() {
                 type="button"
                 onClick={handleDeleteAllData}
                 disabled={deleting}
-                className="px-4 py-2 rounded-lg text-red-400 border border-red-900/50 bg-transparent hover:bg-red-950/50 disabled:opacity-50 transition-colors duration-200"
+                className="confirm-delete-btn"
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(239,68,68,0.25)",
+                  color: "#ef4444",
+                  borderRadius: "8px",
+                  padding: "9px 16px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  opacity: deleting ? 0.5 : 1,
+                  fontFamily: "Inter, sans-serif",
+                  transition: "background 0.15s",
+                }}
               >
                 {deleting ? "Deleting…" : "Yes, delete everything"}
               </button>
