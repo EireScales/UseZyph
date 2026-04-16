@@ -5,19 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 
-const glassCard = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  backdropFilter: "blur(24px)",
-};
-
-const glassInput = {
-  background: "rgba(0,0,0,0.3)",
-  border: "1px solid rgba(255,255,255,0.1)",
-};
-
 const GoogleIcon = () => (
-  <svg viewBox="0 0 24 24" width={20} height={20} className="shrink-0">
+  <svg viewBox="0 0 24 24" width={18} height={18} style={{ flexShrink: 0 }}>
     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
@@ -82,39 +71,147 @@ export default function AuthPage() {
     }
   };
 
+  const outerWrapperStyle: React.CSSProperties = {
+    minHeight: "100vh",
+    background: "#08090a",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+    position: "relative",
+    overflow: "hidden",
+    fontFamily: "Inter, -apple-system, sans-serif",
+  };
+
+  const cardStyle: React.CSSProperties = {
+    position: "relative",
+    zIndex: 10,
+    width: "100%",
+    maxWidth: 400,
+    background: "rgba(11,11,15,0.92)",
+    backdropFilter: "blur(40px) saturate(150%)",
+    WebkitBackdropFilter: "blur(40px) saturate(150%)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 14,
+    padding: 32,
+    boxShadow: "0 0 0 1px rgba(255,255,255,0.03) inset, 0 32px 80px rgba(0,0,0,0.5)",
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "11px 14px",
+    borderRadius: 8,
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    color: "#F2F2F2",
+    fontSize: 14,
+    fontFamily: "Inter, sans-serif",
+    outline: "none",
+    transition: "border-color 0.15s, background 0.15s",
+    boxSizing: "border-box",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: 12,
+    fontWeight: 500,
+    color: "#525252",
+    marginBottom: 6,
+    fontFamily: "Inter, sans-serif",
+    letterSpacing: "0.03em",
+    textTransform: "uppercase",
+  };
+
+  const errorBoxStyle: React.CSSProperties = {
+    background: "rgba(239,68,68,0.08)",
+    border: "1px solid rgba(239,68,68,0.2)",
+    borderRadius: 8,
+    padding: "10px 14px",
+    fontSize: 13,
+    color: "#fca5a5",
+    fontFamily: "Inter, sans-serif",
+  };
+
   if (emailSent) {
     return (
-      <div
-        className="min-h-screen bg-[#000000] flex items-center justify-center px-4"
-        style={{
-          backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
-        `,
-          backgroundSize: "80px 80px",
-        }}
-      >
-        <div className="w-full max-w-md rounded-2xl p-8 shadow-2xl text-center" style={glassCard}>
-          <div
-            className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.3)" }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <div style={outerWrapperStyle}>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+          * { box-sizing: border-box; }
+        `}</style>
+
+        {/* Background layers */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99,102,241,0.18) 0%, transparent 65%)",
+          }} />
+          <div style={{
+            position: "absolute", width: "100%", height: "100%",
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+            backgroundSize: "80px 80px",
+          }} />
+        </div>
+
+        <div style={{ ...cardStyle, textAlign: "center" }}>
+          {/* Icon */}
+          <div style={{
+            width: 56, height: 56,
+            background: "rgba(99,102,241,0.1)",
+            border: "1px solid rgba(99,102,241,0.2)",
+            borderRadius: 12,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 20px",
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Check your inbox</h2>
-          <p className="text-white/50 text-sm leading-relaxed mb-2">
+
+          <h2 style={{
+            fontFamily: "'Instrument Serif', Georgia, serif",
+            fontStyle: "italic",
+            fontSize: 24,
+            color: "#F2F2F2",
+            letterSpacing: "-0.02em",
+            marginBottom: 8,
+          }}>
+            Check your inbox.
+          </h2>
+
+          <p style={{ fontSize: 14, color: "#8a8f98", lineHeight: 1.7, marginBottom: 4 }}>
             We sent a confirmation link to
           </p>
-          <p className="text-[#a78bfa] font-semibold text-sm mb-6">{email}</p>
-          <p className="text-white/30 text-xs leading-relaxed mb-8">
+          <p style={{ fontSize: 14, color: "#818cf8", fontWeight: 600, marginBottom: 20 }}>
+            {email}
+          </p>
+
+          <p style={{ fontSize: 12, color: "#3f3f46", lineHeight: 1.6, marginBottom: 24 }}>
             Click the link in the email to activate your account. Check your spam folder if you don&apos;t see it within a minute.
           </p>
+
+          {oauthError && (
+            <div style={{ ...errorBoxStyle, marginBottom: 16 }} role="alert">
+              {oauthError}
+            </div>
+          )}
+
           <button
             type="button"
             onClick={() => setEmailSent(false)}
-            className="text-sm text-white/40 hover:text-white/60 transition-colors"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 13,
+              color: "#3f3f46",
+              fontFamily: "Inter, sans-serif",
+              transition: "color 0.15s",
+              padding: 0,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#8a8f98")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#3f3f46")}
           >
             ← Use a different email
           </button>
@@ -124,90 +221,168 @@ export default function AuthPage() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-[#000000] flex items-center justify-center px-4"
-      style={{
-        backgroundImage: `
-          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
-        `,
-        backgroundSize: "80px 80px",
-      }}
-    >
-      <div
-        className="w-full max-w-md rounded-2xl p-8 shadow-2xl"
-        style={glassCard}
-      >
-        <Link href="/" className="inline-block mb-6">
-          <h1 className="text-2xl font-bold text-white">Zyph</h1>
-        </Link>
-        <p className="text-white/50 text-sm mb-8">
-          Sign in or create an account to get started.
+    <div style={outerWrapperStyle}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; }
+        .auth-input:focus {
+          border-color: rgba(99,102,241,0.5) !important;
+          background: rgba(255,255,255,0.06) !important;
+          outline: none;
+        }
+        .auth-input::placeholder { color: #3f3f46; }
+        .auth-google-btn:hover { background: rgba(255,255,255,0.1) !important; }
+        .auth-back:hover { color: #8a8f98 !important; }
+        .auth-submit:hover:not(:disabled) { opacity: 0.88 !important; }
+        .auth-tab-inactive:hover { color: #8a8f98 !important; }
+      `}</style>
+
+      {/* Background layers */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0 }}>
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99,102,241,0.18) 0%, transparent 65%)",
+        }} />
+        <div style={{
+          position: "absolute", width: "100%", height: "100%",
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+        }} />
+      </div>
+
+      <div style={cardStyle}>
+
+        {/* Logo */}
+        <div style={{ marginBottom: 28 }}>
+          <Link href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center" }}>
+            <span style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: 22,
+              color: "#F2F2F2",
+              letterSpacing: "-0.02em",
+            }}>
+              Zyph
+            </span>
+            <span style={{
+              display: "inline-block",
+              width: 6, height: 6,
+              background: "#6366f1",
+              borderRadius: "50%",
+              marginLeft: 3, marginBottom: 1,
+              verticalAlign: "middle",
+            }} />
+          </Link>
+        </div>
+
+        {/* Tagline */}
+        <p style={{ fontSize: 13, color: "#525252", marginBottom: 24, fontFamily: "Inter, sans-serif" }}>
+          Sign in or create an account to continue.
         </p>
 
+        {/* Google button */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
           disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 py-3 rounded-xl bg-white text-[#1a1a1a] border border-[#e5e7eb] hover:bg-[#f9fafb] hover:border-[#d1d5db] disabled:opacity-50 transition-colors mb-6"
+          className="auth-google-btn"
+          style={{
+            width: "100%",
+            padding: "11px 16px",
+            borderRadius: 8,
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            color: "#F2F2F2",
+            fontSize: 14,
+            fontWeight: 500,
+            fontFamily: "Inter, sans-serif",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            cursor: googleLoading ? "not-allowed" : "pointer",
+            opacity: googleLoading ? 0.5 : 1,
+            transition: "background 0.15s",
+            marginBottom: 20,
+          }}
         >
           <GoogleIcon />
           <span>{googleLoading ? "Redirecting…" : "Continue with Google"}</span>
         </button>
+
         {oauthError && (
-          <p className="text-sm text-[#e8837a] bg-[#e8837a]/10 border border-[#e8837a]/20 rounded-lg px-4 py-3 mb-6" role="alert">
+          <div style={{ ...errorBoxStyle, marginBottom: 16 }} role="alert">
             {oauthError}
-          </p>
+          </div>
         )}
 
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-white/10" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-3 text-white/50" style={{ background: "rgba(255,255,255,0.04)" }}>or continue with email</span>
-          </div>
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
+          <span style={{ fontSize: 12, color: "#3f3f46", fontFamily: "Inter, sans-serif", whiteSpace: "nowrap" }}>
+            or continue with email
+          </span>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
         </div>
 
-        <div className="flex rounded-lg p-1 mb-6" style={glassInput}>
+        {/* Mode toggle */}
+        <div style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          borderRadius: 8,
+          padding: 3,
+          display: "flex",
+          marginBottom: 20,
+        }}>
           <button
             type="button"
-            onClick={() => {
-              setMode("signin");
-              setError(null);
+            onClick={() => { setMode("signin"); setError(null); }}
+            className={mode === "signin" ? undefined : "auth-tab-inactive"}
+            style={{
+              flex: 1,
+              padding: 8,
+              borderRadius: 6,
+              fontSize: 13,
+              fontWeight: 500,
+              fontFamily: "Inter, sans-serif",
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.15s, color 0.15s",
+              background: mode === "signin" ? "rgba(99,102,241,0.15)" : "transparent",
+              color: mode === "signin" ? "#818cf8" : "#525252",
+              ...(mode === "signin" ? { border: "1px solid rgba(99,102,241,0.2)" } : {}),
             }}
-            className={`flex-1 py-2.5 rounded-md text-sm font-medium transition-colors ${
-              mode === "signin"
-                ? "bg-white/10 text-white"
-                : "text-white/60 hover:text-white/80"
-            }`}
           >
             Sign in
           </button>
           <button
             type="button"
-            onClick={() => {
-              setMode("signup");
-              setError(null);
+            onClick={() => { setMode("signup"); setError(null); }}
+            className={mode === "signup" ? undefined : "auth-tab-inactive"}
+            style={{
+              flex: 1,
+              padding: 8,
+              borderRadius: 6,
+              fontSize: 13,
+              fontWeight: 500,
+              fontFamily: "Inter, sans-serif",
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.15s, color 0.15s",
+              background: mode === "signup" ? "rgba(99,102,241,0.15)" : "transparent",
+              color: mode === "signup" ? "#818cf8" : "#525252",
+              ...(mode === "signup" ? { border: "1px solid rgba(99,102,241,0.2)" } : {}),
             }}
-            className={`flex-1 py-2.5 rounded-md text-sm font-medium transition-colors ${
-              mode === "signup"
-                ? "bg-white/10 text-white"
-                : "text-white/60 hover:text-white/80"
-            }`}
           >
             Sign up
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-white/70 mb-2"
-            >
-              Email
-            </label>
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: 16 }}>
+            <label htmlFor="email" style={labelStyle}>Email</label>
             <input
               id="email"
               type="email"
@@ -215,18 +390,14 @@ export default function AuthPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full px-4 py-3 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/50 transition-all"
-              style={glassInput}
               placeholder="you@example.com"
+              className="auth-input"
+              style={inputStyle}
             />
           </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-white/70 mb-2"
-            >
-              Password
-            </label>
+
+          <div style={{ marginBottom: 16 }}>
+            <label htmlFor="password" style={labelStyle}>Password</label>
             <input
               id="password"
               type="password"
@@ -235,39 +406,54 @@ export default function AuthPage() {
               required
               autoComplete={mode === "signin" ? "current-password" : "new-password"}
               minLength={6}
-              className="w-full px-4 py-3 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/50 transition-all"
-              style={glassInput}
               placeholder="••••••••"
+              className="auth-input"
+              style={inputStyle}
             />
           </div>
 
           {error && (
-            <p
-              className="text-sm text-[#e8837a] bg-[#e8837a]/10 border border-[#e8837a]/20 rounded-lg px-4 py-3"
-              role="alert"
-            >
+            <div style={{ ...errorBoxStyle, marginBottom: 16 }} role="alert">
               {error}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:opacity-95"
+            className="auth-submit"
             style={{
-              background: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)",
-              boxShadow: "0 4px 20px rgba(124,58,237,0.35)",
+              width: "100%",
+              padding: 12,
+              borderRadius: 8,
+              background: "#6366f1",
+              color: "white",
+              fontSize: 14,
+              fontWeight: 600,
+              fontFamily: "Inter, sans-serif",
+              border: "none",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: loading ? 0.5 : 1,
+              boxShadow: "0 0 0 1px rgba(99,102,241,0.4), 0 8px 24px rgba(99,102,241,0.25)",
+              transition: "opacity 0.15s",
+              marginTop: 4,
             }}
           >
             {loading ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-white/40 text-sm">
-          <Link href="/" className="hover:text-white/60 transition-colors">
+        {/* Back to home */}
+        <div style={{ marginTop: 20, textAlign: "center" }}>
+          <Link
+            href="/"
+            className="auth-back"
+            style={{ fontSize: 13, color: "#3f3f46", textDecoration: "none", transition: "color 0.15s" }}
+          >
             ← Back to home
           </Link>
-        </p>
+        </div>
+
       </div>
     </div>
   );

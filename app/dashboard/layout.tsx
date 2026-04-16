@@ -90,53 +90,90 @@ export default function DashboardLayout({
   };
 
   return (
-    <div
-      className="min-h-screen flex"
-      style={{
-        background: "radial-gradient(ellipse 80% 50% at 50% 0%, #0f0a1a 0%, #0a0a0a 70%)",
-      }}
-    >
+    <div style={{ minHeight: "100vh", display: "flex", background: "#08090a" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .dash-nav-link { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 7px; font-size: 13px; font-weight: 500; font-family: Inter, sans-serif; transition: background 0.12s, color 0.12s; text-decoration: none; }
+        .dash-nav-link.active { background: rgba(99,102,241,0.1); color: #818cf8; }
+        .dash-nav-link.inactive { color: #525252; }
+        .dash-nav-link.inactive:hover { background: rgba(255,255,255,0.04); color: #8a8f98; }
+        .dash-nav-link.inactive:hover .nav-icon { color: #8a8f98; }
+        .dash-footer-link { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; font-size: 13px; color: #3f3f46; text-decoration: none; transition: color 0.12s, background 0.12s; width: 100%; }
+        .dash-footer-link:hover { color: #8a8f98; background: rgba(255,255,255,0.04); }
+        .dash-signout { display: flex; align-items: center; width: 100%; padding: 8px 10px; border-radius: 7px; font-size: 13px; color: #3f3f46; background: none; border: none; cursor: pointer; font-family: Inter, sans-serif; text-align: left; transition: color 0.12s, background 0.12s; }
+        .dash-signout:hover { color: #8a8f98; background: rgba(255,255,255,0.04); }
+        .hamburger-btn { padding: 8px; border-radius: 6px; background: none; border: none; cursor: pointer; color: #525252; transition: color 0.12s; }
+        .hamburger-btn:hover { color: #8a8f98; }
+      `}</style>
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 transition-opacity duration-200 lg:hidden"
+          className="fixed inset-0 z-30 lg:hidden"
+          style={{ background: "rgba(0,0,0,0.7)", transition: "opacity 200ms" }}
           onClick={() => setSidebarOpen(false)}
           aria-hidden
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 bottom-0 w-[220px] flex flex-col z-40 transition-transform duration-200 ease-[cubic-bezier(0.2)] lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed left-0 top-0 bottom-0 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         style={{
-          background: "#0d0d0d",
-          borderRight: "1px solid #1a1a1a",
+          width: 220,
+          display: "flex",
+          flexDirection: "column",
+          zIndex: 40,
+          background: "#08090a",
+          borderRight: "1px solid rgba(255,255,255,0.06)",
+          transition: "transform 200ms ease",
         }}
       >
-        <div className="p-5 flex items-center justify-between lg:justify-start">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 text-white font-semibold text-lg hover:opacity-90 transition-opacity duration-200"
-          >
-            Zyph
-            <span
-              className="w-2 h-2 rounded-full bg-[#7c3aed] shrink-0 animate-pulse"
-              style={{ boxShadow: "0 0 8px #7c3aed" }}
-              aria-label="Active"
-            />
+        {/* Sidebar header */}
+        <div style={{
+          padding: "20px 16px",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+          <Link href="/dashboard" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+            <span style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: 20,
+              color: "#F2F2F2",
+              letterSpacing: "-0.02em",
+            }}>
+              Zyph
+            </span>
+            <span style={{
+              display: "inline-block",
+              width: 5, height: 5,
+              background: "#6366f1",
+              borderRadius: "50%",
+              marginLeft: 3, marginBottom: 1,
+              verticalAlign: "middle",
+              animation: "pulse 2.5s ease-in-out infinite",
+            }} />
           </Link>
+
+          {/* Close button — mobile only */}
           <button
             type="button"
-            className="lg:hidden p-2 rounded-lg text-[#666] hover:text-[#999] hover:bg-[#141414] transition-colors duration-200"
+            className="hamburger-btn lg:hidden"
             onClick={() => setSidebarOpen(false)}
             aria-label="Close menu"
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
+        {/* Nav items */}
+        <nav style={{ flex: 1, padding: "12px 10px", display: "flex", flexDirection: "column", gap: 2 }}>
           {NAV_ITEMS.map((item) => {
             const isActive =
               item.href === "/dashboard"
@@ -147,22 +184,17 @@ export default function DashboardLayout({
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? "text-white bg-[#1a1a2e]"
-                    : "text-[#555] hover:text-[#999] hover:bg-[#141414]"
-                }`}
-                style={
-                  isActive
-                    ? {
-                        borderLeft: "2px solid #7c3aed",
-                        paddingLeft: "calc(0.75rem + 2px)",
-                      }
-                    : { borderLeft: "2px solid transparent" }
-                }
+                className={`dash-nav-link ${isActive ? "active" : "inactive"}`}
               >
-                <span className={isActive ? "text-white" : "text-current"}>
-                  <NavIcon name={item.icon} />
+                <span
+                  className="nav-icon"
+                  style={{
+                    width: 16, height: 16, flexShrink: 0,
+                    color: isActive ? "#6366f1" : "currentColor",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <NavIcon name={item.icon} className="w-4 h-4" />
                 </span>
                 {item.label}
               </Link>
@@ -170,58 +202,103 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        <div
-          className="p-4 border-t border-[#1a1a1a] space-y-2"
-          style={{ borderTop: "1px solid #1a1a1a" }}
-        >
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#555] hover:text-[#f0f0f0] hover:bg-[#141414] transition-colors duration-200 w-full"
-          >
-            <svg
-              className="w-4 h-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 12H5M12 19l-7-7 7-7" />
+        {/* Sidebar footer */}
+        <div style={{
+          padding: "12px 10px",
+          borderTop: "1px solid rgba(255,255,255,0.05)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+        }}>
+          <Link href="/" className="dash-footer-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
             Back to home
           </Link>
+
           {userEmail && (
-            <p className="text-xs text-[#666] truncate px-2" title={userEmail}>
+            <p
+              title={userEmail}
+              style={{
+                padding: "6px 10px",
+                fontSize: 11,
+                color: "#3f3f46",
+                fontFamily: "monospace",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {userEmail}
             </p>
           )}
+
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full px-3 py-2 rounded-lg text-sm text-[#666] hover:text-[#f0f0f0] hover:bg-[#141414] transition-colors duration-200 text-left"
+            className="dash-signout"
           >
             Sign out
           </button>
         </div>
       </aside>
 
-      <div className="flex-1 min-h-screen flex flex-col lg:pl-[220px]">
-        <header className="sticky top-0 z-20 lg:hidden flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0d0d0d]">
+      {/* Main content */}
+      <div
+        className="lg:pl-[220px]"
+        style={{ flex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", background: "#08090a" }}
+      >
+        {/* Mobile header */}
+        <header
+          className="sticky top-0 z-20 lg:hidden"
+          style={{
+            height: 52,
+            background: "rgba(8,9,10,0.9)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px",
+          }}
+        >
           <button
             type="button"
-            className="p-2 rounded-lg text-[#666] hover:text-[#999] hover:bg-[#141414] transition-colors duration-200"
+            className="hamburger-btn"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open menu"
           >
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 5h16M4 12h16M4 19h16"/>
+            </svg>
           </button>
-          <Link href="/dashboard" className="font-semibold text-white">
-            Zyph
+
+          <Link href="/dashboard" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <span style={{
+              fontFamily: "'Instrument Serif', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: 18,
+              color: "#F2F2F2",
+              letterSpacing: "-0.02em",
+            }}>
+              Zyph
+            </span>
+            <span style={{
+              display: "inline-block",
+              width: 5, height: 5,
+              background: "#6366f1",
+              borderRadius: "50%",
+              marginLeft: 3, marginBottom: 1,
+              verticalAlign: "middle",
+            }} />
           </Link>
-          <div className="w-10" />
+
+          <div style={{ width: 36 }} />
         </header>
-        <main className="flex-1">{children}</main>
+
+        <main style={{ flex: 1 }}>{children}</main>
       </div>
     </div>
   );
