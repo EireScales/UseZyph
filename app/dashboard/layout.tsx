@@ -245,10 +245,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <div
-        className="lg:pl-[220px]"
-        style={{ flex: 1, minHeight: "100vh", display: "flex", flexDirection: "column", background: "#08090a" }}
-      >
+      <div className="flex-1 min-h-screen flex flex-col lg:pl-[220px]">
         {/* Mobile header */}
         <header
           className="sticky top-0 z-20 lg:hidden"
@@ -279,7 +276,7 @@ export default function DashboardLayout({
             <span style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
               fontStyle: "italic",
-              fontSize: 18,
+              fontSize: 19,
               color: "#F2F2F2",
               letterSpacing: "-0.02em",
             }}>
@@ -298,7 +295,7 @@ export default function DashboardLayout({
           <div style={{ width: 36 }} />
         </header>
 
-        <main style={{ flex: 1 }}>{children}</main>
+        <main className="flex-1 w-full">{children}</main>
       </div>
     </div>
   );
