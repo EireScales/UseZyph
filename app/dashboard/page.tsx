@@ -233,17 +233,17 @@ function DashboardContent() {
     {
       label: "Total Observations",
       value: countTotal.toLocaleString(),
-      border: "#7c3aed",
+      border: "#6366f1",
     },
     {
       label: "Days Active",
       value: countDays.toString(),
-      border: "#e8837a",
+      border: "#f97316",
     },
     {
       label: "Insights Generated",
       value: countInsights.toString(),
-      border: "#f59e0b",
+      border: "#eab308",
     },
     { label: "Top App Used", value: topApp, border: "#22c55e" },
   ];
@@ -265,7 +265,8 @@ function DashboardContent() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div
-          className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
           aria-label="Loading"
         />
       </div>
@@ -273,22 +274,17 @@ function DashboardContent() {
   }
 
   return (
-    <div
-      className="p-6 md:p-8"
-      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
-    >
+    <div style={{ padding: "32px 40px", fontFamily: "Inter, sans-serif" }}>
 
-      <div className="max-w-6xl mx-auto">
-        <header className="flex flex-wrap items-start justify-between gap-4 mb-8">
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        <header style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 20 }}>
           <h1
-            className="text-[32px] font-semibold text-[#f0f0f0]"
-            style={{ fontFamily: "var(--font-sans)" }}
+            style={{ fontSize: "28px", fontWeight: 700, color: "#F2F2F2", letterSpacing: "-0.02em", fontFamily: "'Instrument Serif', serif", fontStyle: "italic", margin: 0 }}
           >
             Good {greeting}, {displayName}
           </h1>
           <div
-            className="text-right tabular-nums text-[#444] font-medium text-sm"
-            style={{ fontFamily: "var(--font-mono)" }}
+            style={{ color: "#3f3f46", fontSize: "13px", fontFamily: "monospace" }}
             aria-live="polite"
           >
             {time.toLocaleTimeString("en-US", {
@@ -298,20 +294,17 @@ function DashboardContent() {
             })}
           </div>
         </header>
-        <div className="h-px bg-[#1a1a1a] mb-8" />
+        <div style={{ height: "1px", background: "rgba(255,255,255,0.05)", margin: "20px 0" }} />
 
         {trialing && trialEndsSoon && (
           <div
-            className="mb-6 flex flex-col gap-3 rounded-xl border border-amber-600/40 bg-amber-950/25 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, borderRadius: 8, border: "1px solid rgba(249,115,22,0.15)", background: "rgba(249,115,22,0.06)", padding: "10px 16px", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}
             role="status"
           >
-            <p className="text-sm text-amber-100/95">
-              Your trial ends soon — upgrade to keep unlimited access
+            <p style={{ color: "#fb923c", margin: 0 }}>
+              Your trial ends soon — upgrade to keep unlimited access.
             </p>
-            <Link
-              href="/pricing"
-              className="shrink-0 text-sm font-semibold text-amber-400 hover:text-amber-300 hover:underline"
-            >
+            <Link href="/pricing" style={{ color: "#fb923c", fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
               View plans →
             </Link>
           </div>
@@ -319,25 +312,20 @@ function DashboardContent() {
 
         {trialing && !trialEndsSoon && (
           <div
-            className="mb-6 flex flex-col gap-3 rounded-xl border border-[#5b21b6]/50 bg-[#1a0a2e]/80 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, borderRadius: 8, border: "1px solid rgba(99,102,241,0.15)", background: "rgba(99,102,241,0.06)", padding: "10px 16px", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}
             role="status"
           >
-            <p className="text-sm text-[#c4b5fd]">
+            <p style={{ color: "#818cf8", margin: 0 }}>
               {trialDaysLeft != null && trialDaysLeft > 0 ? (
                 <>
-                  <span className="font-semibold text-white">
-                    {trialDaysLeft}
-                  </span>{" "}
-                  {trialDaysLeft === 1 ? "day" : "days"} left in your free trial
+                  <span style={{ fontWeight: 600, color: "#F2F2F2" }}>{trialDaysLeft}</span>{" "}
+                  {trialDaysLeft === 1 ? "day" : "days"} left in your free trial.
                 </>
               ) : (
                 <>You&apos;re on a free trial — Pro features are unlocked.</>
               )}
             </p>
-            <Link
-              href="/pricing"
-              className="shrink-0 text-sm font-semibold text-[#a78bfa] hover:text-white hover:underline"
-            >
+            <Link href="/pricing" style={{ color: "#818cf8", fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
               Plans & pricing →
             </Link>
           </div>
@@ -345,13 +333,13 @@ function DashboardContent() {
 
         {onFreePlan && (
           <div
-            className="mb-6 flex flex-col gap-3 rounded-xl border border-[#2a1a4a] bg-[#14101c] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, borderRadius: 8, border: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)", padding: "10px 16px", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}
             role="status"
           >
-            <p className="text-sm text-[#c4b5fd]">
-              You&apos;re on the <span className="font-semibold text-white">Free plan</span> — upgrade to Pro or Mirror for more captures and priority AI.
+            <p style={{ color: "#8a8f98", margin: 0 }}>
+              You&apos;re on the <span style={{ fontWeight: 600, color: "#F2F2F2" }}>Free plan</span> — upgrade to Pro or Mirror for more captures and priority AI.
             </p>
-            <Link href="/pricing" className="shrink-0 text-sm font-semibold text-[#7c3aed] hover:underline">
+            <Link href="/pricing" style={{ color: "#6366f1", fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
               Upgrade →
             </Link>
           </div>
@@ -359,105 +347,80 @@ function DashboardContent() {
 
         {!onFreePlan && !trialing && (
           <div
-            className="mb-6 flex flex-col gap-3 rounded-xl border border-[#1a3a1a] bg-[#0a140a] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+            style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, borderRadius: 8, border: "1px solid rgba(34,197,94,0.12)", background: "rgba(34,197,94,0.06)", padding: "10px 16px", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}
             role="status"
           >
-            <p className="text-sm text-[#86efac]">
+            <p style={{ color: "#86efac", margin: 0 }}>
               You&apos;re on the{" "}
-              <span className="font-semibold text-white capitalize">
+              <span style={{ fontWeight: 600, color: "#F2F2F2" }}>
                 {subscription.status === "mirror" ? "Mirror" : subscription.status === "pro" ? "Pro" : subscription.status}
               </span>{" "}
               plan
               {subscription.status === "mirror" ? " — unlimited captures enabled." : " — 150 captures/day enabled."}
             </p>
-            <Link href="/pricing" className="shrink-0 text-sm font-semibold text-[#22c55e] hover:underline">
+            <Link href="/pricing" style={{ color: "#22c55e", fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
               Manage plan →
             </Link>
           </div>
         )}
 
-        {onFreePlan &&
-          capturesToday >= 15 &&
-          capturesToday < 80 && (
-            <div
-              className="mb-6 flex flex-col gap-3 rounded-xl border border-[#3a2a4a] bg-[#161018] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
-              role="status"
-            >
-              <p className="text-sm text-[#a78bfa]">
-                You&apos;ve used{" "}
-                <span className="font-semibold text-white">{capturesToday}</span>{" "}
-                of{" "}
-                <span className="font-semibold text-white">80</span> free
-                captures today — upgrade for unlimited.
-              </p>
-              <Link
-                href="/pricing"
-                className="shrink-0 text-sm font-semibold text-[#7c3aed] hover:underline"
-              >
-                View Pro →
-              </Link>
-            </div>
-          )}
+        {onFreePlan && capturesToday >= 15 && capturesToday < 80 && (
+          <div
+            style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, borderRadius: 8, border: "1px solid rgba(249,115,22,0.15)", background: "rgba(249,115,22,0.06)", padding: "10px 16px", alignItems: "center", justifyContent: "space-between", fontSize: 13 }}
+            role="status"
+          >
+            <p style={{ color: "#fb923c", margin: 0 }}>
+              You&apos;ve used{" "}
+              <span style={{ fontWeight: 600, color: "#F2F2F2" }}>{capturesToday}</span>{" "}
+              of{" "}
+              <span style={{ fontWeight: 600, color: "#F2F2F2" }}>80</span> free captures today — upgrade for unlimited.
+            </p>
+            <Link href="/pricing" style={{ color: "#fb923c", fontWeight: 600, textDecoration: "none", flexShrink: 0 }}>
+              View Pro →
+            </Link>
+          </div>
+        )}
 
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }} className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {statCards.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl p-5 relative overflow-hidden transition-all duration-200 hover:border-[#2a2a2a]"
               style={{
-                background: "#111111",
-                border: "1px solid #1e1e1e",
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.07)",
                 borderLeft: "2px solid " + stat.border,
+                borderRadius: 10,
+                padding: 16,
               }}
             >
-              <p
-                className="text-[#555] text-[11px] uppercase tracking-widest mb-1"
-                style={{ letterSpacing: "0.1em" }}
-              >
+              <p style={{ fontSize: 9, color: "#525252", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6, margin: "0 0 6px" }}>
                 {stat.label}
               </p>
-              <p
-                className="text-[28px] font-medium text-white truncate"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
+              <p style={{ fontSize: 26, fontWeight: 700, color: "#F2F2F2", fontFamily: "monospace", letterSpacing: "-0.02em", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {stat.value}
               </p>
             </div>
           ))}
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <div
-              className="rounded-xl p-5 transition-all duration-200"
-              style={{
-                background: "#111111",
-                border: "1px solid #1e1e1e",
-              }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-[#f0f0f0]">
-                  Recent Activity
-                </h2>
-                <Link
-                  href="/dashboard/profile"
-                  className="text-sm text-[#7c3aed] hover:underline transition-opacity duration-200"
-                >
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 24 }} className="grid-cols-1 lg:grid-cols-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }} className="lg:col-span-2">
+
+            {/* Recent Activity */}
+            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <h2 style={{ fontSize: 13, fontWeight: 600, color: "#F2F2F2", margin: 0 }}>Recent Activity</h2>
+                <Link href="/dashboard/profile" style={{ fontSize: 13, color: "#6366f1", textDecoration: "none" }}>
                   View all
                 </Link>
               </div>
               {observations.length === 0 ? (
-                <div className="py-12 flex flex-col items-center justify-center text-center">
-                  <div
-                    className="w-12 h-12 rounded-full mb-3 opacity-60"
-                    style={{ background: "#1a1a2e" }}
-                  />
-                  <p className="text-[#666] text-sm">
-                    Start the desktop app to begin learning
-                  </p>
+                <div style={{ padding: "40px 0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(99,102,241,0.08)", marginBottom: 12 }} />
+                  <p style={{ color: "#525252", fontSize: 13, margin: 0 }}>Start the desktop app to begin learning.</p>
                 </div>
               ) : (
-                <ul className="divide-y divide-[#1a1a1a]">
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
                   {observations.map((obs) => {
                     const o = obs as {
                       id: string;
@@ -469,33 +432,22 @@ function DashboardContent() {
                     return (
                       <li
                         key={o.id}
-                        className="flex items-start gap-3 py-3 first:pt-0"
+                        style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
                       >
                         <span
-                          className="w-2.5 h-2.5 rounded-full shrink-0 mt-1.5"
                           style={{
-                            background:
-                              ["#7c3aed", "#e8837a", "#f59e0b", "#22c55e"][
-                                o.app_name?.length ?? 0 % 4
-                              ] || "#7c3aed",
+                            width: 6, height: 6, borderRadius: "50%", flexShrink: 0, marginTop: 4,
+                            background: (["#6366f1", "#f97316", "#eab308", "#22c55e"])[o.app_name?.length ?? 0 % 4] || "#6366f1",
                           }}
                         />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[#f0f0f0] text-sm">
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <p style={{ margin: 0, fontSize: 13, color: "#8a8f98" }}>
                             {o.app_name && (
-                              <span className="font-medium">{o.app_name}</span>
+                              <span style={{ fontWeight: 600, color: "#818cf8", background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.15)", borderRadius: 4, padding: "1px 6px", fontSize: 11, marginRight: 6 }}>{o.app_name}</span>
                             )}
-                            {o.summary && (
-                              <span className="text-[#666]">
-                                {" "}
-                                — {o.summary}
-                              </span>
-                            )}
+                            {o.summary && o.summary}
                           </p>
-                          <p
-                            className="text-[#666] text-xs mt-0.5"
-                            style={{ fontFamily: "var(--font-mono)" }}
-                          >
+                          <p style={{ margin: "3px 0 0", fontSize: 11, color: "#3f3f46", fontFamily: "monospace" }}>
                             {new Date(o.captured_at).toLocaleString()}
                           </p>
                         </div>
@@ -506,50 +458,33 @@ function DashboardContent() {
               )}
             </div>
 
-            <div
-              className="rounded-xl p-5 transition-all duration-200"
-              style={{
-                background: "#111111",
-                border: "1px solid #1e1e1e",
-              }}
-            >
-              <h2 className="text-base font-semibold text-[#f0f0f0] mb-4">
+            {/* What Zyph knows */}
+            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: 20 }}>
+              <h2 style={{ fontSize: 13, fontWeight: 600, color: "#F2F2F2", marginBottom: 16, margin: "0 0 16px" }}>
                 What Zyph knows about you
               </h2>
               {profileInsights.length === 0 ? (
-                <div className="py-10 flex flex-col items-center justify-center text-center">
-                  <div
-                    className="w-10 h-10 rounded-full bg-[#7c3aed]/40 animate-pulse mb-3"
-                    style={{ boxShadow: "0 0 20px rgba(124,58,237,0.3)" }}
-                  />
-                  <p className="text-[#666] text-sm">
-                    Zyph is building your profile…
-                  </p>
+                <div style={{ padding: "32px 0", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+                  <div className="animate-pulse" style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(99,102,241,0.15)", marginBottom: 12 }} />
+                  <p style={{ color: "#525252", fontSize: 13, margin: 0 }}>Zyph is building your profile…</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {Object.entries(insightCategories).map(([category, items]) => (
                     <div key={category}>
-                      <p className="text-[#555] text-xs uppercase tracking-wider mb-2">
+                      <p style={{ fontSize: 10, color: "#525252", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8, margin: "0 0 8px" }}>
                         {category}
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                         {items.slice(0, 5).map((insight) => {
-                          const i = insight as {
-                            id: string;
-                            insight_value?: string | null;
-                          };
+                          const i = insight as { id: string; insight_value?: string | null };
                           const text = i.insight_value ?? "";
                           return (
                             <span
                               key={i.id}
-                              className="inline-flex px-3 py-1 rounded-full text-xs text-[#a78bfa]"
-                              style={{
-                                background: "#1a1a2e",
-                              }}
+                              style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.12)", color: "#818cf8", borderRadius: 99, padding: "4px 12px", fontSize: 12 }}
                             >
-                              {text.slice(0, 60)}
-                              {text.length > 60 ? "…" : ""}
+                              {text.slice(0, 60)}{text.length > 60 ? "…" : ""}
                             </span>
                           );
                         })}
@@ -561,62 +496,55 @@ function DashboardContent() {
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Chat card */}
             <Link
               href="/dashboard/chat"
-              className="block rounded-xl p-6 transition-all duration-200 hover:border-[#2a1a4a]"
               style={{
-                background: "linear-gradient(135deg, #1a0a2e 0%, #0f0a0a 100%)",
-                border: "1px solid #2a1a4a",
+                display: "block",
+                background: "linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(99,102,241,0.03) 100%)",
+                border: "1px solid rgba(99,102,241,0.18)",
+                borderRadius: 10,
+                padding: 20,
+                textDecoration: "none",
               }}
             >
-              <h3 className="text-lg font-semibold text-white mb-1">
-                Chat with Zyph
-              </h3>
-              <p className="text-[#666] text-sm mb-4">
-                Your AI has full context. Ask anything.
-              </p>
-              <span
-                className="inline-flex items-center justify-center w-full py-2.5 rounded-lg text-sm font-medium text-white transition-colors duration-200 hover:opacity-90"
-                style={{ background: "#7c3aed" }}
-              >
+              <h3 style={{ fontSize: 15, fontWeight: 600, color: "#F2F2F2", marginBottom: 4, margin: "0 0 4px" }}>Chat with Zyph</h3>
+              <p style={{ color: "#8a8f98", fontSize: 13, marginBottom: 16, margin: "0 0 16px" }}>Your AI has full context. Ask anything.</p>
+              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", padding: "9px 0", borderRadius: 7, fontSize: 13, fontWeight: 600, color: "white", background: "#6366f1" }}>
                 Open Chat →
               </span>
-              <p className="text-[#22c55e] text-xs mt-3 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+              <p style={{ color: "#22c55e", fontSize: 12, marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
                 Zyph knows you
               </p>
             </Link>
 
-            <div
-              className="rounded-xl p-5 transition-all duration-200"
-              style={{
-                background: "#111111",
-                border: "1px solid #1e1e1e",
-              }}
-            >
-              <h3 className="text-sm font-medium text-[#f0f0f0] mb-3">
-                Quick Stats
-              </h3>
-              <div className="flex gap-1 mb-3 items-end" style={{ height: 24 }}>
+            {/* Quick Stats */}
+            <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: 20 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: "#F2F2F2", marginBottom: 12, margin: "0 0 12px" }}>Quick Stats</h3>
+              <div style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 28, marginBottom: 12 }}>
                 {Array.from({ length: 14 }).map((_, i) => {
                   const active = i < Math.min(daysActive, 14);
                   return (
                     <div
                       key={i}
-                      className="flex-1 rounded-sm bg-[#1a1a1a] min-h-[4px]"
                       style={{
+                        flex: 1,
+                        borderRadius: 3,
+                        background: active ? "#6366f1" : "rgba(255,255,255,0.06)",
                         height: active ? `${12 + (i % 3) * 4}px` : "6px",
-                        opacity: active ? 0.7 : 0.25,
+                        opacity: active ? 0.8 : 1,
+                        minHeight: 4,
                       }}
                     />
                   );
                 })}
               </div>
-              <p className="text-sm text-[#666] flex items-center gap-2">
+              <p style={{ fontSize: 13, color: "#525252", display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
                 {lastActiveDaysAgo === 0 ? (
                   <>
-                    <span className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
                     Active today
                   </>
                 ) : lastActiveDaysAgo != null ? (
@@ -656,7 +584,8 @@ function DashboardLoading() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div
-        className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+        className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+        style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
         aria-label="Loading"
       />
     </div>
