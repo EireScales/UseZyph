@@ -235,6 +235,14 @@ export default function AuthPage() {
         .auth-back:hover { color: #8a8f98 !important; }
         .auth-submit:hover:not(:disabled) { opacity: 0.88 !important; }
         .auth-tab-inactive:hover { color: #8a8f98 !important; }
+        @keyframes arrowBounce {
+          0%, 100% { transform: translateY(0px); opacity: 1; }
+          50% { transform: translateY(4px); opacity: 0.6; }
+        }
+        @keyframes recommendPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
       `}</style>
 
       {/* Background layers */}
@@ -325,6 +333,49 @@ export default function AuthPage() {
           </span>
           <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
         </div>
+
+        {/* Recommended pill */}
+        {mode === "signin" && (
+          <div style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "12px",
+            animation: "recommendPulse 2s ease-in-out infinite",
+          }}>
+            <div style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              background: "rgba(99,102,241,0.08)",
+              border: "1px solid rgba(99,102,241,0.18)",
+              borderRadius: "99px",
+              padding: "4px 12px 4px 8px",
+            }}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#6366f1"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ animation: "arrowBounce 1.2s ease-in-out infinite", flexShrink: 0 }}
+              >
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+              </svg>
+              <span style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "#818cf8",
+                letterSpacing: "0.04em",
+                fontFamily: "Inter, sans-serif",
+              }}>
+                use this one
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Mode toggle */}
         <div style={{
