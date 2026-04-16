@@ -86,9 +86,7 @@ export default function DnaPage() {
   const [peakHour, setPeakHour] = useState(12);
   const [dominantCategory, setDominantCategory] = useState("Unknown");
   const [daysActive, setDaysActive] = useState(0);
-  const [groupedInsights, setGroupedInsights] = useState<
-    Record<string, InsightRow[]>
-  >({});
+  const [groupedInsights, setGroupedInsights] = useState<Record<string, InsightRow[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -184,160 +182,271 @@ export default function DnaPage() {
 
   if (loading) {
     return (
-      <div
-        className="flex min-h-screen items-center justify-center"
-        style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
-      >
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: "80px", animation: "dashboardFadeIn 0.3s ease forwards" }}>
         <div
-          className="h-10 w-10 animate-spin rounded-full border-2 border-[#7c3aed] border-t-transparent"
+          className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
+          style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
           aria-label="Loading"
         />
+        <p style={{ fontSize: "14px", color: "#525252", marginTop: "16px", fontFamily: "Inter, sans-serif" }}>
+          Analysing your patterns...
+        </p>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ animation: "dashboardFadeIn 0.3s ease forwards" }}
-    >
-      <div className="max-w-2xl mx-auto p-6 md:p-8">
-        <h1 className="text-[28px] font-semibold text-[#f0f0f0] mb-2">
+    <div style={{ padding: "32px 40px", animation: "dashboardFadeIn 0.3s ease forwards" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        .regen-btn:hover { opacity: 0.88; }
+        .share-btn:hover { opacity: 0.88; }
+      `}</style>
+
+      <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+
+        {/* Heading */}
+        <h1 style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "28px", color: "#F2F2F2", letterSpacing: "-0.02em", marginBottom: "4px" }}>
           Zyph DNA
         </h1>
-        <p className="text-[#555] text-sm mb-8">
+        <p style={{ fontSize: "14px", color: "#525252", marginBottom: "32px", fontFamily: "Inter, sans-serif" }}>
           Your work identity, distilled from everything Zyph has observed.
         </p>
 
+        {/* Error */}
         {error && (
           <div
-            className="rounded-xl p-4 mb-6 text-sm text-[#fca5a5]"
-            style={{ background: "#1a0a0a", border: "1px solid #3f1a1a" }}
+            style={{
+              borderRadius: "10px",
+              padding: "14px 18px",
+              marginBottom: "20px",
+              fontSize: "13px",
+              color: "#fca5a5",
+              background: "rgba(239,68,68,0.06)",
+              border: "1px solid rgba(239,68,68,0.15)",
+              fontFamily: "Inter, sans-serif",
+            }}
           >
             {error}
           </div>
         )}
 
-        {/* Main DNA card */}
-        <div
-          className="rounded-2xl p-8 mb-6 relative overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, #1a0a2e 0%, #0f0a0a 100%)",
-            border: "1px solid #2a1a4a",
-          }}
-        >
-          <p className="text-xs font-semibold tracking-widest text-[#7c3aed] uppercase mb-3">
-            Your Archetype
-          </p>
-          <h2 className="text-4xl font-extrabold text-white mb-3">
-            {archetype || "—"}
-          </h2>
-          <p className="text-[#a78bfa] text-lg leading-relaxed mb-8">
-            {summary || "—"}
-          </p>
-
-          {/* Stat pills */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: "Top App", value: topApp },
-              {
-                label: "Peak Hour",
-                value: `${String(peakHour).padStart(2, "0")}:00`,
-              },
-              { label: "Focus Mode", value: dominantCategory },
-              { label: "Days Active", value: String(daysActive) },
-            ].map((stat) => (
+        {!archetype && !error ? (
+          /* No insights state */
+          <div
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "10px",
+              padding: "48px",
+              textAlign: "center",
+            }}
+          >
+            <p style={{ fontSize: "15px", color: "#525252", fontFamily: "Inter, sans-serif" }}>
+              Not enough data to generate your DNA yet. Keep using Zyph.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Main DNA card */}
+            <div
+              style={{
+                background: "linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(99,102,241,0.04) 100%)",
+                border: "1px solid rgba(99,102,241,0.2)",
+                borderRadius: "14px",
+                padding: "32px",
+                marginBottom: "16px",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              {/* Background glow */}
               <div
-                key={stat.label}
-                className="rounded-xl p-3 text-center"
                 style={{
-                  background: "rgba(124,58,237,0.1)",
-                  border: "1px solid rgba(124,58,237,0.2)",
+                  position: "absolute",
+                  top: "-40px",
+                  right: "-40px",
+                  width: "200px",
+                  height: "200px",
+                  background: "rgba(99,102,241,0.08)",
+                  borderRadius: "50%",
+                  filter: "blur(40px)",
+                  pointerEvents: "none",
+                }}
+                aria-hidden
+              />
+
+              <p style={{ fontSize: "10px", fontWeight: 600, color: "#818cf8", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: "12px", fontFamily: "Inter, sans-serif" }}>
+                Your Archetype
+              </p>
+              <h2 style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "clamp(28px, 4vw, 44px)", color: "#F2F2F2", letterSpacing: "-0.02em", lineHeight: 1.1, marginBottom: "12px" }}>
+                {archetype || "—"}
+              </h2>
+              <p style={{ fontSize: "16px", color: "#a5b4fc", lineHeight: 1.65, marginBottom: "28px", fontFamily: "Inter, sans-serif" }}>
+                {summary || "—"}
+              </p>
+
+              {/* Stat pills */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-[10px]">
+                {[
+                  { label: "Top App", value: topApp },
+                  { label: "Peak Hour", value: `${String(peakHour).padStart(2, "0")}:00` },
+                  { label: "Focus Mode", value: dominantCategory },
+                  { label: "Days Active", value: String(daysActive) },
+                ].map((stat) => (
+                  <div
+                    key={stat.label}
+                    style={{
+                      background: "rgba(99,102,241,0.08)",
+                      border: "1px solid rgba(99,102,241,0.15)",
+                      borderRadius: "8px",
+                      padding: "12px 14px",
+                      textAlign: "center",
+                    }}
+                  >
+                    <p style={{ fontSize: "9px", color: "#818cf8", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "4px", fontFamily: "Inter, sans-serif" }}>
+                      {stat.label}
+                    </p>
+                    <p style={{ fontSize: "15px", fontWeight: 600, color: "#F2F2F2", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {stat.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Traits */}
+            {traits.length > 0 && (
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "10px",
+                  padding: "20px",
+                  marginBottom: "12px",
                 }}
               >
-                <p className="text-[#666] text-xs uppercase tracking-wider mb-1">
-                  {stat.label}
+                <p style={{ fontSize: "10px", fontWeight: 600, color: "#525252", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "12px", fontFamily: "Inter, sans-serif" }}>
+                  Core Traits
                 </p>
-                <p className="text-white font-semibold text-sm truncate">
-                  {stat.value}
+                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                  {traits.map((trait, idx) => (
+                    <span
+                      key={`${trait}-${idx}`}
+                      style={{
+                        background: "rgba(99,102,241,0.08)",
+                        border: "1px solid rgba(99,102,241,0.15)",
+                        color: "#818cf8",
+                        borderRadius: "99px",
+                        padding: "5px 14px",
+                        fontSize: "13px",
+                        display: "inline-flex",
+                        marginRight: "8px",
+                        marginBottom: "8px",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                    >
+                      {trait}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Insights grouped by type */}
+            {Object.entries(groupedInsights).map(([type, items]) => (
+              <div
+                key={type}
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  borderRadius: "10px",
+                  padding: "16px 20px",
+                  marginBottom: "8px",
+                }}
+              >
+                <p style={{ fontSize: "10px", fontWeight: 600, color: "#525252", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "10px", fontFamily: "Inter, sans-serif" }}>
+                  {type}
                 </p>
+                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                  {items.slice(0, 4).map((i, idx) => (
+                    <span
+                      key={`${type}-${idx}`}
+                      style={{
+                        background: "rgba(99,102,241,0.08)",
+                        border: "1px solid rgba(99,102,241,0.15)",
+                        color: "#818cf8",
+                        borderRadius: "99px",
+                        padding: "5px 14px",
+                        fontSize: "12px",
+                        display: "inline-flex",
+                        marginRight: "8px",
+                        marginBottom: "8px",
+                        fontFamily: "Inter, sans-serif",
+                        maxWidth: "280px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {i.insight_value?.slice(0, 60)}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
-          </div>
-        </div>
 
-        {/* Traits */}
-        {traits.length > 0 && (
-          <div
-            className="rounded-xl p-5 mb-6"
-            style={{ background: "#111111", border: "1px solid #1e1e1e" }}
-          >
-            <p className="text-[#555] text-xs uppercase tracking-wider mb-3">
-              Core Traits
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {traits.map((trait, idx) => (
-                <span
-                  key={`${trait}-${idx}`}
-                  className="px-3 py-1.5 rounded-full text-sm text-[#a78bfa]"
-                  style={{ background: "#1a1a2e" }}
-                >
-                  {trait}
-                </span>
-              ))}
+            {/* Action buttons */}
+            <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
+              <button
+                type="button"
+                onClick={() =>
+                  window.open(
+                    `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                      `My Zyph DNA: I'm ${archetype}. usezyph.com #ZyphDNA`
+                    )}`
+                  )
+                }
+                className="share-btn"
+                style={{
+                  flex: 1,
+                  background: "#1d9bf0",
+                  color: "#fff",
+                  borderRadius: "8px",
+                  padding: "11px 20px",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                  transition: "opacity 0.15s",
+                }}
+              >
+                Share on X →
+              </button>
+              <button
+                type="button"
+                onClick={generateDNA}
+                className="regen-btn"
+                style={{
+                  flex: 1,
+                  background: "#6366f1",
+                  color: "#fff",
+                  borderRadius: "8px",
+                  padding: "11px 20px",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  border: "none",
+                  cursor: "pointer",
+                  fontFamily: "Inter, sans-serif",
+                  transition: "opacity 0.15s",
+                }}
+              >
+                Regenerate
+              </button>
             </div>
-          </div>
+          </>
         )}
-
-        {/* Insights grouped by type */}
-        {Object.entries(groupedInsights).map(([type, items]) => (
-          <div
-            key={type}
-            className="rounded-xl p-5 mb-4"
-            style={{ background: "#111111", border: "1px solid #1e1e1e" }}
-          >
-            <p className="text-[#555] text-xs uppercase tracking-wider mb-3">
-              {type}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {items.slice(0, 4).map((i, idx) => (
-                <span
-                  key={`${type}-${idx}`}
-                  className="px-3 py-1 rounded-full text-xs text-[#a78bfa]"
-                  style={{ background: "#1a1a2e" }}
-                >
-                  {i.insight_value?.slice(0, 60)}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {/* Share + Regenerate buttons */}
-        <div className="flex gap-3 mt-6">
-          <button
-            type="button"
-            onClick={() =>
-              window.open(
-                `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                  `My Zyph DNA: I'm ${archetype}. usezyph.com #ZyphDNA`
-                )}`
-              )
-            }
-            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white"
-            style={{ background: "#1da1f2" }}
-          >
-            Share on X →
-          </button>
-          <button
-            type="button"
-            onClick={generateDNA}
-            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white"
-            style={{ background: "#7c3aed" }}
-          >
-            Regenerate
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -123,7 +123,7 @@ export default function ChatPage() {
 
   if (!insightsLoaded && userId === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div style={{ display: "flex", minHeight: "100vh", alignItems: "center", justifyContent: "center", background: "#08090a" }}>
         <div
           className="h-10 w-10 animate-spin rounded-full border-2 border-t-transparent"
           style={{ borderColor: "#6366f1", borderTopColor: "transparent" }}
@@ -134,52 +134,70 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-0px)] lg:h-[calc(100vh-0px)]">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');`}</style>
-      <header
-        className="flex items-center justify-between px-6 py-4 shrink-0"
-        style={{ background: "#08090a", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="flex items-center gap-2">
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#08090a", overflow: "hidden" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
+        .chat-input:focus { border-color: rgba(99,102,241,0.5) !important; background: rgba(255,255,255,0.06) !important; }
+        .chat-input::placeholder { color: #525252; }
+        .chat-scrollbar::-webkit-scrollbar { width: 6px; }
+        .chat-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+        .chip-btn:hover { background: rgba(255,255,255,0.06) !important; }
+        .new-chat-btn:hover { background: rgba(255,255,255,0.05) !important; }
+        .send-btn:hover:not(:disabled) { opacity: 0.88; }
+      `}</style>
+
+      {/* Header */}
+      <header style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 40px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "19px", color: "#F2F2F2", letterSpacing: "-0.02em" }}>Zyph</span>
-          <span
-            style={{ display: "inline-block", width: "5px", height: "5px", borderRadius: "50%", background: "#22c55e", flexShrink: 0, boxShadow: "0 0 6px rgba(34,197,94,0.6)" }}
-            aria-hidden
-          />
+          <span style={{ display: "inline-block", width: "5px", height: "5px", borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 6px rgba(34,197,94,0.6)" }} aria-hidden />
         </div>
         <button
           type="button"
           onClick={handleNewChat}
-          className="px-4 py-2 rounded-lg text-sm font-medium text-[#f0f0f0] border border-[#1e1e1e] hover:bg-[#141414] transition-colors duration-200"
+          className="new-chat-btn"
+          style={{ padding: "7px 16px", borderRadius: "8px", fontSize: "13px", fontWeight: 500, color: "#8a8f98", background: "transparent", border: "1px solid rgba(255,255,255,0.08)", cursor: "pointer", fontFamily: "Inter, sans-serif", transition: "background 0.15s" }}
         >
           New chat
         </button>
       </header>
 
+      {/* Messages scroll area */}
       <div
         ref={scrollAreaRef}
-        className="flex-1 overflow-y-auto flex flex-col gap-4 p-6"
-        style={{ background: "transparent" }}
+        className="chat-scrollbar"
+        style={{ flex: 1, overflowY: "auto", padding: "24px 40px" }}
       >
-        <style>{`
-          .chat-scrollbar::-webkit-scrollbar { width: 8px; }
-          .chat-scrollbar::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
-          .chat-scrollbar::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
-        `}</style>
-        <div className="max-w-3xl mx-auto w-full chat-scrollbar">
+        <div style={{ maxWidth: "800px", margin: "0 auto", width: "100%" }}>
+
+          {/* Welcome state */}
           {messages.length === 0 && !loading && (
-            <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
-                  <p style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "28px", color: "#8a8f98", marginBottom: "8px", letterSpacing: "-0.01em" }}>Ask anything.</p>
-              <p style={{ fontSize: "13px", color: "#525252", marginBottom: "28px", fontFamily: "Inter, sans-serif" }}>
+            <div style={{ paddingTop: "80px", textAlign: "center" }}>
+              <p style={{ fontFamily: "'Instrument Serif', serif", fontStyle: "italic", fontSize: "36px", color: "#F2F2F2", letterSpacing: "-0.02em", marginBottom: "12px" }}>
+                Ask anything.
+              </p>
+              <p style={{ fontSize: "15px", color: "#525252", marginBottom: "40px", fontFamily: "Inter, sans-serif" }}>
                 Zyph uses your profile to respond.
               </p>
-              <div className="flex flex-wrap justify-center gap-3">
+              <div style={{ display: "inline-flex", flexWrap: "wrap", gap: "10px", justifyContent: "center" }}>
                 {SUGGESTIONS.map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => sendMessage(s)}
-                    className="px-4 py-2.5 rounded-full text-sm text-[#8a8f98] border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(255,255,255,0.12)] hover:text-[#F2F2F2] transition-all duration-200"
+                    className="chip-btn"
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      color: "#8a8f98",
+                      borderRadius: "8px",
+                      padding: "9px 16px",
+                      fontSize: "13px",
+                      cursor: "pointer",
+                      fontFamily: "Inter, sans-serif",
+                      transition: "background 0.15s",
+                    }}
                   >
                     {s}
                   </button>
@@ -188,38 +206,44 @@ export default function ChatPage() {
             </div>
           )}
 
-          <div className="flex flex-col gap-4">
+          {/* Message list */}
+          <div style={{ display: "flex", flexDirection: "column", paddingTop: messages.length > 0 ? "8px" : "0" }}>
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                style={{
+                  display: "flex",
+                  justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                  marginBottom: msg.role === "user" ? "12px" : "16px",
+                }}
               >
-                <div
-                  className={msg.role === "user" ? "max-w-[70%]" : "max-w-[75%]"}
-                >
+                <div style={{ maxWidth: msg.role === "user" ? "75%" : "85%" }}>
                   {msg.role === "assistant" && (
-                    <p className="text-[11px] text-[#444] mb-1 ml-1">Zyph</p>
+                    <p style={{ fontSize: "11px", color: "#3f3f46", marginBottom: "4px", marginLeft: "4px", fontFamily: "Inter, sans-serif" }}>Zyph</p>
                   )}
                   <div
-                    className={`rounded-2xl px-4 py-3 ${
-                      msg.role === "user"
-                        ? "rounded-br-sm"
-                        : "rounded-bl-sm"
-                    }`}
                     style={
                       msg.role === "user"
                         ? {
                             background: "#6366f1",
                             color: "#fff",
+                            borderRadius: "14px 14px 4px 14px",
+                            padding: "10px 14px",
+                            fontSize: "14px",
+                            lineHeight: 1.6,
                           }
                         : {
-                            background: "rgba(255,255,255,0.03)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            color: "#F2F2F2",
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.07)",
+                            color: "#c4c9d4",
+                            borderRadius: "4px 14px 14px 14px",
+                            padding: "12px 14px",
+                            fontSize: "14px",
+                            lineHeight: 1.75,
                           }
                     }
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                    <p style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "Inter, sans-serif" }}>
                       {msg.content}
                     </p>
                   </div>
@@ -227,71 +251,100 @@ export default function ChatPage() {
               </div>
             ))}
 
+            {/* Loading dots */}
             {loading && (
-              <div className="flex justify-start">
+              <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: "16px" }}>
                 <div>
-                  <p className="text-[11px] text-[#444] mb-1 ml-1">Zyph</p>
+                  <p style={{ fontSize: "11px", color: "#3f3f46", marginBottom: "4px", marginLeft: "4px", fontFamily: "Inter, sans-serif" }}>Zyph</p>
                   <div
-                    className="rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1 items-center"
                     style={{
-                      background: "rgba(255,255,255,0.03)",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.07)",
+                      borderRadius: "4px 14px 14px 14px",
+                      padding: "12px 14px",
+                      display: "flex",
+                      gap: "5px",
+                      alignItems: "center",
                     }}
                   >
-                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "rgba(99,102,241,0.6)", animationDelay: "0ms" }} />
-                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "rgba(99,102,241,0.6)", animationDelay: "150ms" }} />
-                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "rgba(99,102,241,0.6)", animationDelay: "300ms" }} />
+                    <span className="animate-pulse" style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#6366f1", display: "inline-block", animationDelay: "0ms" }} />
+                    <span className="animate-pulse" style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#6366f1", display: "inline-block", animationDelay: "150ms" }} />
+                    <span className="animate-pulse" style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#6366f1", display: "inline-block", animationDelay: "300ms" }} />
                   </div>
                 </div>
               </div>
             )}
           </div>
+
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      <div
-        className="shrink-0 p-4"
-        style={{ background: "#08090a", borderTop: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="max-w-3xl mx-auto w-full">
-          <form onSubmit={handleSubmit} className="flex gap-3 items-end">
-            <div className="flex-1 rounded-xl px-4 py-3 min-h-[48px] flex items-center gap-2 border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] focus-within:border-[#6366f1] transition-colors duration-200">
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage(input);
-                  }
-                }}
-                placeholder="Message Zyph..."
-                disabled={loading}
-                className="flex-1 bg-transparent text-[#f0f0f0] placeholder-[#666] text-sm focus:outline-none min-w-0"
-              />
-              <button
-                type="submit"
-                disabled={loading || !input.trim()}
-                className="shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed transition-opacity duration-200 bg-[#6366f1] hover:opacity-90"
-                aria-label="Send"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 2L11 13" />
-                  <path d="M22 2L15 22L11 13L2 9L22 2Z" />
-                </svg>
-              </button>
-            </div>
+      {/* Input area */}
+      <div style={{ background: "rgba(8,9,10,0.95)", backdropFilter: "blur(20px)", borderTop: "1px solid rgba(255,255,255,0.07)", padding: "16px 40px 24px", flexShrink: 0 }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto", width: "100%" }}>
+          <form onSubmit={handleSubmit} style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage(input);
+                }
+              }}
+              placeholder="Message Zyph..."
+              disabled={loading}
+              className="chat-input"
+              style={{
+                flex: 1,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#F2F2F2",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontSize: "14px",
+                width: "100%",
+                outline: "none",
+                fontFamily: "Inter, sans-serif",
+                transition: "border-color 0.15s, background 0.15s",
+              }}
+            />
+            <button
+              type="submit"
+              disabled={loading || !input.trim()}
+              className="send-btn"
+              style={{
+                background: "#6366f1",
+                color: "#fff",
+                borderRadius: "8px",
+                padding: "10px 14px",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                transition: "opacity 0.15s",
+                opacity: loading || !input.trim() ? 0.4 : 1,
+              }}
+              aria-label="Send"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 2L11 13" />
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+              </svg>
+            </button>
           </form>
-          <div className="mt-2 space-y-1 text-center">
+          <div style={{ marginTop: "10px", textAlign: "center" }}>
             {isFreeUser && (
-              <p className="text-[11px] text-[#6b7280]">
+              <p style={{ fontSize: "11px", color: "#525252", marginBottom: "2px", fontFamily: "Inter, sans-serif" }}>
                 Pro users get priority AI responses
               </p>
             )}
-            <p className="text-[11px] text-[#333]">
+            <p style={{ fontSize: "11px", color: "#3f3f46", fontFamily: "Inter, sans-serif" }}>
               Zyph knows you · Powered by Claude
             </p>
           </div>
