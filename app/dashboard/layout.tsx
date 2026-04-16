@@ -90,7 +90,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", background: "#08090a" }}>
+    <div style={{ minHeight: "100vh", background: "#08090a" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap');
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
@@ -119,8 +119,10 @@ export default function DashboardLayout({
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 bottom-0 lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
         style={{
+          position: "fixed",
+          left: 0, top: 0, bottom: 0,
           width: 220,
           display: "flex",
           flexDirection: "column",
@@ -245,7 +247,10 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 min-h-screen flex flex-col lg:pl-[220px]">
+      <div
+        className="lg:ml-[220px] ml-0"
+        style={{ marginLeft: 0, minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
         {/* Mobile header */}
         <header
           className="sticky top-0 z-20 lg:hidden"
@@ -295,7 +300,7 @@ export default function DashboardLayout({
           <div style={{ width: 36 }} />
         </header>
 
-        <main className="flex-1 w-full">{children}</main>
+        <main style={{ flex: 1, width: "100%" }}>{children}</main>
       </div>
     </div>
   );
